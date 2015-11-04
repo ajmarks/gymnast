@@ -6,11 +6,6 @@ from builtins import *
 
 LINEBREAKS = set([b'\r', b'\n', b'\r\n'])
 WHITESPACE = LINEBREAKS.union([b'\x00', b'\x09', b'\x0A', b'\x20'])
-DELIMITERS = {ord('('):ord(')'), 
-              ord('<'):ord('>'),
-              ord('['):ord(']'),
-              ord('{'):ord('}')
-             }
 
 class PdfType(object):
     """Abstract base class for PDF objects"""

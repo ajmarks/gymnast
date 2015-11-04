@@ -1,4 +1,4 @@
-from exc                  import *
+from exc                      import *
 from opcodes.text_objects     import BT, ET
 from opcodes.text_state       import Tc, Tw, Tz, TL, Tf, Tr, Ts
 from opcodes.text_positioning import Td, TD, Tm, Tstar
