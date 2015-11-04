@@ -36,7 +36,7 @@ class TextParser(object):
             
         self._words = []
         self._fonts = {k: PdfFont(v) for
-                         k,v in page['/Resources']['/Font'].items()}
+                         k,v in page['Resources']['Font'].items()}
         
         for args, oper in content.operations:
             self._opcodes[oper](*args)
@@ -57,16 +57,16 @@ class TextParser(object):
     @property
     def _space_width(self):
         """The width of a space in the current font"""
-        return self.active_font['/Widths'][ord(' ')-self.active_font['/FirstChar']]
+        return self.active_font['Widths'][ord(' ')-self.active_font['FirstChar']]
     
     @property
     def _cap_height(self):
         """The height of a capital letter in the current font"""
-        return self.active_font['/FontDescriptor']['/CapHeight']
+        return self.active_font['FontDescriptor']['CapHeight']
     
     def _get_glyph_width(self, glyph):
-        w_idx = ord(glyph)-self._fonts[self._T_f]['/FirstChar']
-        return self._fonts[self._T_f]['/Widths'][w_idx]
+        w_idx = ord(glyph)-self._fonts[self._T_f]['FirstChar']
+        return self._fonts[self._T_f]['Widths'][w_idx]
     
     def _write_glyph(self, glyph=None, T_j=0.0):
         """rite the glyph to the text output and update T_m.  See pp.409-10.

@@ -5,27 +5,27 @@ class FontDescriptor(object):
     Note that this will need to be overloaded to properly handle Type3 fonts."""
 
     # Dict mapping official PDF FontDescriptor names to our pythonic ones
-    names_map = {'/FontName'    :'font_name',
-                 '/Flags'       :'flags',
-                 '/FontBBox'    :'font_b_box',
-                 '/ItalicAngle' :'italic_angle',
-                 '/Ascent'      :'ascent',
-                 '/Descent'     :'descent',
-                 '/CapHeight'   :'cap_height',
-                 '/StemV'       :'stem_v',
-                 '/FontFamily'  :'font_family',
-                 '/FontStretch' :'font_stretch',
-                 '/FontWeight'  :'font_weight',
-                 '/Leading'     :'leading',
-                 '/XHeight'     :'x_height',
-                 '/StemH'       :'stem_h',
-                 '/AvgWidth'    :'avg_width',
-                 '/MaxWidth'    :'max_width',
-                 '/MissingWidth':'missing_width',
-                 '/FontFile'    :'font_file',
-                 '/FontFile2'   :'font_file2',
-                 '/FontFile3'   :'font_file3',
-                 '/CharSet'     :'char_set'}
+    names_map = {'FontName'    :'font_name',
+                 'Flags'       :'flags',
+                 'FontBBox'    :'font_b_box',
+                 'ItalicAngle' :'italic_angle',
+                 'Ascent'      :'ascent',
+                 'Descent'     :'descent',
+                 'CapHeight'   :'cap_height',
+                 'StemV'       :'stem_v',
+                 'FontFamily'  :'font_family',
+                 'FontStretch' :'font_stretch',
+                 'FontWeight'  :'font_weight',
+                 'Leading'     :'leading',
+                 'XHeight'     :'x_height',
+                 'StemH'       :'stem_h',
+                 'AvgWidth'    :'avg_width',
+                 'MaxWidth'    :'max_width',
+                 'MissingWidth':'missing_width',
+                 'FontFile'    :'font_file',
+                 'FontFile2'   :'font_file2',
+                 'FontFile3'   :'font_file3',
+                 'CharSet'     :'char_set'}
 
     def __init__(self, font_name, flags, font_b_box, italic_angle, ascent,
                        descent, cap_height,stem_v,
@@ -104,18 +104,18 @@ class PdfFont(object):
     GLYPH_LIST = pdf_constants.GLYPH_LIST
     def __init__(self, font):
         """See Table 5.8 on p. 413"""
-        self._type       = font['/Type']
-        self._subtype    = font['/Subtype']
-        self._name       = font.get('/Name')
-        self._base_font  = font.get('/BaseFont')
-        self._first_char = font['/FirstChar']
-        self._last_char  = font['/LastChar']
-        self._widths     = font['/Widths']
-        self._descriptor = FontDescriptor(**{v: font['/FontDescriptor'][k] 
+        self._type       = font['Type']
+        self._subtype    = font['Subtype']
+        self._name       = font.get('Name')
+        self._base_font  = font.get('BaseFont')
+        self._first_char = font['FirstChar']
+        self._last_char  = font['LastChar']
+        self._widths     = font['Widths']
+        self._descriptor = FontDescriptor(**{v: font['FontDescriptor'][k] 
                                            for k, v in FontDescriptor.names_map.items()
-                                             if k in font['/FontDescriptor']})
-        self._encoding   = FontEncoding(font['/Encoding'].get('/BaseEncoding'),
-                                        font['/Encoding'].get('/Differences'))
+                                             if k in font['FontDescriptor']})
+        self._encoding   = FontEncoding(font['Encoding'].get('BaseEncoding'),
+                                        font['Encoding'].get('Differences'))
 
     def get_glyph_width(self, glyph):
         if not isinstance(glyph, int):
@@ -140,4 +140,4 @@ class PdfFont(object):
     @property
     def space_width(self):
         """Width of the space character in the current font"""
-        return self.get_glyph_width(self.get_char_code('/space'))
+        return self.get_glyph_width(self.get_char_code('space'))
