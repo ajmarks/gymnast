@@ -7,9 +7,8 @@
 	* Implement trailers
 	* PDF Headers
 	* %%EOF
-    * Decide if we're going to keep the PdfNull, PdfBoolean, PdfInt, and PdfReal types
     * Package it up into a nice class
-    * See if we can make that main parser function not be so insanely awful, probably making a parser class
+
 
 * **Text Parser**
 	* Refactor existing code to longer assume PyPDF2 conventions.  This also means nuking all of those ridiculous extra leading /'s in Name objects

@@ -22,6 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="exc.py" />
+    <Compile Include="font.py" />
     <Compile Include="misc.py" />
     <Compile Include="opcodes\text_objects.py" />
     <Compile Include="opcodes\text_positioning.py" />
@@ -29,9 +30,8 @@
     <Compile Include="opcodes\text_state.py" />
     <Compile Include="opcodes\__init__.py" />
     <Compile Include="pdf_constants.py" />
+    <Compile Include="pdf_oper.py" />
     <Compile Include="text_extractor.py" />
-    <Compile Include="pdf_font.py" />
-    <Compile Include="pdf_opcodes.py" />
     <Compile Include="pdf_text.py" />
     <Compile Include="pdf_types.py" />
     <Compile Include="text_block.py" />
