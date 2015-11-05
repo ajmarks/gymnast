@@ -1,5 +1,5 @@
 import numpy as np
-from ..pdf_opcodes import PdfOper
+from ..pdf_oper import PdfOper
 
 class Td(PdfOper):
     opcode  = 'Td'

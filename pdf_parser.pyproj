@@ -28,14 +28,15 @@
     <Compile Include="opcodes\text_showing.py" />
     <Compile Include="opcodes\text_state.py" />
     <Compile Include="opcodes\__init__.py" />
-    <Compile Include="parse_data.py" />
     <Compile Include="pdf_constants.py" />
-    <Compile Include="pdf_extractor.py" />
+    <Compile Include="text_extractor.py" />
     <Compile Include="pdf_font.py" />
     <Compile Include="pdf_opcodes.py" />
     <Compile Include="pdf_text.py" />
     <Compile Include="pdf_types.py" />
     <Compile Include="text_block.py" />
+    <Compile Include="pdf_doc.py" />
+    <Compile Include="pdf_parser.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>

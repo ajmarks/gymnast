@@ -1,10 +1,11 @@
 import numpy as np
 
-from ..pdf_opcodes   import PdfOper
-from ..pdf_extractor import TextParser
-from ..pdf_font      import PdfFont
-from ..misc          import classproperty
+from ..pdf_oper       import PdfOper
+from ..text_extractor import TextParser
+from ..font           import PdfFont
+from ..misc           import classproperty
 
+#PTVS nonsense
 from builtins import *
 
 class TextOper(PdfOper):

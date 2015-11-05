@@ -1,4 +1,4 @@
-from pdf_opcodes import PdfOper
+from ..pdf_oper import PdfOper
 
 class BT(PdfOper):
     """Begin a text object, resetting the text and line matricies"""

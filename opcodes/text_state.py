@@ -1,4 +1,4 @@
-from ..pdf_opcodes import PdfOper
+from ..pdf_oper import PdfOper
 
 class Tc(PdfOper):
     opcode  = 'Tc'

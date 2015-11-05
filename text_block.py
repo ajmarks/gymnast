@@ -1,4 +1,4 @@
-from pdf_font import PdfFont
+from .font import PdfFont
 
 class TextBlock(object):
     """Represents a block of text in the PDF output"""

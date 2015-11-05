@@ -1,11 +1,10 @@
 import PyPDF2
 import numpy as np
 import re
-import pdf_opcodes
 from PyPDF2.pdf  import ContentStream
 
-from pdf_exc     import *
-from pdf_opcodes import OpcodeExecutor
+from .exc      import *
+from .pdf_oper import OpcodeExecutor
 
 #Nonsense to make PTVS happy
 from builtins import *

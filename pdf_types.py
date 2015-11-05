@@ -1,5 +1,5 @@
 import numbers
-from exc import *
+from .exc import *
 
 #PTVS nonsense
 from builtins import *
