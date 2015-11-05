@@ -276,3 +276,32 @@ class PdfDict(PdfCompountType, dict):
     def __init__(self, *args, **kwargs):
         PdfCompountType.__init__(self)
         dict.__init__(self, *args, **kwargs)
+
+class PdfIndirectObject(PdfType):
+    def __init__(self, document, object_number, generation):
+        super().__init__()
+        self._object_number = object_number
+        self._generation    = generation
+        self._document      = document
+        
+        if   not isinstance(self._object_number, int) \
+          or not isinstance(self._generation,    int) \
+          or self._object_number <= 0 or self._generation < 0:
+            raise ValueError('Invalid indirect object identifier')
+    def get_object(self):
+        return self._document.get_object(self._object_number, self._generation)
+    def __str__(self): 
+        return 'PdfIndirectObject(%d, %d)'%(self._object_number, self._generation)
+    def __repr__(self): 
+        return 'PdfIndirectObject(%d, %d)'%(self._object_number, self._generation)
+
+class PdfStream(PdfType):
+    def __init__(self, header, data):
+        super().__init__()
+        self._header = header
+        self._data   = data
+
+class PdfXref(PdfType):
+    def __init__(self, data):
+        super().__init__()
+        self._data   = data
