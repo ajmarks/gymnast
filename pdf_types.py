@@ -71,7 +71,7 @@ class PdfLiteralString(PdfString):
             if escaped:
                 escaped = False
                 try:
-                    result += ESCAPES[e_str+d]
+                    result += PdfLiteralString.ESCAPES[e_str+d]
                     continue
                 except KeyError: pass
                 if not e_str:

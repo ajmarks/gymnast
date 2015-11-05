@@ -32,8 +32,9 @@ class PdfParser(object):
         elif value in PdfParser.obj_types and \
               (value+self._data[-1:]) not in PdfParser.obj_types:
             return True
-        elif closer and self._data[-clen:] == closer[::-1]:
-            return True
+        elif closer and self._data[-clen:] == closer[::-1] \
+            and value+self._data[-(clen-len(value)):] != closer: #The last clause covers an issue
+            return True                                          #the dict as the last element of a dict
         elif bytes(self._data[-1:]) in PdfParser.ENDERS and \
               (value+self._data[-1:]) not in PdfParser.obj_types:
             return True
@@ -73,6 +74,7 @@ class PdfParser(object):
         objects = []
         while self._data:
             token = self._get_next_token(closer)
+            if not token: continue
             if token == closer: break
             element  = self._process_token(token, objects)
             if token != b'obj':
@@ -84,8 +86,7 @@ class PdfParser(object):
         token = b''
         self._consume_whitespace()
         while self._data and token != closer \
-            and not self._is_token(token, closer, clen):
-
+           and not self._is_token(token, closer, clen):
             token += self._next_byte()
         return token
 
@@ -154,6 +155,7 @@ class PdfParser(object):
         return PdfComment(token)
 
     def _parse_expression(self, objects):
+        """TODO: This"""
         pass
 
     def _parse_object(self, objects):
@@ -223,7 +225,7 @@ class PdfParser(object):
         token = bytes(token)
         if   token == b'true' : return True
         elif token == b'false': return False
-        elif token == b'null' :  return None
+        elif token == b'null' : return None
         elif token[:1] == b'/':
             return PdfParser._parse_name(token)
         else:
