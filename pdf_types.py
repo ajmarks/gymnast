@@ -1,6 +1,8 @@
 import numbers
-from exc  import *
-from misc import iterbytes
+import re
+from exc     import *
+from misc    import iterbytes
+from decimal import Decimal
 
 #PTVS nonsense
 from builtins import *
@@ -109,6 +111,18 @@ class PdfHexString(PdfString):
         return bytes.fromhex(token.decode())
 
 class PdfIndirectObject(PdfType):
+    def __init__(self, object_number, generation, offset, object):
+        super().__init__()
+        self._object_number = object_number
+        self._generation    = generation
+        self._offset        = offset
+        self._object        = object
+
+    def get_object(self):
+        return self._object
+    object = property(get_object)
+
+class PdfObjectReference(PdfType):
     def __init__(self, object_number, generation, document=None):
         super().__init__()
         self._object_number = object_number
@@ -119,12 +133,18 @@ class PdfIndirectObject(PdfType):
           or not isinstance(self._generation,    int) \
           or self._object_number <= 0 or self._generation < 0:
             raise ValueError('Invalid indirect object identifier')
-    def get_object(self):
-        return self._document.get_object(self._object_number, self._generation)
+       
+    def get_object(self, document=None):
+        if not document and not self._document:
+            raise PdfError('Evaluating indirect references requires a document')
+        id = (self._object_number, self._generation)
+        return (document if document else self._document).indirect_objects[id]
+    object = property(get_object)
+
     def __str__(self): 
-        return 'PdfIndirectObject(%d, %d)'%(self._object_number, self._generation)
+        return 'PdfObjectReference(%d, %d)'%(self._object_number, self._generation)
     def __repr__(self): 
-        return 'PdfIndirectObject(%d, %d)'%(self._object_number, self._generation)
+        return 'PdfObjectReference(%d, %d)'%(self._object_number, self._generation)
 
 class PdfStream(PdfType):
     def __init__(self, header, data):
@@ -133,21 +153,61 @@ class PdfStream(PdfType):
         self._data   = data
 
 class PdfXref(PdfType):
-    def __init__(self, data):
-        super().__init__()
-        self._data   = data
+    LINE_PAT = re.compile(r'(\d{10}) (\d{5}) (n|f)$')
+
+    def __init__(self, id, offset, generation, in_use):
+        super().__init__()       
+        self._id         = id
+        self._offset     = offset
+        self._generation = generation
+        self._in_use     = in_use
+
+    def get_object(self, document):
+        if self._in_use:
+            return document.get_offset(self._offset)
+        else:
+            return None # TODO: implement free Xrefs
+
+    def __str__(self):
+        return '{:010d} {:010d} '.format(self._offset, self._generation)\
+              +('n' if self._in_use else 'f')
+
+    @staticmethod
+    def from_line(id, line):
+        # TODO: change to fullmatch once 3.4+ is standard
+        match = re.match(PdfXref.LINE_PAT, line)
+        if not match:
+            raise PdfParseError('Invalid xref line')
+        return PdfXref(id, int(match.group(1)), int(match.group(2)), 
+                       True if match.group(3) == 'n' else False)
+
 
 class PdfComment(PdfType, str):
-   def __new__(cls, *args, **kwargs):
-       return str.__new__(cls, *args, **kwargs)
-   def __init__(self, *args, **kwargs):
-       PdfType.__init__(self)
+    def __new__(cls, obj):
+        if isinstance(obj, (bytes, bytearray)):
+            obj = obj.decode(errors='surrogateescape')
+        return str.__new__(cls, obj)
+    def __init__(self, *args, **kwargs):
+        PdfType.__init__(self)
 
 class PdfTrailer(PdfType):
     def __init__(self, trailer, startxref):
         super().__init__()
         self._trailer   = trailer
         self._startxref   = startxref
+
+class PdfHeader(PdfType):
+    def __init__(self, version, adobe_version=None):
+        super().__init__()
+        self.version       = Decimal(version)
+        self.adobe_version = Decimal(adobe_version) if adobe_version else None
+    def __str__(self):
+        vers = '%'
+        if self.adobe_version:
+            vers += '!PS-Adobe-'+str(self.adobe_version)+' '
+        return vers+'PDF-'+str(self.version)
+    def __bytes__(self):
+        return bytes(str(self))
 
 ###These were so unnecessary
 #

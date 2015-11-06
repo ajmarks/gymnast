@@ -40,6 +40,7 @@
     <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="filters\" />
     <Folder Include="opcodes" />
   </ItemGroup>
   <ItemGroup>

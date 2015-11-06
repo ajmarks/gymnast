@@ -1,7 +1,7 @@
 # pdf_parser TODO
 
 * **PDF basic Parser**
-    * Decide if indirect they should be decoded in-place or left as a PdfIndirectObject type
+    * Decide if indirect they should be decoded in-place or left as a PdfObjectReference type
 	* Implement streams
     * Implement xrefs
 	* Implement trailers
