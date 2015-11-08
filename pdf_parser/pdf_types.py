@@ -1,3 +1,4 @@
+import io
 import numbers
 import re
 from decimal   import Decimal
@@ -8,7 +9,6 @@ from .misc          import iterbytes
 from .stream_filter import FilterExecutor
 
 
-
 #PTVS nonsense
 from builtins import *
 
@@ -17,12 +17,10 @@ WHITESPACE = LINEBREAKS.union([b'\x00', b'\x09', b'\x0A', b'\x20'])
 
 class PdfType(object):
     """Abstract base class for PDF objects"""
-    #Type hints
-    if False:
-        comments = []
+    def pdf_encode(self):
+        """Translate the object into bytes in PDF format"""
+        raise NotImplementedError
 
-    def __init__(self, *args, **kwargs):
-        self.comments = []
 
 class PdfString(PdfType):
     #Type hints for the IDE
@@ -73,12 +71,12 @@ class PdfLiteralString(PdfString):
         iter    = iterbytes(data)
         escaped = 0 # (0, 1, 2, 3) = (Unescaped, Normal escape, escape-\r, escape-digit)
         e_str   = b''
-        result  = b''
+        result  = io.BytesIO()
         for d in iter:
             if escaped:
                 escaped = False
                 try:
-                    result += PdfLiteralString.ESCAPES[e_str+d]
+                    result.write(PdfLiteralString.ESCAPES[e_str+d])
                     continue
                 except KeyError: pass
                 if not e_str:
@@ -89,9 +87,9 @@ class PdfLiteralString(PdfString):
                 #Octals
                 elif e_str.isdigit():
                     if not d.isdigit():
-                        result += bytes((min(int(e_str  , 8),255),))
+                        result.write(bytes((min(int(e_str  , 8),255),)))
                     elif len(e_str) == 2:
-                        result += bytes((min(int(e_str+d, 8),255),))
+                        result.write(bytes((min(int(e_str+d, 8),255),)))
                         continue
                     else:
                         e_str += d
@@ -103,8 +101,8 @@ class PdfLiteralString(PdfString):
                 e_str   = b''
                 escaped = True
             else:
-                result += d
-        return result
+                result.write(d)
+        return result.getvalue()
 
 class PdfHexString(PdfString):
     @property
@@ -237,7 +235,7 @@ class PdfTrailer(PdfType):
     def __init__(self, trailer, startxref):
         super().__init__()
         self._trailer   = trailer
-        self._startxref   = startxref
+        self._startxref = startxref
 
 class PdfHeader(PdfType):
     def __init__(self, version, adobe_version=None):
