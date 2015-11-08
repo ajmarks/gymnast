@@ -1,8 +1,20 @@
 import numbers
 import re
-from exc     import *
-from misc    import iterbytes
-from decimal import Decimal
+from decimal   import Decimal
+from functools import partial, reduce
+
+try:
+    from .exc           import *
+    from .misc          import iterbytes
+    from .stream_filter import FilterExecutor
+except SystemError as e:
+    if 'not loaded, cannot perform relative import' not in e.args[0]:
+        raise
+    from exc           import *
+    from misc          import iterbytes
+    from stream_filter import FilterExecutor
+
+
 
 #PTVS nonsense
 from builtins import *
@@ -147,16 +159,54 @@ class PdfObjectReference(PdfType):
         return 'PdfObjectReference(%d, %d)'%(self._object_number, self._generation)
 
 class PdfStream(PdfType):
+    filters = FilterExecutor()
+
     def __init__(self, header, data):
         super().__init__()
-        self._header = header
-        self._data   = data
+        self._header  = header
+        
+        # This is obnoxious, but the PDF standard allows the stream header to
+        # to specify another file with the data, ignoring the stream data.
+        # Also, for some reason, some header keys change when that happens.
+        try:
+            with open(header['F'], 'rb') as f:
+                data = f.read()
+        except KeyError:
+            self._data     = data
+            self._filedata = False
+        else:
+            self._filedata = True
+        self._decoded  = bool(headers.get(self._filter_key))
+
+    @property
+    def _filter_key(self):
+        return 'FFilter' if self._filedata else 'Filter'
+    @property
+    def _params_key(self):
+        return 'FDecodeParms' if self._filedata else 'DecodeParms'
+
+    def decode(self):
+        if self._decoded == True:
+            return self._decoded_data
+        data = self._data
+        filter_names = list(self._header.get(self._filter_key, []))
+        params       = list(self._header.get(self._params_key, []))
+        if len(params) == 0:
+            params = [{} for f in filters]
+        decoded_data = reduce(lambda f1, f2: f2(f1), 
+                              [partial(self.filters[f], **p) 
+                               for f, p in zip(filter_names, params)], data)
+        self._decoded      = True
+        self._decoded_data = decoded_data
+        return self._decoded_data
+    decoded_data = property(decode)
+
 
 class PdfXref(PdfType):
     LINE_PAT = re.compile(r'(\d{10}) (\d{5}) (n|f)$')
 
     def __init__(self, id, offset, generation, in_use):
-        super().__init__()       
+        super().__init__()
         self._id         = id
         self._offset     = offset
         self._generation = generation

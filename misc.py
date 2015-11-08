@@ -11,6 +11,12 @@ def iterbytes(bstring):
     for b in bstring:
         yield bytes((b,))
 
+def get_subclasses(cls):
+    subs = cls.__subclasses__()
+    for s in subs:
+        subs += get_subclasses(s)
+    return subs
+
 class ReCacher(object):
     """Passes calls and arguments through to re and caches the results.
     Usage:

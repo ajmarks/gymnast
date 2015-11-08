@@ -1,4 +1,5 @@
 from .exc                      import *
+from .misc                     import get_subclasses
 from .opcodes.text_objects     import BT, ET
 from .opcodes.text_state       import Tc, Tw, Tz, TL, Tf, Tr, Ts
 from .opcodes.text_positioning import Td, TD, Tm, Tstar
@@ -9,11 +10,7 @@ from .text_extractor               import TextParser
 #PTVS nonsense
 from builtins import *
 
-def get_subclasses(cls):
-    subs = cls.__subclasses__()
-    for s in subs:
-        subs += get_subclasses(s)
-    return subs
+
 
 class PdfOper(object):
     """Abstract PDF opcode class.  Specify new opcodes by inheriting from 
