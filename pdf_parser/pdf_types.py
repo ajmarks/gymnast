@@ -249,10 +249,13 @@ class PdfHeader(PdfType):
         return vers+'PDF-'+str(self.version)
     def __bytes__(self):
         return bytes(str(self))
+class PdfName(PdfType, str):   
+    # Needs to be string-like for key purposes
+    def __new__(cls, *args, **kwargs):
+        return str.__new__(cls, *args, **kwargs)
+
 
 ###These were so unnecessary
-#
-
 #class PdfCompountType(PdfType):
 #    pass
 #class PdfArray(PdfCompountType, list):
@@ -334,27 +337,6 @@ class PdfHeader(PdfType):
 #class PdfReal(PdfNumeric, float):
 #    def __new__(cls, val):
 #        return float.__new__(cls, val)
-#class PdfName(PdfString):   
-#    # Needs to be string-like for key purposes
-#    def __eq__(self, other):  return (self._text == other)
-#    def __hash__(self):       return self._parsed_bytes.__hash__()
-#    
-#    @property
-#    def _text(self):
-#        return self._parsed_bytes.decode('utf-8')
-#    
-#    @staticmethod
-#    def parse_bytes(data):
-#        data = bytearray(data)
-#        dlen = len(data)
-#        i = 0
-#        while i <= dlen:
-#            if data[i:i+1] == b'#':
-#                data[i:i+3] = int(data[i+1:i+3], 16).to_bytes(1, 'big')
-#                dlen -= 2
-#                i += 1
-#            i += 1
-#        return bytes(data[1:])
 #        
 #    @staticmethod
 #    def find_string_end(data):

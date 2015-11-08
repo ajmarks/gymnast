@@ -1,7 +1,7 @@
 from .exc import *
 from .pdf_types import PdfObjectReference, PdfComment, PdfLiteralString, \
                        PdfHexString, PdfStream, PdfXref, PdfTrailer,     \
-                       PdfHeader, PdfIndirectObject
+                       PdfHeader, PdfIndirectObject, PdfName
 from .pdf_doc   import PdfDocument
 from .misc      import ReCacher
 
@@ -275,7 +275,7 @@ class PdfParser(object):
                                     %(token, name[hash_pos:hash_pos+3]))
             name[hash_pos:hash_pos+3] = new_char
             hash_pos = name.find(b'#', hash_pos)
-        return name.decode()
+        return PdfName(name.decode())
 
     # dict of PDF object types besides literals to look for.
     # Keys are the token that identifies that beginning of that type,
