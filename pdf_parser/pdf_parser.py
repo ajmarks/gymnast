@@ -25,6 +25,10 @@ class PdfParser(object):
         doc_objects = self._get_objects()
         return PdfDocument(header, doc_objects, self._ind_objects)
 
+    @property
+    def _eod(self):
+        return bool(self._data.peek(1))
+
     def _read_data(self, file):
         if isinstance(file, str):
             return io.BufferedReader(open(file, 'rb'))
@@ -58,10 +62,9 @@ class PdfParser(object):
 
     def _is_token(self, value, closer=None, clen=None):
         """Is this a token?"""
-        if closer and not clen:
-            clen = len(closer)
-        elif not self._data            : return True
-        elif not value                 : return False
+        if closer and not clen: clen = len(closer)
+        elif not self._eod    : return True
+        elif not value        : return False
 
         next_char = self._data.peek(1)
         not_obj   = (value+next_char) not in PdfParser.obj_types
@@ -76,15 +79,13 @@ class PdfParser(object):
         return False
 
     def _consume_whitespace(self, whitespace=WHITESPACE):
-        c = b' '
-        while c in whitespace and self._data:
-            c = self._data.read(1)
-        if c:
-            self._data.write(c)
+        while not self._eod and self._data.read(1) in whitespace:
+            pass
+        self._data.peek(-1, 1) # Rewind 1 byte
 
     def _get_objects(self, closer=None):
         objects = []
-        while self._data:
+        while not self._eod:
             token = self._get_next_token(closer)
             if not token: continue
             if token == closer: break
@@ -136,7 +137,7 @@ class PdfParser(object):
     def _parse_hex_string(self, objects):
         # TODO: Eliminate all of these getvalue() calls
         token = io.BytesIO(self._data.read(1))
-        while self._data and token.getvalue()[-1:] != b'>':
+        while not self._eod and token.getvalue()[-1:] != b'>':
             token.write(self._data.read(1))
         return PdfHexString(token.getvalue()[:-1])
 
@@ -144,7 +145,7 @@ class PdfParser(object):
         token   = io.BytesIO()
         parens  = 0
         escaped = False
-        while self._data:
+        while not self._eod:
             b = self._data.read(1)
             if  escaped:
                 escaped = False
@@ -167,7 +168,7 @@ class PdfParser(object):
 
     def _parse_comment(self, objects):
         token = io.BytesIO()
-        while self._data:
+        while not self._eod:
             b = self._data.read(1)
             if b in PdfParser.EOLS: break
             token.write(b)
