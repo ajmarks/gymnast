@@ -185,7 +185,7 @@ class PdfStream(PdfType):
         if len(params) == 0:
             params = [{} for f in filters]
         decoded_data = reduce(lambda f1, f2: f2(f1), 
-                              [partial(self.filters[f], **p) 
+                              [partial(self.filters[f].decode, **p) 
                                for f, p in zip(filter_names, params)], data)
         self._decoded      = True
         self._decoded_data = decoded_data

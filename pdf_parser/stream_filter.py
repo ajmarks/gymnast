@@ -22,14 +22,24 @@ class StreamFilter(object):
         else:
             return cls.decode_data(data, **kwargs)
 
+    @classmethod
+    def encode(cls, data, **kwargs):
+        return cls.encode_data(data, **kwargs) + (cls.EOD if cls.EOD else b'')
+
     @staticmethod
     def decode_data(data, **kwargs):
+        raise NotImplementedError
+    @staticmethod
+    def encode_data(data, **kwargs):
         raise NotImplementedError
 
 class NOPFilter(StreamFilter):
     """NOP filter."""
     @staticmethod
     def decode_data(data, **kwargs):
+        return data
+    @staticmethod
+    def encode_data(data, **kwargs):
         return data
 
 class FilterExecutor(object):
@@ -61,5 +71,5 @@ class FilterExecutor(object):
     @classmethod
     def _get_filters(cls):
         """Build the filters dict"""
-        filters = {f.filter_name: f.decode
+        filters = {f.filter_name: f
                     for f in get_subclasses(cls) if f.filter_name}
