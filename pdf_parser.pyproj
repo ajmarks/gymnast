@@ -22,8 +22,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="pdf_parser\exc.py" />
+    <Compile Include="pdf_parser\filters\crypt_filters.py" />
     <Compile Include="pdf_parser\filters\lzw_and_flate.py" />
     <Compile Include="pdf_parser\filters\ascii_filters.py" />
+    <Compile Include="pdf_parser\filters\image_filters.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="pdf_parser\filters\__init__.py" />
     <Compile Include="pdf_parser\font.py" />
     <Compile Include="pdf_parser\misc.py" />
