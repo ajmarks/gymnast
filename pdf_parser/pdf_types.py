@@ -3,16 +3,9 @@ import re
 from decimal   import Decimal
 from functools import partial, reduce
 
-try:
-    from .exc           import *
-    from .misc          import iterbytes
-    from .stream_filter import FilterExecutor
-except SystemError as e:
-    if 'not loaded, cannot perform relative import' not in e.args[0]:
-        raise
-    from exc           import *
-    from misc          import iterbytes
-    from stream_filter import FilterExecutor
+from .exc           import *
+from .misc          import iterbytes
+from .stream_filter import FilterExecutor
 
 
 

@@ -1,13 +1,6 @@
-try:
-    from .exc     import *
-    from .misc    import get_subclasses
-    from .filters import *
-except SystemError as e:
-    if 'not loaded, cannot perform relative import' not in e.args[0]:
-        raise
-    from exc     import *
-    from misc    import get_subclasses
-    from filters import *
+from .exc     import *
+from .misc    import get_subclasses
+from .filters import *
 
 #PTVS nonsense
 from builtins import *

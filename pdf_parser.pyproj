@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{bea0173b-6da0-4352-97d4-705d599e6b67}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>pdf_constants.py</StartupFile>
+    <StartupFile>pdf_parser\pdf_constants.py</StartupFile>
     <SearchPath>opcodes\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -21,36 +21,38 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="exc.py" />
-    <Compile Include="filters\lzw_and_flate.py" />
-    <Compile Include="filters\ascii_filters.py" />
-    <Compile Include="filters\__init__.py" />
-    <Compile Include="font.py" />
-    <Compile Include="misc.py" />
-    <Compile Include="opcodes\text_objects.py" />
-    <Compile Include="opcodes\text_positioning.py" />
-    <Compile Include="opcodes\text_showing.py" />
-    <Compile Include="opcodes\text_state.py" />
-    <Compile Include="opcodes\__init__.py" />
-    <Compile Include="pdf_constants.py" />
-    <Compile Include="stream_filter.py" />
-    <Compile Include="pdf_oper.py" />
-    <Compile Include="text_extractor.py" />
-    <Compile Include="pdf_text.py" />
-    <Compile Include="pdf_types.py" />
-    <Compile Include="text_block.py" />
-    <Compile Include="pdf_doc.py" />
-    <Compile Include="pdf_parser.py" />
-    <Compile Include="__init__.py" />
+    <Compile Include="pdf_parser\exc.py" />
+    <Compile Include="pdf_parser\filters\lzw_and_flate.py" />
+    <Compile Include="pdf_parser\filters\ascii_filters.py" />
+    <Compile Include="pdf_parser\filters\__init__.py" />
+    <Compile Include="pdf_parser\font.py" />
+    <Compile Include="pdf_parser\misc.py" />
+    <Compile Include="pdf_parser\opcodes\text_objects.py" />
+    <Compile Include="pdf_parser\opcodes\text_positioning.py" />
+    <Compile Include="pdf_parser\opcodes\text_showing.py" />
+    <Compile Include="pdf_parser\opcodes\text_state.py" />
+    <Compile Include="pdf_parser\opcodes\__init__.py" />
+    <Compile Include="pdf_parser\pdf_constants.py" />
+    <Compile Include="pdf_parser\stream_filter.py" />
+    <Compile Include="pdf_parser\pdf_oper.py" />
+    <Compile Include="pdf_parser\text_extractor.py" />
+    <Compile Include="pdf_parser\pdf_text.py" />
+    <Compile Include="pdf_parser\pdf_types.py" />
+    <Compile Include="pdf_parser\text_block.py" />
+    <Compile Include="pdf_parser\pdf_doc.py" />
+    <Compile Include="pdf_parser\pdf_parser.py" />
+    <Compile Include="pdf_parser\__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="filters\" />
-    <Folder Include="opcodes" />
+    <Folder Include="pdf_parser\filters\" />
+    <Folder Include="pdf_parser\" />
+    <Folder Include="pdf_parser\opcodes\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="local_tests.py" />
     <Content Include="TODO.md" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />

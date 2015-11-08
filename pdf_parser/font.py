@@ -1,4 +1,4 @@
-import .pdf_constants
+import pdf_constants
 
 class FontDescriptor(object):
     """FontDescriptior object describefd in Table 5.19 on p. 456.

@@ -1,19 +1,9 @@
-try:
-    from .exc import *
-    from .pdf_types import PdfObjectReference, PdfComment, PdfLiteralString, \
-                           PdfHexString, PdfStream, PdfXref, PdfTrailer,    \
-                           PdfHeader, PdfIndirectObject
-    from .pdf_doc   import PdfDocument
-    from .misc      import ReCacher
-except SystemError as e:
-    if 'not loaded, cannot perform relative import' not in e.args[0]:
-        raise
-    from exc       import *
-    from pdf_types import PdfObjectReference, PdfComment, PdfLiteralString, \
-                          PdfHexString, PdfStream, PdfXref, PdfTrailer,    \
-                          PdfHeader, PdfIndirectObject
-    from pdf_doc   import PdfDocument
-    from misc      import ReCacher
+from .exc import *
+from .pdf_types import PdfObjectReference, PdfComment, PdfLiteralString, \
+                       PdfHexString, PdfStream, PdfXref, PdfTrailer,     \
+                       PdfHeader, PdfIndirectObject
+from .pdf_doc   import PdfDocument
+from .misc      import ReCacher
 
 import io
 
@@ -322,8 +312,3 @@ class PdfParser(object):
                  b'xref'     : _parse_xref,
                  b'trailer'  : _parse_trailer,
                 }
-if __name__ == '__main__':
-    fname = 'S:/Research/Leisure/STR RevPar Data/US Weekly PDFs/Lodging Smith Travel Results 15-10-07.pdf'
-    parser = PdfParser()
-    pdf = parser.parse(fname)
-    pass

@@ -1,4 +1,4 @@
-from stream_filter import StreamFilter
+from ..stream_filter import StreamFilter
 
 import base64
 
