@@ -48,7 +48,7 @@ class FilterExecutor(object):
 
     __instance = None
     def __new__(cls, *args, **kwargs):
-        if cls.__instance is not None:
+        if cls.__instance is None:
             fexec = super(FilterExecutor, cls).__new__(cls)
             fexec.__init__(*args, **kwargs)
             cls.__instance = fexec
@@ -56,22 +56,23 @@ class FilterExecutor(object):
     
     def __init__(self):
         self._NOP     = NOPFilter
-        self._filters = self._get_filters()
+        self._filters = self._get_filters(StreamFilter)
 
     def __getitem__(self, filter_name):
         """Main dispatch method.  Return the filter if implemented, otherwise
         returns a NOP."""
         try:
-            return self._filters[filters]
+            return self._filters[filter_name]
         except KeyError:
             #We should probably add some logging stuff here
             return self.NOP
     
-    @classmethod
+    @staticmethod
     def _get_filters(cls):
         """Build the filters dict"""
-        filters = {f.filter_name: f
+        return {f.filter_name: f
                     for f in get_subclasses(cls) if f.filter_name}
+        
 
 import base64
 import codecs

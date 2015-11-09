@@ -170,7 +170,8 @@ class PdfStream(PdfType):
             self._filedata = False
         else:
             self._filedata = True
-        self._decoded  = bool(header.get(self._filter_key))
+        self._decoded  = not bool(header.get(self._filter_key))
+        self.decode()
 
     @property
     def _filter_key(self):
@@ -183,8 +184,12 @@ class PdfStream(PdfType):
         if self._decoded == True:
             return self._decoded_data
         data = self._data
-        filter_names = list(self._header.get(self._filter_key, []))
-        params       = list(self._header.get(self._params_key, []))
+        filter_names = self._header.get(self._filter_key, [])
+        params       = self._header.get(self._params_key, {})
+        if not isinstance(filter_names, list):
+            filter_names = [filter_names]
+        if not isinstance(params, list):
+            params       = [params]
         if len(params) == 0:
             params = [{} for f in filters]
         decoded_data = reduce(lambda f1, f2: f2(f1), 
@@ -193,6 +198,7 @@ class PdfStream(PdfType):
         self._decoded      = True
         self._decoded_data = decoded_data
         return self._decoded_data
+
     decoded_data = property(decode)
 
 
