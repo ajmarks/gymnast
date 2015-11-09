@@ -10,7 +10,7 @@ from .pdf_oper import OpcodeExecutor
 from builtins import *
 
 
-class TextParser(object):
+class TextRenderer(object):
     def __init__(self):
         self._Tm      = self.id_matrix
         self._Tlm     = self.id_matrix

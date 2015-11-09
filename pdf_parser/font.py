@@ -1,4 +1,4 @@
-import pdf_constants
+from .pdf_constants import *
 
 class FontDescriptor(object):
     """FontDescriptior object describefd in Table 5.19 on p. 456.
@@ -64,8 +64,6 @@ class FontDescriptor(object):
 class FontEncoding(object):
     """Font encoding object as described in Appendix D"""
 
-    # Base font encodings
-    BASE_ENCODINGS  = pdf_constants.BASE_ENCODINGS
     #This should never change ever, but why hardcode in two places?
     VALID_ENCODINGS = set(next(iter(BASE_ENCODINGS.values())).keys())
 
@@ -101,7 +99,6 @@ class FontEncoding(object):
         return self._charcodes[name]
 
 class PdfFont(object):
-    GLYPH_LIST = pdf_constants.GLYPH_LIST
     def __init__(self, font):
         """See Table 5.8 on p. 413"""
         self._type       = font['Type']

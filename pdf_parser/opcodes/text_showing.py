@@ -1,36 +1,35 @@
 import numpy as np
 
-from ..pdf_oper       import PdfOper
-from ..text_extractor import TextParser
+from ..pdf_operation import PdfOperation
 from ..font           import PdfFont
 from ..misc           import classproperty
 
 #PTVS nonsense
 from builtins import *
 
-class TextOper(PdfOper):
+class TextOper(PdfOperation):
     is_text = True
 
     #Type hints
     if False:
         parser.active_font = PdfFont()
 
-    @classmethod
-    def get_glyph_width(cls, glyph_code):
-        return cls.parser.active_font.get_glyph_width(glyph_code)
+    @staticmethod
+    def get_glyph_width(renderer, glyph_code):
+        return renderer.active_font.get_glyph_width(glyph_code)
 
-    @classmethod
-    def get_char_code(cls, glyph_name):
-        return cls.parser.active_font.get_char_code(glyph_name)
+    @staticmethod
+    def get_char_code(renderer, glyph_name):
+        return renderer.active_font.get_char_code(glyph_name)
 
     @classproperty
-    def space_width(cls):
-        return cls.parser.active_font.space_width
+    def space_width(renderer):
+        return renderer.active_font.space_width
 
 class Tj(TextOper):
     opcode  = b'Tj'
-    @classmethod
-    def do_opcode(cls, string):
+    @staticmethod
+    def do_opcode(renderer, string):
         if not isinstance(string, bytes):
             glyphs = string.get_original_bytes()
         else:
@@ -40,21 +39,21 @@ class Tj(TextOper):
 
 class TJ(TextOper):
     opcode  = b'TJ'
-    @classmethod
-    def do_opcode(cls, string):
+    @staticmethod
+    def do_opcode(renderer, string):
         raise NotImplementedError
 
 class Apostrophe(TextOper):
     opcode  = b"'"
-    @classmethod
-    def do_opcode(cls, string):
-        cls.opcodes['T*']()
-        cls.opcodes['Tj'](string)
+    @staticmethod
+    def do_opcode(renderer, string):
+        PdfOperation['T*'](renderer)
+        PdfOperation['Tj'](string)(renderer)
 
 class Quote(TextOper):
     opcode  = b'"'
-    @classmethod
-    def do_opcode(cls, a_w, a_c, string):
-        cls.opcodes['Tw'](a_w)
-        cls.opcodes['Tc'](a_c)
-        cls.opcodes['\''](string)
+    @staticmethod
+    def do_opcode(renderer, a_w, a_c, string):
+        PdfOperation['Tw'](a_w)(renderer)
+        PdfOperation['Tc'](a_c)(renderer)
+        PdfOperation['\''](string)(renderer)

@@ -20,6 +20,11 @@ class PdfType(object):
     def pdf_encode(self):
         """Translate the object into bytes in PDF format"""
         raise NotImplementedError
+    @property
+    def value(self):
+        """Objects, references, and such will override this in clever
+        ways."""
+        return self    
 
 
 class PdfString(PdfType):
@@ -117,16 +122,17 @@ class PdfHexString(PdfString):
         return bytes.fromhex(hstr)
 
 class PdfIndirectObject(PdfType):
-    def __init__(self, object_number, generation, offset, object):
+    def __init__(self, object_number, generation, offset, object, document):
         super().__init__()
         self._object_number = object_number
         self._generation    = generation
         self._offset        = offset
         self._object        = object
+        self._document      = document
 
-    def get_object(self):
+    @property
+    def value(self):
         return self._object
-    object = property(get_object)
 
 class PdfObjectReference(PdfType):
     def __init__(self, object_number, generation, document=None):
@@ -145,7 +151,9 @@ class PdfObjectReference(PdfType):
             raise PdfError('Evaluating indirect references requires a document')
         id = (self._object_number, self._generation)
         return (document if document else self._document).indirect_objects[id]
-    object = property(get_object)
+    @property
+    def value(self):
+        return self.get_object().value
 
     def __str__(self): 
         return 'PdfObjectReference(%d, %d)'%(self._object_number, self._generation)
@@ -158,6 +166,7 @@ class PdfStream(PdfType):
     def __init__(self, header, data):
         super().__init__()
         self._header  = header
+        self._objects = None
         
         # This is obnoxious, but the PDF standard allows the stream header to
         # to specify another file with the data, ignoring the stream data.
@@ -170,8 +179,12 @@ class PdfStream(PdfType):
             self._filedata = False
         else:
             self._filedata = True
-        self._decoded  = not bool(header.get(self._filter_key))
-        self.decode()
+
+        if self._filter_key in header:
+            self._decoded  = False
+        else:
+            self._decoded  = True
+            self._decoded_data = self._data
 
     @property
     def _filter_key(self):
@@ -198,11 +211,19 @@ class PdfStream(PdfType):
         self._decoded      = True
         self._decoded_data = decoded_data
         return self._decoded_data
+    @property
+    def value(self):
+       return self.decode()
 
-    decoded_data = property(decode)
 
 
 class PdfXref(PdfType):
+    def __init__(self, xrefs, offset):
+        super().__init__()
+        self._xrefs  = xrefs
+        self._offset = offset
+
+class PdfXrefLine(PdfType):
     LINE_PAT = re.compile(r'(\d{10}) (\d{5}) (n|f)$')
 
     def __init__(self, id, offset, generation, in_use):
@@ -225,10 +246,10 @@ class PdfXref(PdfType):
     @staticmethod
     def from_line(id, line):
         # TODO: change to fullmatch once 3.4+ is standard
-        match = re.match(PdfXref.LINE_PAT, line)
+        match = re.match(PdfXrefLine.LINE_PAT, line)
         if not match:
             raise PdfParseError('Invalid xref line')
-        return PdfXref(id, int(match.group(1)), int(match.group(2)), 
+        return PdfXrefLine(id, int(match.group(1)), int(match.group(2)), 
                        True if match.group(3) == 'n' else False)
 
 
@@ -240,14 +261,32 @@ class PdfComment(PdfType, str):
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
 
-class PdfTrailer(PdfType):
+class PdfTrailer(PdfType, dict):
+    #Type hints:
+    if False:
+        _root = PdfObjectReference()
+        _info = PdfObjectReference()
+
     def __init__(self, trailer):
-        super().__init__()
-        self._trailer   = trailer
+        PdfType.__init__(self)
+        dict.__init__(self, trailer)
+        #self._document = document
+        #self._size     = trailer['Size']
+        #self._root     = trailer['Root']
+        #self._prev     = trailer.get('Prev')
+        #self._encrypt  = trailer.get('Encrypt')
+        #self._info     = trailer.get('Info', {})
+        #self._id       = trailer.get('ID')
+    @property
+    def root(self):
+        return self._root.object
+
 class PdfStartXref(PdfType):
     def __init__(self, offset):
         super().__init__()
         self._offset = offset
+    def lookup(self, document):
+        return document.get_offset(self._offset)
 
 class PdfHeader(PdfType):
     def __init__(self, version, adobe_version=None):
@@ -265,7 +304,17 @@ class PdfName(PdfType, str):
     # Needs to be string-like for key purposes
     def __new__(cls, *args, **kwargs):
         return str.__new__(cls, *args, **kwargs)
-
+class PdfEOF(PdfType):
+    """Singleton to mark ends of files"""
+    def __new__(cls):
+        return cls
+class PdfRaw(PdfType, bytes):
+    def __new__(cls, *args, **kwargs):
+        val =  bytes.__new__(cls, *args, **kwargs)
+        val.__init__(*args, **kwargs)
+        return val
+    def __init__(self, *args, **kwargs):
+        PdfType.__init__(self)
 
 ###These were so unnecessary
 #class PdfCompountType(PdfType):

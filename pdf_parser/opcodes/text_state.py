@@ -1,44 +1,44 @@
-from ..pdf_oper import PdfOper
+from ..pdf_operation import PdfOperation
 
-class Tc(PdfOper):
+class Tc(PdfOperation):
     opcode  = 'Tc'
-    @classmethod
-    def do_opcode(cls, char_spacing):
-        cls.parser._T_c = char_spacing
+    @staticmethod
+    def do_opcode(renderer, char_spacing):
+        renderer._T_c = char_spacing
 
-class Tw(PdfOper):
+class Tw(PdfOperation):
     opcode  = 'Tw'
-    @classmethod
-    def do_opcode(cls, word_spacing):
-        cls.parser._T_w = word_spacing
+    @staticmethod
+    def do_opcode(renderer, word_spacing):
+        renderer._T_w = word_spacing
 
-class Tz(PdfOper):
+class Tz(PdfOperation):
     opcode  = 'Tz'
-    @classmethod
-    def do_opcode(cls, scale):
-        cls.parser._T_z = scale
+    @staticmethod
+    def do_opcode(renderer, scale):
+        renderer._T_z = scale
 
-class TL(PdfOper):
+class TL(PdfOperation):
     opcode  = 'TL'
-    @classmethod
-    def do_opcode(cls, leading):
-        cls.parser._T_l = leading
+    @staticmethod
+    def do_opcode(renderer, leading):
+        renderer._T_l = leading
 
-class Tf(PdfOper):
+class Tf(PdfOperation):
     opcode  = 'Tf'
-    @classmethod
-    def do_opcode(cls, font, size):
-        cls.parser._T_f  = font
-        cls.parser._T_fs = size
+    @staticmethod
+    def do_opcode(renderer, font, size):
+        renderer._T_f  = font
+        renderer._T_fs = size
         
-class Tr(PdfOper):
+class Tr(PdfOperation):
     opcode  = 'Tr'
-    @classmethod
-    def do_opcode(cls, render):
-        cls.parser._T_mode = render
+    @staticmethod
+    def do_opcode(renderer, render):
+        renderer._T_mode = render
 
-class Ts(PdfOper):
+class Ts(PdfOperation):
     opcode  = 'Ts'
-    @classmethod
-    def do_opcode(cls, rise):
-        cls.parser._T_rise = rise
+    @staticmethod
+    def do_opcode(renderer, rise):
+        renderer._T_rise = rise

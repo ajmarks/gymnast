@@ -1,18 +1,24 @@
-import io
-
-from .exc       import *
-from .pdf_types import PdfObjectReference, PdfComment, PdfLiteralString, \
-                        PdfHexString, PdfStream, PdfXref, PdfTrailer
+from .exc        import *
+from .pdf_types  import *
+from .pdf_parser import PdfParser
 
 #PTVS nonsense
 from builtins import *
 
 class PdfDocument(object):
-    def __init__(self, header, elements=[], indirect_objects={}):
+    def __init__(self, file):
+        self._file = file
+
+    def parse(self):
+        parser = PdfParser(self)
+        
+        header, ind_objects, doc_objects, xrefs = parser.parse(self._file)
         self._header      = header
-        self._elements    = elements
-        self._ind_objects = indirect_objects
-        self._offsets     = {i._offset:i for i in indirect_objects.values()}
+        self._elements    = doc_objects
+        self._ind_objects = ind_objects
+        self._offsets     =  {i._offset:i for i in ind_objects.values()}
+        self._offsets.update({i._offset:i for i in xrefs})
+        print(None)
 
     @property
     def indirect_objects(self):

@@ -21,6 +21,7 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="pdf_parser\pdf_page.py" />
     <Compile Include="tests.py" />
     <Compile Include="pdf_parser\exc.py" />
     <Compile Include="pdf_parser\filters\crypt_filters.py" />
@@ -39,7 +40,7 @@
     <Compile Include="pdf_parser\opcodes\__init__.py" />
     <Compile Include="pdf_parser\pdf_constants.py" />
     <Compile Include="pdf_parser\stream_filter.py" />
-    <Compile Include="pdf_parser\pdf_oper.py" />
+    <Compile Include="pdf_parser\pdf_operation.py" />
     <Compile Include="pdf_parser\tests\test_string_types.py" />
     <Compile Include="pdf_parser\tests\test_simple_types.py" />
     <Compile Include="pdf_parser\tests\parser_test.py" />

@@ -1,33 +1,33 @@
 import numpy as np
-from ..pdf_oper import PdfOper
+from ..pdf_operation import PdfOperation
 
-class Td(PdfOper):
+class Td(PdfOperation):
     opcode  = 'Td'
-    @classmethod
-    def do_opcode(cls, t_x, t_y):
-        cls.parser._T_m = np.matrix([[1,  0,  0],
-                                     [0,  1,  0],
-                                     [t_x,t_y,0]])*cls.parser._T_lm
-        cls.parser.reset_T_lm()
+    @staticmethod
+    def do_opcode(renderer, t_x, t_y):
+        renderer._T_m = np.matrix([[1,  0,  0],
+                                   [0,  1,  0],
+                                   [t_x,t_y,0]])*renderer._T_lm
+        renderer.reset_T_lm()
 
-class TD(PdfOper):
+class TD(PdfOperation):
     opcode  = 'TD'
     @classmethod
-    def do_opcode(cls, t_x, t_y):
-        cls.opcodes['TL'](-t_y)
-        cls.opcodes['Td'](t_x, t_y)
+    def do_opcode(renderer, t_x, t_y):
+        PdfOperation['TL'](-t_y)(renderer)
+        PdfOperation['Td'](t_x, t_y)(renderer)
 
-class Tm(PdfOper):
+class Tm(PdfOperation):
     opcode  = 'Tm'
-    @classmethod
-    def do_opcode(cls, a, b, c, d, e, f):
-        cls.parser._T_m = np.matrix([[a, b, 0],
-                                     [c, d, 0],
-                                     [e, f, 1]])
-        cls.parser.reset_T_lm()
+    @staticmethod
+    def do_opcode(renderer, a, b, c, d, e, f):
+        renderer._T_m = np.matrix([[a, b, 0],
+                                   [c, d, 0],
+                                   [e, f, 1]])
+        renderer.reset_T_lm()
 
-class Tstar(PdfOper):
+class Tstar(PdfOperation):
     opcode  = 'T*'
-    @classmethod
-    def do_opcode(cls):
-        cls.opcodes['Td'](0, cls.parser._T_l)
+    @staticmethod
+    def do_opcode(renderer):
+        PdfOperation['Td'](0, renderer._T_l)(renderer)
