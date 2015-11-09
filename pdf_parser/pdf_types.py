@@ -111,7 +111,10 @@ class PdfHexString(PdfString):
            
     @staticmethod
     def parse_bytes(token):
-        return bytes.fromhex(token.decode())
+        hstr = token.decode()
+        if len(hstr) % 2:
+            hstr += '0'
+        return bytes.fromhex(hstr)
 
 class PdfIndirectObject(PdfType):
     def __init__(self, object_number, generation, offset, object):
@@ -167,7 +170,7 @@ class PdfStream(PdfType):
             self._filedata = False
         else:
             self._filedata = True
-        self._decoded  = bool(headers.get(self._filter_key))
+        self._decoded  = bool(header.get(self._filter_key))
 
     @property
     def _filter_key(self):
@@ -232,10 +235,13 @@ class PdfComment(PdfType, str):
         PdfType.__init__(self)
 
 class PdfTrailer(PdfType):
-    def __init__(self, trailer, startxref):
+    def __init__(self, trailer):
         super().__init__()
         self._trailer   = trailer
-        self._startxref = startxref
+class PdfStartXref(PdfType):
+    def __init__(self, offset):
+        super().__init__()
+        self._offset = offset
 
 class PdfHeader(PdfType):
     def __init__(self, version, adobe_version=None):

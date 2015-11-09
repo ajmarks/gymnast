@@ -1,6 +1,11 @@
+import sys
+sys.path.insert(1, './')
+#sys.path.insert(1, './pdf_parser/')
+
 from pdf_parser.pdf_parser import PdfParser
 
-fname = 'S:/Research/Leisure/STR RevPar Data/US Weekly PDFs/Lodging Smith Travel Results 15-10-07.pdf'
+fname = 'c:/L549-0113-6.pdf'
 parser = PdfParser()
 pdf = parser.parse(fname)
-pass
+
+print(pdf)

@@ -1,6 +1,6 @@
 import io
 import unittest
-from ..pdf_parser import PdfParser
+from ..ppdf_parser import PdfParser
 
 class ParserTestCase(unittest.TestCase):
     def setUp(self):
