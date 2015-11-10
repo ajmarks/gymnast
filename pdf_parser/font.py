@@ -70,9 +70,9 @@ class PdfFont(PdfObject):
             # We're going to need to modify PyPDF2 to do better here,
             # also this should use the encodings 
             glyph = int.from_bytes(glyph.encode('utf_16_be'))
-        if glyph > self._last_char:
-            return self.FontDescriptor.missing_width
-        return self._widths[glyph - self._first_char]
+        if glyph > self.LastChar or glyph < self.FirstChar:
+            return self.FontDescriptor.get('MissingWidth', 0)
+        return self.Widths[glyph - self.FirstChar]
 
     def glyph_to_unicode(self, glyph_code):
         """TODO: Support ToUnicode CMaps"""
