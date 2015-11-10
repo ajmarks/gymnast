@@ -45,7 +45,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pdf_parser\filters\__init__.py" />
-    <Compile Include="pdf_parser\font.py" />
+    <Compile Include="pdf_parser\pdf_font.py" />
     <Compile Include="pdf_parser\misc.py" />
     <Compile Include="pdf_parser\pdf_constants.py" />
     <Compile Include="pdf_parser\stream_filter.py" />
