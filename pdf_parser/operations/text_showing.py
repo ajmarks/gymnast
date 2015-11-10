@@ -1,7 +1,7 @@
 import numpy as np
 
 from ..pdf_operation import PdfOperation
-from ..font          import PdfFont
+from ..pdf_font          import PdfFont
 from ..misc          import classproperty
 
 #PTVS nonsense

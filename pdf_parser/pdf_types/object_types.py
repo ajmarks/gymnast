@@ -22,7 +22,7 @@ class PdfIndirectObject(PdfType):
     @property
     def parsed_object(self):
         from ..pdf_page import PdfPage, PdfPageNode
-        from ..font     import PdfFont, FontDescriptor, FontEncoding
+        from ..pdf_font     import PdfFont, FontDescriptor, FontEncoding
         from ..pdf_doc  import PdfCatalog
         obj_types = {'Page'          : PdfPage,
                      'Pages'         : PdfPageNode,
