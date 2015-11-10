@@ -4,10 +4,84 @@ from datetime import datetime
 from .exc           import *
 from .pdf_types     import *
 from .pdf_parser    import PdfParser
-from .pdf_doc       import PdfDocument
 from .pdf_operation import PdfOperation
 
-class PdfPage(object):
+def parse_page(obj):
+    obj = obj.value
+    if   obj['Type'] == 'Pages':
+        return PdfPageNode(obj)
+    elif obj['Type'] == 'Page':
+        return PdfPage(obj)
+
+class PdfAbstractPage(object):
+    """Base class for PDF Pages and Page Nodes."""
+    def __init__(self, page):
+        #Common and jnheritable properties
+        self._parent    = page.get('Parent')
+        self._resources = page.get('Resources')
+        self._mediabox  = page.get('MediaBox')
+        self._cropbox   = page.get('CropBox')
+        self._rotate    = page.get('Rotate')
+    @property
+    def Parent(self):
+        return self._parent.value if self._parent else None
+    @property
+    def Resources(self):
+        if   self._resources: return self._resources.value
+        elif self._parent:    return self.Parent.Resources
+        else: raise PdfError('Resource dictionary not found')
+    @property
+    def MediaBox(self):
+        if self._mediabox:  return self._mediabox.value
+        elif self._parent: return self.Parent.MediaBox
+        else: raise PdfError('MediaBox not found')
+    @property
+    def CropBox(self):
+        box = self._get_cropbox()
+        return box if box else self.MediaBox
+    
+    def _get_cropbox(self):
+        if self._cropbox:  return self._cropbox.value
+        elif self._parent: return self.Parent._get_cropbox()
+        else:              return None
+    @property
+    def Rotate(self):
+        if self._rotate:   return self._rotate
+        elif self._parent: return self.Parent.Rotate
+        else: return 0
+
+class PdfPageNode(PdfAbstractPage):
+    """Page node object"""
+    def __init__(self, node):
+        node = node.value
+        if node['Type'] != 'Pages':
+            raise ValueError('Type "Pages" expected, got "%s"'%node['Type'])
+        super().__init__(node)
+        self._kids = [parse_page(p) for p in node['Kids']]
+
+    def __getitem__(self, key):
+        return self._kids[key]
+    def __contains__(self, item):
+        return self._kids.__contains__(item)
+    def __setitem__(self, key, value):
+        return self._kids.__setitem__(key, value)
+    def __delitem__(self, key, value):
+        return self._kids.__delitem__(key)
+    def __iter__(selfe):
+        return self._kids.__iter__()
+    def __reversed__(self):
+        return self._kids.__reversed__()
+    @property
+    def Count(self):
+        return len(self._kids)
+    @property
+    def Kids(self):
+        return self._kids
+    def __str__(self):
+        return 'PdfPageNode - %d children'%self.Count
+
+
+class PdfPage(PdfAbstractPage):
     #Type hints
     if False:
         _parent        = PdfIndirectObject()
@@ -15,62 +89,60 @@ class PdfPage(object):
         _resources     = dict()
 
     def __init__(self, page):
-        if isinstance(page, PdfObjectReference):
-            page = page.value
+        page = page.value
         if page['Type'] != 'Page':
             raise PdfParseError('Page dicts must have Type = "Page"')
+        super().__init__(page)
         self._page      = page
-        self._parent    = page['Parent']
-        self._resources = page.get('Resources')
-        self._mediabox  = page.get('MediaBox')
-        self._cropbox   = page.get('CropBox')
         self._contents  = ContentStream(page.get('Contents', []))
-        self._rotate    = page.get('Rotate')
 
-    @property
-    def Parent(self):
-        return self._parent.value
-    @property
-    def Resources(self):
-        if self._resources: return self._resources
-        else: return self.Parent.Resources
-    @property
-    def MediaBox(self):
-        if self._mediabox: return self._mediabox
-        else: return self.Parent.MediaBox
-    @property
-    def CropBox(self):
-        if self._mediabox: return self._mediabox
-        else: return self.Parent.CropBox
     @property
     def Contents(self):
         return self._contents
+    # Default values.
+    # TODO: make this more concise, probably by folding it into 
+    # __getattr__
     @property
-    def Rotate(self):
-        if self._rotate: return self._rotate
-        else: return self.Parent.Rotate
+    def BleedBox(self):
+        try:
+            return self._page['BleedBox']
+        except KeyError:
+            return self.MediaBox
+
     def __getattr__(self, attr):
-        val = self._page.get(attr)
+        #Default values
+        defaults = {'BleedBox': self.MediaBox,
+                    'TrimBox' : self.CropBox,
+                    'ArtBox'  : self.CropBox}
+        try:
+            val = self._page[attr]
+        except KeyError:
+            return defaults[attr]
         if isinstance(val, PdfObjectReference):
             return val.value
         else:
             return val
 
 class ContentStream(object):
+    """A page's content stream"""
     def __init__(self, contents):
         if not isinstance(contents, list):
             contents = [contents]
         self._contents = contents
     @property
     def operations(self):
+        """Iterator over the various PDF operations in the content stream.
+        Each element is an instance of a subclass of PdfOperation, which can 
+        then be rendered by the page by calling e.g. next(operations)(renderer)
+        where renderer is a PdfRenderer object."""
         for stream in self._contents:
-            for oper in ContentStream._extract_stream_ops(stream.value):
+            for oper in self._extract_stream_ops(stream):
                 yield oper
     
     @staticmethod
     def _extract_stream_ops(stream):
         operands = []
-        data = io.BufferedReader(io.BytesIO(stream.value))
+        data = io.BufferedReader(io.BytesIO(stream.value.data))
         for op in PdfParser().iterparse(data):
             if isinstance(op, PdfRaw):
                 yield PdfOperation[op](*operands)

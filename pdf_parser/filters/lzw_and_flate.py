@@ -6,7 +6,7 @@ import zlib
 #PTVS nonsense
 from builtins import *
 
-class LZWDecode(LZWDecode):
+class LZWDecode(StreamFilter):
     filter_name = 'LZWDecode'
     EOD         = None
     

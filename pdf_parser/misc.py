@@ -3,10 +3,50 @@ import numbers
 from functools import wraps
 
 class classproperty(object):
+    """Like the @property method, but for classes instead of instances"""
     def __init__(self, fget):
         self.fget = fget
     def __get__(self, owner_self, owner_cls):
         return self.fget(owner_cls)
+
+class MetaGettable(type):
+    """Metaclass to allow classes to be treated as dictlikes with MyClass[key].
+    Instance classes should implement a classmethod __getitem__(cls, key)."""
+    def __getitem__(cls, key):
+        return cls.__getitem__(key)
+class MetaNonelike(type):
+    """Metaclass to make a class as None-like as possible."""
+    def __call__(cls):
+        return cls
+    def __str__(cls):       return cls.__name__
+    def __repr__(cls):      return cls.__name__
+    def __hash__(cls):      return id(cls)
+    def __bool__(cls):      return False
+    def __lt__(cls, other): return (None <  other)
+    def __le__(cls, other): return (None <= other)
+    def __eq__(cls, other): return (None == other)
+    def __ne__(cls, other): return (None != other)
+    def __gt__(cls, other): return (None >  other)
+    def __ge__(cls, other): return (None >= other)
+
+###Not currently using these, but they are clever, if bad, ideas
+#class MetaCallable(type):
+#    """Metaclass to allow classes to be treated as callables. With this,
+#    MyClass(*args, **kwargs) will call a _classmethod_ MyClass.__call__
+#    instead of returning a new object.  Obviously, anything with this
+#    metaclass will be a singleton."""
+#    def __call__(cls, *args, **kwargs):
+#        return cls.__call__(*args, **kwargs)
+#class MetaMixin(type):
+#    """MetaMetaclass for inheriting multiple metaclasses. Typical use:
+#    class A(object, metaclass=MetaMixin('MetaA', (Meta1, Meta1))"""
+#    def __new__(cls, metaname, metaclasses, attributes={}):
+#        return type(metaname, metaclasses, attributes)
+#    # Defining __init__ just to help IDEs with the docstring
+#    def __init__(cls, name, bases, attributes={}):
+#        """Combines multiple metaclasses into one.  Arguments correspond to
+#        those of type()."""
+#        super().__init__()
 
 def ensure_str(val):
     if isinstance(val, str):
@@ -15,6 +55,8 @@ def ensure_str(val):
         return val.decode()
     else:
         raise ValueError('Expected bytes or string')
+def ensure_list(val):
+    return val if isinstance(val, list) else [val]
 
 def iterbytes(bstring):
     for b in bstring:

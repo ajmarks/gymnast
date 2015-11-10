@@ -211,7 +211,7 @@ class PdfParser(object):
         """A dict is just a differently delimited array, so we'll call that
         to get the elements"""
         elems = self._parse_array(objects, b'>>')
-        return dict(zip(elems[::2], elems[1::2]))
+        return PdfDict(zip(elems[::2], elems[1::2]))
 
     def _parse_hex_string(self, objects):
         # TODO: Eliminate all of these getvalue() calls
@@ -243,7 +243,7 @@ class PdfParser(object):
         """The main method aready returns a list of the objects it found,
         so that's easy"""
         elems = self._get_objects(closer)
-        return elems
+        return PdfArray(elems)
 
     def _parse_comment(self, objects):
         token = io.BytesIO()
@@ -264,9 +264,6 @@ class PdfParser(object):
         gen     = objects.pop()
         obj_no  = objects.pop()
         id      = (obj_no, gen)
-        if id in self._ind_objects:
-            raise PdfParseError('Indirect object identifiers must be unique. '\
-                                'Duplicate value: '+str(id))
         offset  = self._offsets[-3]
         obj     = self._get_objects(closer=b'endobj')
         self._ind_objects[id] = \

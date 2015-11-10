@@ -1,20 +1,12 @@
 import warnings
 
-from .exc            import *
-from .misc           import get_subclasses, classproperty, ensure_str
+from .exc  import *
+from .misc import get_subclasses, classproperty, ensure_str, MetaGettable
 
 #PTVS nonsense
 from builtins import *
 
-class PdfOperationMeta(type):
-    def __getitem__(cls, operator):
-        operator = ensure_str(operator)
-        try:
-            return cls.opcodes[operator]
-        except KeyError:
-            return type(operator, (PdfNOP,), {})
-
-class PdfOperation(object, metaclass=PdfOperationMeta):
+class PdfOperation(object, metaclass=MetaGettable):
     """PDF content stream operations."""
     opcode = None
     
@@ -37,8 +29,17 @@ class PdfOperation(object, metaclass=PdfOperationMeta):
     def __call__(self, renderer):
         return self.do_opcode(renderer, *self._operands)
 
+    @classmethod
+    def __getitem__(cls, operator):
+        operator = ensure_str(operator)
+        try:
+            return cls.opcodes[operator]
+        except KeyError:
+            return type(operator, (PdfNOP,), {})
+
     @staticmethod
     def __init_opcodes():
+        # Need to do the imports here to prevent circular imports.
         from .opcodes.text_objects     import BT, ET
         from .opcodes.text_state       import Tc, Tw, Tz, TL, Tf, Tr, Ts
         from .opcodes.text_positioning import Td, TD, Tm, Tstar
@@ -47,8 +48,6 @@ class PdfOperation(object, metaclass=PdfOperationMeta):
                    for o in get_subclasses(PdfOperation)
                      if o.opcode}
         PdfOperation.__opcodes = opcodes
-
-        
 
 class PdfNOP(PdfOperation):
     """Dummy opcode that does nothing.  Called when we've not 

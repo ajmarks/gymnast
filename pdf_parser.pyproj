@@ -22,6 +22,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="pdf_parser\pdf_page.py" />
+    <Compile Include="pdf_parser\pdf_types\structural_types.py" />
+    <Compile Include="pdf_parser\pdf_types\streams.py" />
+    <Compile Include="pdf_parser\pdf_types\object_types.py" />
+    <Compile Include="pdf_parser\pdf_types\string_types.py" />
+    <Compile Include="pdf_parser\pdf_types\simple_types.py" />
+    <Compile Include="pdf_parser\pdf_types\compound_types.py" />
+    <Compile Include="pdf_parser\pdf_types\common.py" />
+    <Compile Include="pdf_parser\pdf_types\__init__.py" />
     <Compile Include="tests.py" />
     <Compile Include="pdf_parser\exc.py" />
     <Compile Include="pdf_parser\filters\crypt_filters.py" />
@@ -47,7 +55,7 @@
     <Compile Include="pdf_parser\tests\__init__.py" />
     <Compile Include="pdf_parser\text_extractor.py" />
     <Compile Include="pdf_parser\pdf_text.py" />
-    <Compile Include="pdf_parser\pdf_types.py" />
+    <Compile Include="pdf_parser\pdf_types_old.py" />
     <Compile Include="pdf_parser\text_block.py" />
     <Compile Include="pdf_parser\pdf_doc.py" />
     <Compile Include="pdf_parser\pdf_parser.py" />
@@ -56,6 +64,7 @@
   <ItemGroup>
     <Folder Include="pdf_parser\filters\" />
     <Folder Include="pdf_parser\" />
+    <Folder Include="pdf_parser\pdf_types\" />
     <Folder Include="pdf_parser\tests\" />
     <Folder Include="pdf_parser\opcodes\" />
   </ItemGroup>
