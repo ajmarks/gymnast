@@ -40,10 +40,10 @@ class PdfOperation(object, metaclass=MetaGettable):
     @staticmethod
     def __init_opcodes():
         # Need to do the imports here to prevent circular imports.
-        from .opcodes.text_objects     import BT, ET
-        from .opcodes.text_state       import Tc, Tw, Tz, TL, Tf, Tr, Ts
-        from .opcodes.text_positioning import Td, TD, Tm, Tstar
-        from .opcodes.text_showing     import Tj, TJ, Apostrophe, Quote
+        from .operations.text_objects     import BT, ET
+        from .operations.text_state       import Tc, Tw, Tz, TL, Tf, Tr, Ts
+        from .operations.text_positioning import Td, TD, Tm, Tstar
+        from .operations.text_showing     import Tj, TJ, Apostrophe, Quote
         opcodes = {ensure_str(o.opcode): o
                    for o in get_subclasses(PdfOperation)
                      if o.opcode}

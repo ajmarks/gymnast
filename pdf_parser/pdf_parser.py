@@ -37,8 +37,11 @@ class PdfParser(object):
         elif isinstance(file, (bytes, bytearray)):
             yield io.BufferedReader(io.BytesIO(file))
         else:
-            raise ValueError('Data to be parsed must be either bytes, '
-                             'bytesarray, a file name, or a read()able stream.')
+            try:
+                yield io.BufferedReader(io.BytesIO(bytes(file)))
+            except TypeError:
+                raise ValueError('Data to be parsed must be either bytes, '
+                                 'bytesarray, a file name, or a read()able stream.')
 
     def parse(self, data, full_file=True, allow_invalid=False):
         with PdfParser.file_context(data) as data:

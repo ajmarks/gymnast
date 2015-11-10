@@ -2,6 +2,7 @@ import io
 from datetime import datetime
 
 from .exc           import *
+from .pdf_common    import PdfObject
 from .pdf_types     import *
 from .pdf_parser    import PdfParser
 from .pdf_operation import PdfOperation
@@ -13,18 +14,17 @@ def parse_page(obj):
     elif obj['Type'] == 'Page':
         return PdfPage(obj)
 
-class PdfAbstractPage(object):
+class PdfAbstractPage(PdfObject):
     """Base class for PDF Pages and Page Nodes."""
     def __init__(self, page):
-        #Common and jnheritable properties
-        self._parent    = page.get('Parent')
+        #Common and inheritable properties
+        super().__init__(page)
         self._resources = page.get('Resources')
         self._mediabox  = page.get('MediaBox')
         self._cropbox   = page.get('CropBox')
         self._rotate    = page.get('Rotate')
-    @property
-    def Parent(self):
-        return self._parent.value if self._parent else None
+        self._fonts     = None
+
     @property
     def Resources(self):
         if   self._resources: return self._resources.value
@@ -38,8 +38,7 @@ class PdfAbstractPage(object):
     @property
     def CropBox(self):
         box = self._get_cropbox()
-        return box if box else self.MediaBox
-    
+        return box if box else self.MediaBox    
     def _get_cropbox(self):
         if self._cropbox:  return self._cropbox.value
         elif self._parent: return self.Parent._get_cropbox()
@@ -49,6 +48,13 @@ class PdfAbstractPage(object):
         if self._rotate:   return self._rotate
         elif self._parent: return self.Parent.Rotate
         else: return 0
+    @property
+    def Fonts(self):
+        if self._fonts is None:
+            self._fonts = {k: v.parsed_object 
+                           for k,v in self._object.get('Resources', {})\
+                                          .get('Font',{}).items()}
+        return self._fonts
 
 class PdfPageNode(PdfAbstractPage):
     """Page node object"""
@@ -57,7 +63,7 @@ class PdfPageNode(PdfAbstractPage):
         if node['Type'] != 'Pages':
             raise ValueError('Type "Pages" expected, got "%s"'%node['Type'])
         super().__init__(node)
-        self._kids = [parse_page(p) for p in node['Kids']]
+        self._kids = [p.parsed_object for p in node['Kids'].value]
 
     def __getitem__(self, key):
         return self._kids[key]
@@ -79,6 +85,7 @@ class PdfPageNode(PdfAbstractPage):
         return self._kids
     def __str__(self):
         return 'PdfPageNode - %d children'%self.Count
+    
 
 
 class PdfPage(PdfAbstractPage):
@@ -95,6 +102,7 @@ class PdfPage(PdfAbstractPage):
         super().__init__(page)
         self._page      = page
         self._contents  = ContentStream(page.get('Contents', []))
+        self._fonts     = None # Load these when they're called
 
     @property
     def Contents(self):
@@ -102,28 +110,21 @@ class PdfPage(PdfAbstractPage):
     # Default values.
     # TODO: make this more concise, probably by folding it into 
     # __getattr__
-    @property
-    def BleedBox(self):
-        try:
-            return self._page['BleedBox']
-        except KeyError:
-            return self.MediaBox
-
     def __getattr__(self, attr):
         #Default values
         defaults = {'BleedBox': self.MediaBox,
                     'TrimBox' : self.CropBox,
                     'ArtBox'  : self.CropBox}
         try:
-            val = self._page[attr]
+            val = super().__getitem__(attr)
         except KeyError:
             return defaults[attr]
         if isinstance(val, PdfObjectReference):
-            return val.value
+            return val.parsed_object
         else:
             return val
 
-class ContentStream(object):
+class ContentStream(PdfObject):
     """A page's content stream"""
     def __init__(self, contents):
         if not isinstance(contents, list):

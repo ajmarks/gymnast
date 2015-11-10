@@ -1,19 +1,31 @@
 import numpy as np
 import re
 
-from .exc      import *
+from .exc           import *
+from .pdf_page      import PdfPage
+from .pdf_operation import PdfOperation
 
 #Nonsense to make PTVS happy
 from builtins import *
 
 class PdfRenderer(object):
     """PdfRenderer object.  PdfOperations act on this to produce a
-    representation of the contents of the pdf document."""
+    representation of the contents of the pdf document.  This class primarily
+    serves to maintain the global state as the page is drawn."""
+    
+    #Type hints
+    if False:
+        _page = PdfPage()
+    
     def __init__(self, page):
         self._Tm      = self.id_matrix
         self._Tlm     = self.id_matrix
         self._page    = page
         self._in_text = False
+    
+    def render(self):
+        for op in self._page.Contents.operations:
+            op(self)
 
     def _reset_Tm(self):
         """Reset the text matrix to the identity"""

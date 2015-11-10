@@ -2,9 +2,18 @@ from .exc        import *
 from .pdf_types  import *
 from .pdf_parser import PdfParser
 from .pdf_page   import PdfPageNode
+from .pdf_common import PdfObject
 
 #PTVS nonsense
 from builtins import *
+
+class PdfCatalog(PdfObject):
+    def __init__(self, obj):
+        if obj['Type'] != 'Catalog':
+            raise ValueError('Type "Catalog" expected, got "%s"'%Type)
+        if 'Pages' not in obj:
+            raise PdfError('Catalog dictionaries must contain Pages')
+        super().__init__(obj)
 
 class PdfDocument(object):
     def __init__(self, file):
@@ -31,17 +40,17 @@ class PdfDocument(object):
 
     def _build_doc(self, trailer):
         try:
-            self._root    = trailer['Root'].value
+            self._root    = trailer['Root'].parsed_object
         except KeyError:
             raise PdfError('PDF file lacks a root element')
         self._version = trailer.get('Version', self._version)
         try:
-            self._info = trailer['Info'].value
+            self._info = trailer['Info'].parsed_object
         except KeyError:
             self._info = None
         self._size = trailer['Size']
         try:
-            self._encrypt = trailer['Encrypt'].value
+            self._encrypt = trailer['Encrypt'].parsed_object
         except KeyError:
             self._encrypt = None
         try:
@@ -68,7 +77,7 @@ class PdfDocument(object):
     @property
     def Pages(self):
         if self._pages is None:
-            self._pages = PdfPageNode(self.Root['Pages'].value)
+            self._pages = self.Root.Pages
         return self._pages
 
     @property

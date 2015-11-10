@@ -21,6 +21,12 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="pdf_parser\operations\text_objects.py" />
+    <Compile Include="pdf_parser\operations\text_positioning.py" />
+    <Compile Include="pdf_parser\operations\text_showing.py" />
+    <Compile Include="pdf_parser\operations\text_state.py" />
+    <Compile Include="pdf_parser\operations\__init__.py" />
+    <Compile Include="pdf_parser\pdf_common.py" />
     <Compile Include="pdf_parser\pdf_page.py" />
     <Compile Include="pdf_parser\pdf_types\structural_types.py" />
     <Compile Include="pdf_parser\pdf_types\streams.py" />
@@ -41,11 +47,6 @@
     <Compile Include="pdf_parser\filters\__init__.py" />
     <Compile Include="pdf_parser\font.py" />
     <Compile Include="pdf_parser\misc.py" />
-    <Compile Include="pdf_parser\opcodes\text_objects.py" />
-    <Compile Include="pdf_parser\opcodes\text_positioning.py" />
-    <Compile Include="pdf_parser\opcodes\text_showing.py" />
-    <Compile Include="pdf_parser\opcodes\text_state.py" />
-    <Compile Include="pdf_parser\opcodes\__init__.py" />
     <Compile Include="pdf_parser\pdf_constants.py" />
     <Compile Include="pdf_parser\stream_filter.py" />
     <Compile Include="pdf_parser\pdf_operation.py" />
@@ -66,7 +67,7 @@
     <Folder Include="pdf_parser\" />
     <Folder Include="pdf_parser\pdf_types\" />
     <Folder Include="pdf_parser\tests\" />
-    <Folder Include="pdf_parser\opcodes\" />
+    <Folder Include="pdf_parser\operations\" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />

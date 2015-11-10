@@ -11,3 +11,8 @@ class PdfType(object):
         """Objects, references, and such will override this in clever
         ways."""
         return self
+    @property
+    def parsed_object(self):
+        """Objects, references, and such will override this in clever
+        ways."""
+        return self
