@@ -40,7 +40,7 @@
     <Compile Include="pdf_parser\pdf_types\compound_types.py" />
     <Compile Include="pdf_parser\pdf_types\common.py" />
     <Compile Include="pdf_parser\pdf_types\__init__.py" />
-    <Compile Include="tests.py" />
+    <Compile Include="test.py" />
     <Compile Include="pdf_parser\exc.py" />
     <Compile Include="pdf_parser\filters\crypt_filters.py" />
     <Compile Include="pdf_parser\filters\lzw_and_flate.py" />
@@ -54,10 +54,10 @@
     <Compile Include="pdf_parser\pdf_constants.py" />
     <Compile Include="pdf_parser\stream_filter.py" />
     <Compile Include="pdf_parser\pdf_operation.py" />
-    <Compile Include="pdf_parser\tests\test_string_types.py" />
-    <Compile Include="pdf_parser\tests\test_simple_types.py" />
-    <Compile Include="pdf_parser\tests\parser_test.py" />
-    <Compile Include="pdf_parser\tests\__init__.py" />
+    <Compile Include="tests\test_string_types.py" />
+    <Compile Include="tests\test_simple_types.py" />
+    <Compile Include="tests\parser_test.py" />
+    <Compile Include="tests\__init__.py" />
     <Compile Include="pdf_parser\text_extractor.py" />
     <Compile Include="pdf_parser\pdf_text.py" />
     <Compile Include="pdf_parser\text_block.py" />
@@ -70,7 +70,7 @@
     <Folder Include="pdf_parser\" />
     <Folder Include="pdf_parser\pdf_elements\" />
     <Folder Include="pdf_parser\pdf_types\" />
-    <Folder Include="pdf_parser\tests\" />
+    <Folder Include="tests\" />
     <Folder Include="pdf_parser\operations\" />
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +78,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="local_tests.py" />
+    <Content Include="README.md" />
+    <Content Include="pdf_parser\VERSION" />
     <Content Include="TODO.md" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />

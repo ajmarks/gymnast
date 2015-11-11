@@ -4,6 +4,7 @@ from .pdf_element    import PdfElement
 from ..pdf_constants import BASE_ENCODINGS, GLYPH_LIST
 from ..pdf_parser    import PdfParser
 from ..pdf_types     import PdfLiteralString
+from ..exc           import *
 
 #PTVS nonsense
 from builtins import *
@@ -13,12 +14,18 @@ class FontDescriptor(PdfElement):
     Note that this will need to be overloaded to properly handle Type3 fonts."""
     def __init__(self, obj, obj_key=None):
         super().__init__(obj, obj_key)
-        self._charset = None
-        chars = obj.value.get('CharSet')
-        if isinstance(chars, PdfLiteralString):
-            self._charset = PdfParser().parse(chars, False)
+        self._charset = False
+
     @property
     def CharSet(self):
+        if self._charset is False: # We need None
+            chars = self._object.value.get('CharSet')
+            if isinstance(chars, (bytes, PdfLiteralString)):
+                self._charset = PdfParser().parse(chars, False)
+            elif chars is None:
+                self._charset = chars
+            else:
+                raise PdfError('Invalid charset')
         return self._charset
 
 class FontEncoding(PdfElement):
@@ -72,10 +79,6 @@ class FontEncoding(PdfElement):
         return self._glyphmap[name]
 
 class PdfFont(PdfElement):
-    def __init__(self, obj, obj_key=None):
-        """See Table 5.8 on p. 413"""
-        super().__init__(obj, obj_key=None)
-
     def get_glyph_width(self, glyph):
         if not isinstance(glyph, int):
             if len(glyph) != 1:

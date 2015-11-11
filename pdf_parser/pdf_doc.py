@@ -21,6 +21,7 @@ class PdfDocument(object):
         self._offsets     =  {i._offset:i for i in ind_objects.values()}
         self._offsets.update({i._offset:i for i in xrefs})
         self._build_doc(self._get_trailer(doc_objects))
+        return self
    
     def _get_trailer(self, elements):
         final_trailer = {}
@@ -67,6 +68,7 @@ class PdfDocument(object):
 
     @property
     def Pages(self):
+        """Alias for self.Root.Pages.Kids"""
         if self._pages is None:
             self._pages = self.Root.Pages.Kids
         return self._pages
