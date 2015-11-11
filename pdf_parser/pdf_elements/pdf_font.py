@@ -1,11 +1,9 @@
 from bidict import collapsingbidict
 
 from .pdf_element    import PdfElement
-
-from ..pdf_constants import BASE_ENCODINGS
+from ..pdf_constants import BASE_ENCODINGS, GLYPH_LIST
 from ..pdf_parser    import PdfParser
 from ..pdf_types     import PdfLiteralString
-#from pdf_parser     import PdfParser
 
 #PTVS nonsense
 from builtins import *
@@ -91,7 +89,7 @@ class PdfFont(PdfElement):
 
     def glyph_to_unicode(self, glyph_code):
         """TODO: Support ToUnicode CMaps"""
-        return self.GLYPH_LIST[self.get_glyph_name(glyph_code)]
+        return GLYPH_LIST[self.get_glyph_name(glyph_code)]
 
     def get_glyph_name(self, code):
         return self.Encoding.get_glyph_name(code)
