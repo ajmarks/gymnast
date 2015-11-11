@@ -17,29 +17,34 @@ class PdfIndirectObject(PdfType):
         self._parsed_obj    = None
 
     @property
+    def object_key(self):
+        return (self._object_number, self._generation)
+    @property
     def value(self):
         return self._object
     @property
     def parsed_object(self):
-        from ..pdf_page import PdfPage, PdfPageNode
-        from ..pdf_font     import PdfFont, FontDescriptor, FontEncoding
-        from ..pdf_doc  import PdfCatalog
-        obj_types = {'Page'          : PdfPage,
-                     'Pages'         : PdfPageNode,
-                     'Font'          : PdfFont,
+        """The PdfElement corresponding to the object
+        
+        TODO: Move most of this somewhere more sane."""
+        from .. import pdf_elements
+        obj_types = {'Page'          : pdf_elements.PdfPage,
+                     'Pages'         : pdf_elements.PdfPageNode,
+                     'Font'          : pdf_elements.PdfFont,
                      #'XObject'       : PdfXObject,   #TODO
-                     'FontDescriptor': FontDescriptor,
-                     'Encoding'      : FontEncoding,
+                     'FontDescriptor': pdf_elements.FontDescriptor,
+                     'Encoding'      : pdf_elements.FontEncoding,
                      #'ObjStm'        : ObjectStream, #TODO
                      #'XRef'          : XRef
-                     'Catalog'       : PdfCatalog
+                     'Catalog'       : pdf_elements.PdfCatalog
                     }
         if self._parsed_obj is not None:
             return self._parsed_obj
         val = self.value
         if isinstance(val, PdfDict):
             try:
-                self._parsed_obj = obj_types[val['Type']].from_object(val)
+                self._parsed_obj = obj_types[val['Type']]\
+                                          .from_object(val, self.object_key)
                 return self._parsed_obj
             except KeyError:
                 return val

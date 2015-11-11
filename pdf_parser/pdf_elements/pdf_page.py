@@ -1,11 +1,11 @@
 import io
 from datetime import datetime
 
-from .exc           import *
-from .pdf_common    import PdfObject
-from .pdf_types     import *
-from .pdf_parser    import PdfParser
-from .pdf_operation import PdfOperation
+from .pdf_element    import PdfElement
+from ..exc           import *
+from ..pdf_types     import *
+from ..pdf_parser    import PdfParser
+from ..pdf_operation import PdfOperation
 
 def parse_page(obj):
     obj = obj.value
@@ -14,11 +14,16 @@ def parse_page(obj):
     elif obj['Type'] == 'Page':
         return PdfPage(obj)
 
-class PdfAbstractPage(PdfObject):
+class PdfPageResources(PdfElement):
+    """Resources dict on page objects.  Technically, it's not a PDF
+    object type, but this lets us re-use a lot of code."""
+    pass
+
+class PdfAbstractPage(PdfElement):
     """Base class for PDF Pages and Page Nodes."""
-    def __init__(self, page):
+    def __init__(self, page, obj_key=None):
         #Common and inheritable properties
-        super().__init__(page)
+        super().__init__(page, obj_key)
         self._resources = page.get('Resources')
         self._mediabox  = page.get('MediaBox')
         self._cropbox   = page.get('CropBox')
@@ -27,7 +32,7 @@ class PdfAbstractPage(PdfObject):
 
     @property
     def Resources(self):
-        if   self._resources: return self._resources.value
+        if   self._resources: return PdfPageResources.from_object(self._resources)
         elif self._parent:    return self.Parent.Resources
         else: raise PdfError('Resource dictionary not found')
     @property
@@ -52,39 +57,36 @@ class PdfAbstractPage(PdfObject):
     def Fonts(self):
         if self._fonts is None:
             self._fonts = {k: v.parsed_object 
-                           for k,v in self._object.get('Resources', {})\
-                                          .get('Font',{}).items()}
+                           for k,v in self.Resources.Font.items()}
         return self._fonts
 
 class PdfPageNode(PdfAbstractPage):
     """Page node object"""
-    def __init__(self, node):
+    def __init__(self, node, obj_key=None):
         node = node.value
         if node['Type'] != 'Pages':
             raise ValueError('Type "Pages" expected, got "%s"'%node['Type'])
-        super().__init__(node)
-        self._kids = [p.parsed_object for p in node['Kids'].value]
-
-    def __getitem__(self, key):
-        return self._kids[key]
-    def __contains__(self, item):
-        return self._kids.__contains__(item)
-    def __setitem__(self, key, value):
-        return self._kids.__setitem__(key, value)
-    def __delitem__(self, key, value):
-        return self._kids.__delitem__(key)
-    def __iter__(selfe):
-        return self._kids.__iter__()
-    def __reversed__(self):
-        return self._kids.__reversed__()
-    @property
-    def Count(self):
-        return len(self._kids)
+        super().__init__(node, obj_key)
     @property
     def Kids(self):
-        return self._kids
-    def __str__(self):
-        return 'PdfPageNode - %d children'%self.Count
+        return [p.parsed_object for p in self._object['Kids'].value]
+   # def __getitem__(self, key):
+   #     return self._kids[key]
+   # def __contains__(self, item):
+   #     return self._kids.__contains__(item)
+   # def __setitem__(self, key, value):
+   #     return self._kids.__setitem__(key, value)
+   # def __delitem__(self, key, value):
+   #     return self._kids.__delitem__(key)
+   # def __iter__(self):
+   #     return self._kids.__iter__()
+   # def __reversed__(self):
+   #     return self._kids.__reversed__()
+   # @property
+   # def Count(self):
+   #     return len(self._kids)
+   # def __str__(self):
+   #     return 'PdfPageNode - %d children'%self.Count
     
 
 
@@ -95,36 +97,35 @@ class PdfPage(PdfAbstractPage):
         _last_modified = datetime()
         _resources     = dict()
 
-    def __init__(self, page):
+    def __init__(self, page, obj_key=None):
         page = page.value
         if page['Type'] != 'Page':
             raise PdfParseError('Page dicts must have Type = "Page"')
-        super().__init__(page)
-        self._page      = page
+        super().__init__(page, obj_key)
         self._contents  = ContentStream(page.get('Contents', []))
         self._fonts     = None # Load these when they're called
 
     @property
     def Contents(self):
         return self._contents
-    # Default values.
-    # TODO: make this more concise, probably by folding it into 
-    # __getattr__
-    def __getattr__(self, attr):
+    def __getattr__(self, name):
         #Default values
-        defaults = {'BleedBox': self.MediaBox,
-                    'TrimBox' : self.CropBox,
-                    'ArtBox'  : self.CropBox}
+        defaults = {'BleedBox': 'MediaBox',
+                    'TrimBox' : 'CropBox',
+                    'ArtBox'  : 'CropBox'}
         try:
-            val = super().__getitem__(attr)
+            val = super().__getattr__(name)
         except KeyError:
-            return defaults[attr]
-        if isinstance(val, PdfObjectReference):
+            try:
+                val = self.__dict__(defaults[name])
+            except KeyError:
+                raise AttributeError('Object has no attribute "%s"'%name)
+        if isinstance(val, PdfType):
             return val.parsed_object
         else:
             return val
 
-class ContentStream(PdfObject):
+class ContentStream(object):
     """A page's content stream"""
     def __init__(self, contents):
         if not isinstance(contents, list):

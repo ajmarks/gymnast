@@ -1,19 +1,10 @@
-from .exc        import *
-from .pdf_types  import *
-from .pdf_parser import PdfParser
-from .pdf_page   import PdfPageNode
-from .pdf_common import PdfObject
+from .exc          import *
+from .pdf_types    import *
+from .pdf_parser   import PdfParser
+from .pdf_elements import PdfCatalog, PdfPageNode
 
 #PTVS nonsense
 from builtins import *
-
-class PdfCatalog(PdfObject):
-    def __init__(self, obj):
-        if obj['Type'] != 'Catalog':
-            raise ValueError('Type "Catalog" expected, got "%s"'%Type)
-        if 'Pages' not in obj:
-            raise PdfError('Catalog dictionaries must contain Pages')
-        super().__init__(obj)
 
 class PdfDocument(object):
     def __init__(self, file):
@@ -77,7 +68,7 @@ class PdfDocument(object):
     @property
     def Pages(self):
         if self._pages is None:
-            self._pages = self.Root.Pages
+            self._pages = self.Root.Pages.Kids
         return self._pages
 
     @property
@@ -94,7 +85,7 @@ class PdfDocument(object):
         except KeyError:
             raise PdfError('No object exists at that offset')
 
-class PdfObjectList(object):
+class PdfElementList(object):
     def __init__(self, *args, **kwargs):
         self._list = list(*args, **kwargs)
     def __getitem__(self, key):

@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{bea0173b-6da0-4352-97d4-705d599e6b67}</ProjectGuid>
     <ProjectHome />
-    <StartupFile>pdf_parser\pdf_constants.py</StartupFile>
+    <StartupFile>local_tests.py</StartupFile>
     <SearchPath>opcodes\</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
@@ -26,8 +26,12 @@
     <Compile Include="pdf_parser\operations\text_showing.py" />
     <Compile Include="pdf_parser\operations\text_state.py" />
     <Compile Include="pdf_parser\operations\__init__.py" />
-    <Compile Include="pdf_parser\pdf_common.py" />
-    <Compile Include="pdf_parser\pdf_page.py" />
+    <Compile Include="pdf_parser\pdf_elements\other_elements.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pdf_parser\pdf_elements\pdf_element.py" />
+    <Compile Include="pdf_parser\pdf_elements\__init__.py" />
+    <Compile Include="pdf_parser\pdf_elements\pdf_page.py" />
     <Compile Include="pdf_parser\pdf_types\structural_types.py" />
     <Compile Include="pdf_parser\pdf_types\streams.py" />
     <Compile Include="pdf_parser\pdf_types\object_types.py" />
@@ -45,7 +49,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pdf_parser\filters\__init__.py" />
-    <Compile Include="pdf_parser\pdf_font.py" />
+    <Compile Include="pdf_parser\pdf_elements\pdf_font.py" />
     <Compile Include="pdf_parser\misc.py" />
     <Compile Include="pdf_parser\pdf_constants.py" />
     <Compile Include="pdf_parser\stream_filter.py" />
@@ -56,7 +60,6 @@
     <Compile Include="pdf_parser\tests\__init__.py" />
     <Compile Include="pdf_parser\text_extractor.py" />
     <Compile Include="pdf_parser\pdf_text.py" />
-    <Compile Include="pdf_parser\pdf_types_old.py" />
     <Compile Include="pdf_parser\text_block.py" />
     <Compile Include="pdf_parser\pdf_doc.py" />
     <Compile Include="pdf_parser\pdf_parser.py" />
@@ -65,6 +68,7 @@
   <ItemGroup>
     <Folder Include="pdf_parser\filters\" />
     <Folder Include="pdf_parser\" />
+    <Folder Include="pdf_parser\pdf_elements\" />
     <Folder Include="pdf_parser\pdf_types\" />
     <Folder Include="pdf_parser\tests\" />
     <Folder Include="pdf_parser\operations\" />
