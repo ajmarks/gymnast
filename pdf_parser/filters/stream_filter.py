@@ -1,5 +1,5 @@
-from .exc     import *
-from .misc    import get_subclasses, ensure_str, classproperty, MetaGettable
+from ..exc     import *
+from ..misc    import get_subclasses, ensure_str, classproperty, MetaGettable
 
 #PTVS nonsense
 from builtins import *
@@ -49,10 +49,10 @@ class StreamFilter(object, metaclass=MetaGettable):
     @staticmethod
     def __init_filter():
         # Need to do the imports here to prevent circular imports.
-        from .filters.ascii_filters import ASCIIHexDecode, ASCII85Decode
-        from .filters.crypt_filters import Crypt
-        from .filters.image_filters import DCTDecode
-        from .filters.lzw_and_flate import LZWDecode, FlateDecode
+        from .ascii_filters import ASCIIHexDecode, ASCII85Decode
+        from .crypt_filters import Crypt
+        from .image_filters import DCTDecode
+        from .lzw_and_flate import LZWDecode, FlateDecode
         filters = {ensure_str(o.filter_name): o
                    for o in get_subclasses(StreamFilter) if o.filter_name}
         StreamFilter.__filters = filters

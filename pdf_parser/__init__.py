@@ -13,7 +13,8 @@ __copyright__ = 'Copyright 2015, Andrew Marks'
 __license__   = 'MIT'
 __status__    = 'Alpha'
 
-from .pdf_doc import PdfDocument
+from .pdf_doc    import PdfDocument
+from .pdf_parser import PdfParser
 
 try:
     from pkg_resources import resource_string
@@ -22,4 +23,4 @@ except Exception as e:
     from warnings import warn
     warn('Failed to read/set version: %r' % e)
 
-__all__ = ['PdfDocument']
+__all__ = ['PdfDocument', 'PdfParser']

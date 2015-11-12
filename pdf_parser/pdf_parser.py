@@ -8,6 +8,8 @@ from .misc      import ReCacher, BlackHole
 #PTVS nonsense
 from builtins import *
 
+__all__ = ['PdfParser']
+
 class PdfParser(object):
     EOLS       = set([b'\r', b'\n', b'\r\n'])
     WHITESPACE = EOLS.union(set([b'\x00', b'\t', b'\f', b' ']))
@@ -219,6 +221,7 @@ class PdfParser(object):
     def _parse_hex_string(self, objects):
         # TODO: Eliminate all of these getvalue() calls
         token = io.BytesIO(self._data.read(1))
+        token.seek(0, 2)
         while not self._eod and token.getvalue()[-1:] != b'>':
             token.write(self._data.read(1))
         return PdfHexString(token.getvalue()[:-1])

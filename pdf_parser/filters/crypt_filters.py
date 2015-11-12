@@ -1,4 +1,4 @@
-from ..stream_filter import StreamFilter
+from .stream_filter import StreamFilter
 
 import PIL
 
@@ -14,4 +14,3 @@ class Crypt(StreamFilter):
     @staticmethod
     def encode_data(data):
         raise NotImplementedError
-

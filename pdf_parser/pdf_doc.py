@@ -6,6 +6,8 @@ from .pdf_elements import PdfCatalog, PdfPageNode
 #PTVS nonsense
 from builtins import *
 
+__all__ = ['PdfDocument']
+
 class PdfDocument(object):
     def __init__(self, file):
         self._file = file

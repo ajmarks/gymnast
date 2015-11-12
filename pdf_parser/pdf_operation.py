@@ -9,7 +9,28 @@ from builtins import *
 class PdfOperation(object, metaclass=MetaGettable):
     """PDF content stream operations."""
     opcode = None
-    
+    optype = None
+
+    # Operation type constants (see Reference p. 196)
+    # These mostly exist to make things easier in PdfRenderer methods
+    NOP                    =     0
+    GENERAL_GRAPHICS_STATE =     1
+    SPECIAL_GRAPHICS_STATE =     2
+    PATH_CONSTRUCTION      =     4
+    PATH_PAINTING          =     8
+    CLIPPING_PATHS         =    16
+    TEXT_OBJECTS           =    32
+    TEXT_STATE             =    64
+    TEXT_POSITIONING       =   128
+    TEXT_SHOWING           =   256
+    TYPE_3_FONTS           =   512
+    COLOR                  =  1024
+    SHADING_PATTERNS       =  2048
+    INLINE_IMAGES          =  4096
+    XOBJECTS               =  8192
+    MARKED_CONTENT         = 16384
+    COMPATIBILITY          = 32768
+
     @staticmethod
     def do_opcode(renderer, *operands):
         raise NotImplementedError
@@ -39,11 +60,6 @@ class PdfOperation(object, metaclass=MetaGettable):
 
     @staticmethod
     def __init_opcodes():
-        # Need to do the imports here to prevent circular imports.
-        #from .operations.text_objects     import BT, ET
-        #from .operations.text_state       import Tc, Tw, Tz, TL, Tf, Tr, Ts
-        #from .operations.text_positioning import Td, TD, Tm, Tstar
-        #from .operations.text_showing     import Tj, TJ, Apostrophe, Quote
         from . import operations
         opcodes = {ensure_str(o.opcode): o
                    for o in get_subclasses(PdfOperation)
@@ -53,6 +69,8 @@ class PdfOperation(object, metaclass=MetaGettable):
 class PdfNOP(PdfOperation):
     """Dummy opcode that does nothing.  Called when we've not 
     implemented a given opcode"""
+
+    optype = PdfOperation.NOP
     def __call__(self, renderer):
         cname = self.__class__.__name__
         warnings.warn("Opcode '%s' not implemented.  NOP." % cname,

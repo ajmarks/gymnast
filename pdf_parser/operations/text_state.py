@@ -1,43 +1,45 @@
 from ..pdf_operation import PdfOperation
 
-class Tc(PdfOperation):
-    opcode  = 'Tc'
+class PdfTextStateOp(PdfOperation):
+    optype = PdfOperation.TEXT_STATE
+
+class Tc(PdfTextStateOp):
     @staticmethod
     def do_opcode(renderer, char_spacing):
         renderer._T_c = char_spacing
 
-class Tw(PdfOperation):
+class Tw(PdfTextStateOp):
     opcode  = 'Tw'
     @staticmethod
     def do_opcode(renderer, word_spacing):
         renderer._T_w = word_spacing
 
-class Tz(PdfOperation):
+class Tz(PdfTextStateOp):
     opcode  = 'Tz'
     @staticmethod
     def do_opcode(renderer, scale):
         renderer._T_z = scale
 
-class TL(PdfOperation):
+class TL(PdfTextStateOp):
     opcode  = 'TL'
     @staticmethod
     def do_opcode(renderer, leading):
         renderer._T_l = leading
 
-class Tf(PdfOperation):
+class Tf(PdfTextStateOp):
     opcode  = 'Tf'
     @staticmethod
     def do_opcode(renderer, font, size):
         renderer._T_f  = font
         renderer._T_fs = size
         
-class Tr(PdfOperation):
+class Tr(PdfTextStateOp):
     opcode  = 'Tr'
     @staticmethod
     def do_opcode(renderer, render):
         renderer._T_mode = render
 
-class Ts(PdfOperation):
+class Ts(PdfTextStateOp):
     opcode  = 'Ts'
     @staticmethod
     def do_opcode(renderer, rise):

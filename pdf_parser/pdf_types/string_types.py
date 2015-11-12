@@ -1,11 +1,17 @@
+import binascii
 import io
 
-from .common import PdfType
-from ..exc   import *
-from ..misc  import iterbytes
+from .common     import PdfType
+from ..exc       import *
+from ..misc      import iterbytes
+from ..pdf_codec import register_codec
 
 #PTVS nonsense
 from builtins import *
+
+
+# Go ahead and register the codec here, I guess.
+register_codec()
 
 class PdfString(PdfType):
     """Base class from which all of our string-like classes
@@ -37,7 +43,22 @@ class PdfString(PdfType):
     def parse_bytes(data):
         raise NotImplementedError
 
-class PdfLiteralString(PdfString):
+class PdfLiteralString(str, PdfString):
+    def __new__(cls, data):
+        string = cls._decode_bytes(cls.parse_bytes(data))
+        obj = str.__new__(cls, string)
+        obj.__init__(data)
+        return obj
+    @staticmethod
+    def _decode_bytes(data):
+        """Detect the encoding method and return the decoded string"""
+        # Are we UTF-16BE?  Good.
+        if data[:2] == '\xFE\xFF':
+            return data.decode('utf_16_be')
+        # If the string isn't UTF-16BE, it follows PDF standard encoding 
+        # described in Appendix D of the reference.
+        return data.decode('pdf_doc')
+
     """Class for PDF literal strings"""
     ESCAPES = {b'n'   : b'\n',
                b'r'   : b'\r',
@@ -88,19 +109,22 @@ class PdfLiteralString(PdfString):
                 escaped = True
             else:
                 result.write(d)
-        return result.getvalue()
+        return bytes(result.getvalue())
 
 class PdfHexString(PdfString):
+    def __init__(self, data):
+        return super().__init__(data)
     @property
     def _text(self):
-        return '0x'+self._raw_bytes.decode()
-           
+        return '0x'+binascii.hexlify(self._parsed_bytes).decode()
     @staticmethod
     def parse_bytes(token):
         hstr = token.decode()
         if len(hstr) % 2:
             hstr += '0'
         return bytes.fromhex(hstr)
+    def __repr__(self):
+        return str(self)
 
 class PdfComment(PdfType, str):
     def __new__(cls, obj):

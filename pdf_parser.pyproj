@@ -26,6 +26,7 @@
     <Compile Include="pdf_parser\operations\text_showing.py" />
     <Compile Include="pdf_parser\operations\text_state.py" />
     <Compile Include="pdf_parser\operations\__init__.py" />
+    <Compile Include="pdf_parser\pdf_codec.py" />
     <Compile Include="pdf_parser\pdf_elements\other_elements.py">
       <SubType>Code</SubType>
     </Compile>
@@ -40,6 +41,9 @@
     <Compile Include="pdf_parser\pdf_types\compound_types.py" />
     <Compile Include="pdf_parser\pdf_types\common.py" />
     <Compile Include="pdf_parser\pdf_types\__init__.py" />
+    <Compile Include="pdf_parser\renderer\simple_renderer.py" />
+    <Compile Include="pdf_parser\renderer\text_renderer.py" />
+    <Compile Include="pdf_parser\renderer\__init__.py" />
     <Compile Include="test.py" />
     <Compile Include="pdf_parser\exc.py" />
     <Compile Include="pdf_parser\filters\crypt_filters.py" />
@@ -52,15 +56,13 @@
     <Compile Include="pdf_parser\pdf_elements\pdf_font.py" />
     <Compile Include="pdf_parser\misc.py" />
     <Compile Include="pdf_parser\pdf_constants.py" />
-    <Compile Include="pdf_parser\stream_filter.py" />
+    <Compile Include="pdf_parser\filters\stream_filter.py" />
     <Compile Include="pdf_parser\pdf_operation.py" />
     <Compile Include="tests\test_string_types.py" />
     <Compile Include="tests\test_simple_types.py" />
     <Compile Include="tests\parser_test.py" />
     <Compile Include="tests\__init__.py" />
-    <Compile Include="pdf_parser\text_extractor.py" />
-    <Compile Include="pdf_parser\pdf_text.py" />
-    <Compile Include="pdf_parser\text_block.py" />
+    <Compile Include="pdf_parser\renderer\base_renderer.py" />
     <Compile Include="pdf_parser\pdf_doc.py" />
     <Compile Include="pdf_parser\pdf_parser.py" />
     <Compile Include="pdf_parser\__init__.py" />
@@ -68,6 +70,7 @@
   <ItemGroup>
     <Folder Include="pdf_parser\filters\" />
     <Folder Include="pdf_parser\" />
+    <Folder Include="pdf_parser\renderer\" />
     <Folder Include="pdf_parser\pdf_elements\" />
     <Folder Include="pdf_parser\pdf_types\" />
     <Folder Include="tests\" />

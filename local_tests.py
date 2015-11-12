@@ -2,15 +2,15 @@ import sys
 sys.path.insert(1, './')
 #sys.path.insert(1, './pdf_parser/')
 
-from pdf_parser.pdf_doc      import PdfDocument
-from pdf_parser.pdf_elements import PdfPage
+from pdf_parser import PdfDocument, PdfParser
+from pdf_parser.renderer import PdfSimpleRenderer
 
 #fname = 'c:/L549-0113-6.pdf'
 fname = 'S:/Research/Leisure/STR RevPar Data/US Weekly PDFs/Lodging Smith Travel Results 15-10-07.pdf'
 pdf = PdfDocument(fname)
 pdf.parse()
-page = pdf.Pages[0]
-font = pdf.Pages[0].Fonts['T1_0']
-print(font.Encoding)
-ops = page.Contents.operations
-l = [next(ops) for i in  range(100)]
+rend = PdfSimpleRenderer(pdf.Pages[4]).render()
+
+import zlib
+s = page.Fonts['T1_0'].ToUnicode
+PdfParser().parse(page.Fonts['T1_0'].ToUnicode.data, False, True)

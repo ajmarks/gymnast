@@ -1,14 +1,15 @@
-import numpy as np
+import numbers
 
 from ..pdf_operation import PdfOperation
-from ..pdf_font          import PdfFont
+from ..pdf_elements  import PdfFont
 from ..misc          import classproperty
+from ..exc           import *
 
 #PTVS nonsense
 from builtins import *
 
 class TextOper(PdfOperation):
-    is_text = True
+    optype = PdfOperation.TEXT_SHOWING
 
     #Type hints
     if False:
@@ -25,26 +26,29 @@ class TextOper(PdfOperation):
     @classproperty
     def space_width(renderer):
         return renderer.active_font.space_width
-
+    
 class Tj(TextOper):
-    opcode  = b'Tj'
+    opcode  = 'Tj'
     @staticmethod
     def do_opcode(renderer, string):
-        if not isinstance(string, bytes):
-            glyphs = string.get_original_bytes()
-        else:
-            glyphs = string
-        for g in glyphs:
-            raise NotImplementedError
+        for glyph in string:
+            renderer.write_glyph(glyph)
 
 class TJ(TextOper):
-    opcode  = b'TJ'
+    opcode  = 'TJ'
     @staticmethod
-    def do_opcode(renderer, string):
-        raise NotImplementedError
+    def do_opcode(renderer, args):
+        for op in args:
+            if isinstance(op, str):
+                for glyph in op:
+                    renderer.write_glyph(glyph)
+            elif isinstance(op, numbers.Real):
+                renderer.write_glyph(T_j=op)
+            else:
+                raise PdfError('Invalid TJ operand')
 
 class Apostrophe(TextOper):
-    opcode  = b"'"
+    opcode  = "'"
     @staticmethod
     def do_opcode(renderer, string):
         PdfOperation['T*'](renderer)

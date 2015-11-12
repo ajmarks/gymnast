@@ -1,9 +1,9 @@
 from functools import partial, reduce
 
-from .common         import PdfType
-from ..exc           import *
-from ..stream_filter import StreamFilter
-from ..misc          import ensure_list
+from .common   import PdfType
+from ..exc     import *
+from ..filters import StreamFilter
+from ..misc    import ensure_list
 
 #PTVS nonsense
 from builtins import *

@@ -2,7 +2,9 @@ import numpy as np
 from ..pdf_operation import PdfOperation
 
 class Td(PdfOperation):
-    opcode  = 'Td'
+    opcode = 'Td'
+    optype = PdfOperation.TEXT_POSITIONING
+
     @staticmethod
     def do_opcode(renderer, t_x, t_y):
         renderer._T_m = np.matrix([[1,  0,  0],
@@ -11,14 +13,18 @@ class Td(PdfOperation):
         renderer.reset_T_lm()
 
 class TD(PdfOperation):
-    opcode  = 'TD'
-    @classmethod
+    opcode = 'TD'
+    optype = PdfOperation.TEXT_POSITIONING
+
+    @staticmethod
     def do_opcode(renderer, t_x, t_y):
         PdfOperation['TL'](-t_y)(renderer)
         PdfOperation['Td'](t_x, t_y)(renderer)
 
 class Tm(PdfOperation):
-    opcode  = 'Tm'
+    opcode = 'Tm'
+    optype = PdfOperation.TEXT_POSITIONING
+
     @staticmethod
     def do_opcode(renderer, a, b, c, d, e, f):
         renderer._T_m = np.matrix([[a, b, 0],
@@ -27,7 +33,9 @@ class Tm(PdfOperation):
         renderer.reset_T_lm()
 
 class Tstar(PdfOperation):
-    opcode  = 'T*'
+    opcode = 'T*'
+    optype = PdfOperation.TEXT_POSITIONING
+
     @staticmethod
     def do_opcode(renderer):
         PdfOperation['Td'](0, renderer._T_l)(renderer)

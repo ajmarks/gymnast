@@ -144,8 +144,7 @@ class ContentStream(object):
     @staticmethod
     def _extract_stream_ops(stream):
         operands = []
-        data = io.BufferedReader(io.BytesIO(stream.value.data))
-        for op in PdfParser().iterparse(data):
+        for op in PdfParser().iterparse(stream.value.data):
             if isinstance(op, PdfRaw):
                 yield PdfOperation[op](*operands)
                 operands = []
