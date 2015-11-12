@@ -44,6 +44,7 @@
     <Compile Include="pdf_parser\renderer\simple_renderer.py" />
     <Compile Include="pdf_parser\renderer\text_renderer.py" />
     <Compile Include="pdf_parser\renderer\__init__.py" />
+    <Compile Include="setup.py" />
     <Compile Include="test.py" />
     <Compile Include="pdf_parser\exc.py" />
     <Compile Include="pdf_parser\filters\crypt_filters.py" />
@@ -80,9 +81,11 @@
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LICENSE" />
     <Content Include="local_tests.py" />
     <Content Include="README.md" />
     <Content Include="pdf_parser\VERSION" />
+    <Content Include="setup.cfg" />
     <Content Include="TODO.md" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
