@@ -16,7 +16,11 @@ fonts = page.Fonts.values()
 ##TODO (in no particular order)
 - **Features and functionality**
   - [ ] Complete the base page renderer
-  - [ ] Write a fancypants, rtree-based text extracting renderer based on text-object coordinates
+  - [ ] Page Extraction
+    - [x] Getting the BaseExtractor class working
+    - [x] Implement a proof of concept extractor that just dumps strings
+    - [ ] Get a bit fancier, assigning textblocks to lines and such
+    - [ ] Write a fancypants, rtree-based text extracting renderer based on text-object coordinates
   - [ ] Handle page numbering more fully
     - [ ] Add a method to PdfDocument to get a page by number
     - [ ] Add propreties to PdfPage for the page number (both as an int and a formatted str according to PdfDocument.Root.PageLabels['Nums'])
