@@ -7,7 +7,7 @@ class Td(PdfOperation):
 
     @staticmethod
     def do_opcode(renderer, t_x, t_y):
-        renderer._T_m = PdfMatrix(1, 0, 0, 1, tx, ty)*renderer._T_lm
+        renderer._T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y)*renderer._T_lm
         renderer.reset_T_lm()
 
 class TD(PdfOperation):

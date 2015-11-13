@@ -45,9 +45,9 @@ class PdfBaseRenderer(object):
     def _postop(self, op):
         """Method called before each operation is executed."""
         pass
-    def _post_write(self, glyph=None, tx=0.0, ty=0.0):
-        """Method called when a new character is written.
-        Arguments are the glyph written, and the resulting tx and ty shifts."""
+    def _post_write(self, glyph=None, t_x=0.0, t_y=0.0):
+        """Method called when a new character is written. Arguments are the 
+        glyph written, and the resulting t_x and t_y shifts."""
         pass
     def _return(self):
         """Do any required finalization and return the parsed result.
@@ -98,7 +98,7 @@ class PdfBaseRenderer(object):
         else:
             w0 = 0.0
         
-        tx = ((w0-T_j/1000.0)*self._T_fs+self._T_c+self._T_w)*self._T_h
-        ty = 0.0 # <--- TODO: this
-        self._T_m = PdfMatrix(1, 0, 0, 1, tx, ty)*self._T_m
-        self._post_write(glyph, tx, ty)
+        t_x = ((w0-T_j/1000.0)*self._T_fs+self._T_c+self._T_w)*self._T_h
+        t_y = 0.0 # <--- TODO: this
+        self._T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y)*self._T_m
+        self._post_write(glyph, t_x, t_y)
