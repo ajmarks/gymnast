@@ -27,7 +27,7 @@ class PdfMatrix(object):
         self._d = float(d)
         self._e = float(e)
         self._f = float(f)
-    def map_coords(self, x, y):
+    def transform_coords(self, x, y):
         return (self._a*+self._c*y+self._e, 
                 self._b*+self._d*y+self._f)
     def __mul__(self, other):
@@ -41,6 +41,10 @@ class PdfMatrix(object):
                          self._c*other._b+self._d*other._d,
                          self._e*other._a+self._f*other._c+other._e,
                          self._e*other._b+self._f*other._d+other._f)
+    @property
+    def current_coords(self):
+        """Current x, y offset in whatever space this matrix represents"""
+        return self._e, self._f
     def copy(self):
         """Return a copy of this matrix"""
         return PdfMatrix(self._a, self._b,
