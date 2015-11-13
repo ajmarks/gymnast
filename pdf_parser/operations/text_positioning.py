@@ -1,4 +1,4 @@
-import numpy as np
+from ..pdf_matrix    import PdfMatrix
 from ..pdf_operation import PdfOperation
 
 class Td(PdfOperation):
@@ -7,9 +7,7 @@ class Td(PdfOperation):
 
     @staticmethod
     def do_opcode(renderer, t_x, t_y):
-        renderer._T_m = np.matrix([[1,  0,  0],
-                                   [0,  1,  0],
-                                   [t_x,t_y,0]])*renderer._T_lm
+        renderer._T_m = PdfMatrix(1, 0, 0, 1, tx, ty)*renderer._T_lm
         renderer.reset_T_lm()
 
 class TD(PdfOperation):
@@ -27,9 +25,7 @@ class Tm(PdfOperation):
 
     @staticmethod
     def do_opcode(renderer, a, b, c, d, e, f):
-        renderer._T_m = np.matrix([[a, b, 0],
-                                   [c, d, 0],
-                                   [e, f, 1]])
+        renderer._T_m = PdfMatrix(a, b, c, d, e, f)
         renderer.reset_T_lm()
 
 class Tstar(PdfOperation):

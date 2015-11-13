@@ -33,6 +33,7 @@
     <Compile Include="pdf_parser\pdf_elements\pdf_element.py" />
     <Compile Include="pdf_parser\pdf_elements\__init__.py" />
     <Compile Include="pdf_parser\pdf_elements\pdf_page.py" />
+    <Compile Include="pdf_parser\pdf_matrix.py" />
     <Compile Include="pdf_parser\pdf_types\structural_types.py" />
     <Compile Include="pdf_parser\pdf_types\streams.py" />
     <Compile Include="pdf_parser\pdf_types\object_types.py" />

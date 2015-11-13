@@ -141,6 +141,9 @@ class PdfFont(PdfElement):
 
     def get_glyph_width(self, glyph):
         """Return the width of the specified glyph in the current font.
+        Note that these widths are in _glyph_ space, not _text_ space.  For
+        Type 1 fonts, the conversion is generally to divide by 1000.  For 
+        Type 3 fonts though, it's more complex.
 
         Arguments:
             glyph - a one character string"""

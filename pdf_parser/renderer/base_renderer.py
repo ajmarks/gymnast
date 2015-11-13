@@ -1,7 +1,6 @@
-import numpy as np
-
 from ..exc           import *
 from ..pdf_elements  import PdfPage
+from ..pdf_matrix    import PdfMatrix
 from ..pdf_operation import PdfOperation
 
 #Nonsense to make PTVS happy
@@ -24,6 +23,7 @@ class PdfBaseRenderer(object):
         _page = PdfPage()
     
     def __init__(self, page):
+        self._id_matrix = PdfMatrix(1, 0, 0, 1, 0, 0)
         self._T_c     = 0.0  # Char space
         self._T_w     = 0.0  # Word space
         self._T_h     = 1.0  # Horizontal text scale
@@ -68,7 +68,7 @@ class PdfBaseRenderer(object):
     
     def reset_T_lm(self):
         """Reset the line matrix to the general text matrix"""
-        self._T_lm = np.copy(self._Tm)
+        self._T_lm = self._Tm.copy()
     
     def bytes_to_glyphs(self, string):
         """Converts a bytestring into a series of glyphs based upon the active
@@ -80,9 +80,7 @@ class PdfBaseRenderer(object):
 
     @property
     def id_matrix(self):
-        return np.matrix([[1, 0, 0],
-                          [0, 1, 0],
-                          [0, 0, 1]])
+        return self._id_matrix
     
     def _get_glyph_width(self, glyph):
         return self.active_font.get_glyph_width(glyph)
@@ -102,7 +100,5 @@ class PdfBaseRenderer(object):
         
         tx = ((w0-T_j/1000.0)*self._T_fs+self._T_c+self._T_w)*self._T_h
         ty = 0.0 # <--- TODO: this
-        self._T_m = np.matrix([[1, 0, 0],
-                               [0, 1, 0],
-                               [tx,0, 1]])*self._T_m
+        self._T_m = PdfMatrix(1, 0, 0, 1, tx, ty)*self._T_m
         self._post_write(glyph, tx, ty)
