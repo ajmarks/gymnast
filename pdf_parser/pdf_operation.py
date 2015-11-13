@@ -6,6 +6,8 @@ from .misc import get_subclasses, classproperty, ensure_str, MetaGettable
 #PTVS nonsense
 from builtins import *
 
+__all__ =['PdfOperation']
+
 class PdfOperation(object, metaclass=MetaGettable):
     """PDF content stream operations."""
     opcode = None

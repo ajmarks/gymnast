@@ -3,6 +3,7 @@ import codecs
 
 from .pdf_element    import PdfElement
 from ..pdf_constants import BASE_ENCODINGS, GLYPH_LIST
+from ..pdf_matrix    import PdfMatrix
 from ..pdf_parser    import PdfParser
 from ..pdf_types     import PdfLiteralString, PdfDict
 from ..exc           import *
@@ -64,6 +65,7 @@ class FontEncoding(PdfElement):
                 n += 1
         self._glyphmap.update(differences)
         self._differences = differences
+        self._fontmatrix  = PdfMatrix(.001, 0, 0, .001, 0, 0)
     @property
     def BaseEncoding(self):
         return self._object.get('BaseEncoding', 'StandardEncoding')
@@ -157,7 +159,12 @@ class PdfFont(PdfElement):
         return self.Encoding.get_glyph_name(code)
     def get_char_code(self, name):
         return self.Encoding.get_char_code(name)
-
+    @property
+    def FontMatrix(self):
+        """Transformation matrix to go from glyph space to text space.
+        Using this instead of just division by 1000 will make things easier 
+        when we add support for Type 3 fonts"""
+        return self._fontmatrix
     @property
     def space_width(self):
         """Width of the space character in the current font"""

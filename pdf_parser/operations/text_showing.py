@@ -14,36 +14,23 @@ class TextOper(PdfOperation):
     #Type hints
     if False:
         parser.active_font = PdfFont()
-
-    @staticmethod
-    def get_glyph_width(renderer, glyph_code):
-        return renderer.active_font.get_glyph_width(glyph_code)
-
-    @staticmethod
-    def get_char_code(renderer, glyph_name):
-        return renderer.active_font.get_char_code(glyph_name)
-
-    @classproperty
-    def space_width(renderer):
-        return renderer.active_font.space_width
     
 class Tj(TextOper):
     opcode  = 'Tj'
     @staticmethod
     def do_opcode(renderer, string):
-        for glyph in string:
-            renderer.write_glyph(glyph)
+        renderer.render_text(string)
 
 class TJ(TextOper):
     opcode  = 'TJ'
     @staticmethod
     def do_opcode(renderer, args):
+        x=1
         for op in args:
             if isinstance(op, str):
-                for glyph in op:
-                    renderer.write_glyph(glyph)
+                renderer.render_text(op, True)
             elif isinstance(op, numbers.Real):
-                renderer.write_glyph(T_j=op)
+                renderer.move_text_cursor(op)
             else:
                 raise PdfError('Invalid TJ operand')
 

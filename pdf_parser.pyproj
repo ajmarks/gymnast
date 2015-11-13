@@ -84,6 +84,7 @@
   <ItemGroup>
     <Content Include="LICENSE" />
     <Content Include="local_tests.py" />
+    <Content Include="pdf_parser\operations\special_graphics.py" />
     <Content Include="README.md" />
     <Content Include="pdf_parser\VERSION" />
     <Content Include="setup.cfg" />
