@@ -73,8 +73,10 @@
     <Compile Include="pdf_parser\__init__.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="pdf_parser\data\afm\" />
     <Folder Include="pdf_parser\filters\" />
     <Folder Include="pdf_parser\" />
+    <Folder Include="pdf_parser\data\" />
     <Folder Include="pdf_parser\pdf_operation\operations\" />
     <Folder Include="pdf_parser\renderer\" />
     <Folder Include="pdf_parser\pdf_elements\" />
@@ -88,6 +90,22 @@
   <ItemGroup>
     <Content Include="LICENSE" />
     <Content Include="local_tests.py" />
+    <Content Include="pdf_parser\data\afm\Courier-Bold.afm" />
+    <Content Include="pdf_parser\data\afm\Courier-BoldOblique.afm" />
+    <Content Include="pdf_parser\data\afm\Courier-Oblique.afm" />
+    <Content Include="pdf_parser\data\afm\Courier.afm" />
+    <Content Include="pdf_parser\data\afm\Helvetica-Bold.afm" />
+    <Content Include="pdf_parser\data\afm\Helvetica-BoldOblique.afm" />
+    <Content Include="pdf_parser\data\afm\Helvetica-Oblique.afm" />
+    <Content Include="pdf_parser\data\afm\Helvetica.afm" />
+    <Content Include="pdf_parser\data\afm\MustRead.html" />
+    <Content Include="pdf_parser\data\afm\README" />
+    <Content Include="pdf_parser\data\afm\Symbol.afm" />
+    <Content Include="pdf_parser\data\afm\Times-Bold.afm" />
+    <Content Include="pdf_parser\data\afm\Times-BoldItalic.afm" />
+    <Content Include="pdf_parser\data\afm\Times-Italic.afm" />
+    <Content Include="pdf_parser\data\afm\Times-Roman.afm" />
+    <Content Include="pdf_parser\data\afm\ZapfDingbats.afm" />
     <Content Include="pdf_parser\pdf_operation\operations\special_graphics.py" />
     <Content Include="README.md" />
     <Content Include="pdf_parser\VERSION" />
