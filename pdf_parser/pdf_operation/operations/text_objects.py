@@ -3,7 +3,7 @@ from ...renderer import TextState
 
 class BT(PdfOperation):
     """Begin a text object, resetting the text and line matricies"""
-    opcode  = b'BT'
+    opcode  = 'BT'
     optype = PdfOperation.TEXT_OBJECTS
 
     @staticmethod
@@ -11,11 +11,13 @@ class BT(PdfOperation):
         if renderer._in_text:
             raise PdfError('Cannot being a new text object without ending the previous')
         renderer._in_text = True
-        renderer._ts      = TextState()
+        renderer._ts.T_m  = TextState.id_matrix
+        renderer._ts.T_lm = TextState.id_matrix
+
 
 class ET(PdfOperation):
     """Begin a text object, resetting the text and line matricies"""
-    opcode  = b'ET'
+    opcode  = 'ET'
     optype = PdfOperation.TEXT_OBJECTS
     
     @staticmethod
@@ -24,4 +26,5 @@ class ET(PdfOperation):
             raise PdfError('ET without a corresponding BT end text object')
         else:
             renderer._in_text = False
-            renderer._ts      = None
+            renderer._ts.T_m  = None
+            renderer._ts.T_lm = None

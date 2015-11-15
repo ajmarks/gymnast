@@ -28,7 +28,7 @@ class PdfBaseRenderer(object):
         _page = PdfPage()
     
     def __init__(self, page):
-        self._ts      = None            # Text state
+        self._ts      = TextState()   # Text state
         self._gs      = GraphicsState() # Graphics state
         self._page    = page
         self._fonts   = page.Fonts
