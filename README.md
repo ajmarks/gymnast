@@ -15,7 +15,8 @@ fonts = page.Fonts.values()
 
 ##TODO (in no particular order)
 - **Features and functionality**
-  - [ ] Rewrite the parser and document class to lazy-load the document based on the xrefs table
+  - [x] Rewrite the parser and document class to lazy-load the document based on the xrefs table
+  - [ ] Add support for linearized PDF files
   - [x] Complete the base page renderer
   - [ ] Page Rendering
     - [x] Getting the `BaseRenderer` class working
