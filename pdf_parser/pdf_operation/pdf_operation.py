@@ -1,7 +1,7 @@
 import warnings
 
-from .exc  import *
-from .misc import get_subclasses, classproperty, ensure_str, MetaGettable
+from ..exc  import *
+from ..misc import get_subclasses, classproperty, ensure_str, MetaGettable
 
 #PTVS nonsense
 from builtins import *
@@ -58,7 +58,7 @@ class PdfOperation(object, metaclass=MetaGettable):
         try:
             return cls.opcodes[operator]
         except KeyError:
-            return type(operator, (PdfNOP,), {})
+            return type(operator, (PdfNOP,), {'_opcode':operator})
 
     @staticmethod
     def __init_opcodes():
@@ -67,6 +67,9 @@ class PdfOperation(object, metaclass=MetaGettable):
                    for o in get_subclasses(PdfOperation)
                      if o.opcode}
         PdfOperation.__opcodes = opcodes
+    def __str__(self):
+        op = self.opcode if self.opcode else self._opcode
+        return '{}({})'.format(op, ', '.join(str(i) for i in self._operands))
 
 class PdfNOP(PdfOperation):
     """Dummy opcode that does nothing.  Called when we've not 

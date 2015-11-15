@@ -1,7 +1,7 @@
 import copy
 
-from ..pdf_matrix    import PdfMatrix
 from ..pdf_operation import PdfOperation
+from ...pdf_matrix   import PdfMatrix
 
 
 class cm(PdfOperation):

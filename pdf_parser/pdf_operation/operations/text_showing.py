@@ -1,9 +1,10 @@
 import numbers
 
 from ..pdf_operation import PdfOperation
-from ..pdf_elements  import PdfFont
-from ..misc          import classproperty
-from ..exc           import *
+from ...exc           import *
+from ...misc          import classproperty
+from ...pdf_elements  import PdfFont
+
 
 #PTVS nonsense
 from builtins import *
