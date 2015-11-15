@@ -10,7 +10,7 @@ class PdfDict(PdfType, dict):
         PdfType.__init__(self)
         dict.__init__(self, *args, **kwargs)
 
-    def __getattribute__(self, name):
+    def __getattr__(self, name):
         try:
             return self[name].parsed_object
         except AttributeError:
