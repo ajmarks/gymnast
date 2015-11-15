@@ -25,7 +25,7 @@ class TextState(RendererState):
     
     def reset_T_lm(self):
         """Reset the line matrix to the general text matrix"""
-        self.T_lm = copy.copy(self._ts.T_m)
+        self.T_lm = copy.copy(self.T_m)
 
 class GraphicsState(RendererState):
     def __init__(self):
