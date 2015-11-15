@@ -1,4 +1,5 @@
 import binascii
+import codecs
 import io
 
 from .common     import PdfType
@@ -45,7 +46,10 @@ class PdfString(PdfType):
 
 class PdfLiteralString(str, PdfString):
     def __new__(cls, data):
-        string = cls._decode_bytes(cls.parse_bytes(data))
+        try:
+            string = cls._decode_bytes(cls.parse_bytes(data))
+        except UnicodeDecodeError:
+            string = codecs.encode(cls.parse_bytes(data), 'hex_codec').decode()
         obj = str.__new__(cls, string)
         obj.__init__(data)
         return obj
