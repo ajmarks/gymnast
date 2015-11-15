@@ -114,6 +114,7 @@ class PdfParser(object):
         return not bool(self._peek(1))
     
     def _peek(self, n=1):
+        # TODO: make this check the return lenght, and read/seek if needed
         return self._data.peek(n)[:n]      
 
     def _get_header(self):
@@ -286,12 +287,14 @@ class PdfParser(object):
         else:
             raise PdfParseError('stream keyword must be followed by \\r\\n or \\n')
         s_data = self._data.read(lngth)
-        if self._peek(11)   == b'\r\nendstream':
-            self._data.read(11)
-        elif self._peek(10) == b'\nendstream':
-            self._data.read(10)
-        elif self._peek(9)  == b'endstream':
-            self._data.read(9)
+        # These long peeks are not guaranteed to work
+        close = self._data.read(11)
+        if   close      == b'\r\nendstream':
+            pass
+        elif close[:-1] == b'\nendstream':
+            self._data.seek(-1)
+        elif close[:-2]  == b'endstream':
+            self._data.seek(-2)
         else:
             raise PdfParseError('endstream not found')
         return PdfStream(header, s_data)
@@ -356,7 +359,7 @@ class PdfParser(object):
     def _parse_name(token):
         """Parse names by stripping the leading / and replacing instances of
         #YY with the character b'\\xYY', returning a unicode string."""
-        name = token[1:]
+        name = bytearray(token[1:])
         hash_pos = name.find(b'#')
         while hash_pos > 0:
             try:

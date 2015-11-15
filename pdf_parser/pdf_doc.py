@@ -34,9 +34,9 @@ class PdfDocument(object):
 
     def _build_doc(self, trailer):
         try:
-            self._root    = trailer['Root'].parsed_object
+            self._root = trailer['Root'].parsed_object
         except KeyError:
-            raise PdfError('PDF file lacks a root element')
+            raise PdfError('PDF file lacks a root element.  Is it protected?')
         self._version = trailer.get('Version', self._version)
         try:
             self._info = trailer['Info'].parsed_object
