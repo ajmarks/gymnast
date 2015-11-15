@@ -1,6 +1,75 @@
-import re
+import io
 import numbers
+import re
 from functools import wraps
+
+from .pdf_constants import WHITESPACE
+
+__all__ = [# Static functions
+           'buffer_data', 'ensure_str', 'ensure_list', 'iterbytes', 'is_digit',
+           'get_subclasses', 'readuntil', 'force_decode', 'consume_whitespace',
+           # Decorators
+           'classproperty',  
+           # Classes
+           'ReCacher', 'BlackHole',
+           # Metaclasses
+           'MetaGettable', 'MetaNonelike',
+          ]
+
+def _is_buffered_bytesio(data):
+    if   not isinstance(data, io.BufferedIOBase)             : return False
+    elif not data.readable()                                 : return False
+    elif isinstance(data.raw, io.BytesIO)                    : return True
+    elif isinstance(data.raw, io.FileIO) and 'b' in data.mode: return True
+    return False
+
+def read_until(data, char_set):
+    """Reads buffered io object until an element of char_set is encountered,
+    returning the read data without the terminator."""
+    result = io.BytesIO()
+    char_set = set(char_set)
+    c = data.read(1)
+    while c and c not in char_set:
+        result.write(c)
+        c = data.read(1)
+    return result.getvalue()
+
+def is_digit(val):
+    """Returns True if chr(val) is a digit 0-9"""
+    return (val >= 48 and val <= 57)
+
+def consume_whitespace(data, whitespace=WHITESPACE):
+    """Reads buffered io object data until a non-whitespace byte is encountered
+    and leaves the file position at that character."""
+    whitespace = set(whitespace)
+    for c in whitespace:
+        break
+    while c and c in whitespace:
+        c = data.read(1)
+    if c not in whitespace:
+        data.seek(-1, 1) # Rewind 1 byte
+
+def force_decode(bstring):
+    """Tries to decode a bytestring to text.  If that fails, just repr it."""
+    try:
+        return bstring.decode()
+    except UnicodeDecodeError:
+        return repr(bstring)[2:-1]
+
+def buffer_data(data):
+    """Wrap the data in a BufferedReader if we need to."""
+    if _is_buffered_bytesio(data):
+        return data
+    elif isinstance(data, io.BytesIO):
+        return io.BufferedReader(data)
+    elif isinstance(data, (bytes, bytearray)):
+        return io.BufferedReader(io.BytesIO(data))
+    else:
+        try:
+            return io.BufferedReader(io.BytesIO(bytes(data)))
+        except TypeError:
+            return ValueError('Data to be parsed must be either bytes, '
+                                'bytesarray, or a read()able stream.')
 
 class classproperty(object):
     """Like the @property method, but for classes instead of instances"""
@@ -49,6 +118,7 @@ class MetaNonelike(type):
 #        super().__init__()
 
 def ensure_str(val):
+    """Converts the argument to a string if it isn't one already"""
     if isinstance(val, str):
         return val
     elif isinstance(val, (bytes, bytearray)):
@@ -56,13 +126,16 @@ def ensure_str(val):
     else:
         raise ValueError('Expected bytes or string')
 def ensure_list(val):
+    """Converts the argument to a list, wrapping in [] if needed"""
     return val if isinstance(val, list) else [val]
 
 def iterbytes(bstring):
+    """Turn a bytes object into a generator that yields bytes instead of ints"""
     for b in bstring:
         yield bytes((b,))
 
 def get_subclasses(cls):
+    """Get all known subclasses of cls"""
     subs = cls.__subclasses__()
     for s in subs:
         subs += get_subclasses(s)

@@ -3,30 +3,48 @@ from decimal   import Decimal
 
 from .common       import PdfType
 from .object_types import PdfObjectReference
-from ..exc   import *
+from ..exc         import *
 
 #PTVS nonsense
 from builtins import *
 
 class PdfXref(PdfType):
-    def __init__(self, xrefs, offset):
-        super().__init__()
-        self._xrefs  = xrefs
-        self._offset = offset
+    LINE_PAT = re.compile(r'^(\d{10}) (\d{5}) (n|f)\s{0,2}$')
 
-class PdfXrefLine(PdfType):
-    LINE_PAT = re.compile(r'(\d{10}) (\d{5}) (n|f)$')
+    #IDE type hints
+    if False:
+        from ..pdf_doc     import PdfDocument
+        _id         = 0
+        _offset     = 0
+        _generation = 0
+        _in_use     = True
+        _document   = PdfDocument()
 
-    def __init__(self, id, offset, generation, in_use):
+    def __init__(self, document, obj_no, offset, generation, in_use):
         super().__init__()
-        self._id         = id
+        self._obj_no     = obj_no
         self._offset     = offset
         self._generation = generation
         self._in_use     = in_use
+        self._document   = document
+    @property
+    def key(self):
+        return (self._obj_no, self._generation)
 
-    def get_object(self, document):
+    @property
+    def value(self):
+        return self.get_object()
+
+    def get_object(self):
+        """Return the object referenced by this Xref.  If it's already parsed 
+        in the document, great, otherwise parse it."""
         if self._in_use:
-            return document.get_offset(self._offset)
+            objs = self._document.indirect_objects
+            try:
+                return objs[self.key]
+            except KeyError:
+                self._document.parse_object(self._offset)
+                return objs[self.key]
         else:
             return None # TODO: implement free Xrefs
 
@@ -34,14 +52,20 @@ class PdfXrefLine(PdfType):
         return '{:010d} {:010d} '.format(self._offset, self._generation)\
               +('n' if self._in_use else 'f')
 
-    @staticmethod
-    def from_line(id, line):
-        # TODO: change to fullmatch once 3.4+ is standard
-        match = re.match(PdfXrefLine.LINE_PAT, line)
+    @classmethod
+    def from_line(cls, document, id, line):
+        """Takes a line in an xref subsection and returns a PdfXref object.
+
+        Arguments:
+            document - The PdfDocument in which the line resides
+            id       - The xref line's object id based on the subsection header
+            line     - The actual 18 to 20 byte line (possibly with whitespace)"""
+        # TODO: consider using ReCacher here
+        match = re.match(cls.LINE_PAT, line) 
         if not match:
             raise PdfParseError('Invalid xref line')
-        return PdfXrefLine(id, int(match.group(1)), int(match.group(2)), 
-                       True if match.group(3) == 'n' else False)
+        return cls(document, id, int(match.group(1)), int(match.group(2)), 
+                   match.group(3) == 'n')
 
 
 class PdfTrailer(PdfType, dict):
@@ -62,14 +86,7 @@ class PdfTrailer(PdfType, dict):
         #self._id       = trailer.get('ID')
     @property
     def root(self):
-        return self._root.object
-
-class PdfStartXref(PdfType):
-    def __init__(self, offset):
-        super().__init__()
-        self._offset = offset
-    def lookup(self, document):
-        return document.get_offset(self._offset)
+        return self._root.value
 
 class PdfHeader(PdfType):
     def __init__(self, version, adobe_version=None):

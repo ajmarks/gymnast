@@ -43,6 +43,7 @@
     <Compile Include="pdf_parser\pdf_types\common.py" />
     <Compile Include="pdf_parser\pdf_types\__init__.py" />
     <Compile Include="pdf_parser\renderer\simple_renderer.py" />
+    <Compile Include="pdf_parser\renderer\line_renderer.py" />
     <Compile Include="pdf_parser\renderer\text_renderer.py" />
     <Compile Include="pdf_parser\renderer\renderer_states.py" />
     <Compile Include="pdf_parser\renderer\__init__.py" />

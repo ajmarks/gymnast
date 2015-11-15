@@ -7,11 +7,10 @@ from builtins import *
 
 
 class PdfIndirectObject(PdfType):
-    def __init__(self, object_number, generation, offset, object, document):
+    def __init__(self, object_number, generation, object, document):
         super().__init__()
         self._object_number = object_number
         self._generation    = generation
-        self._offset        = offset
         self._object        = object
         self._document      = document
         self._parsed_obj    = None
@@ -67,7 +66,7 @@ class PdfObjectReference(PdfType):
         if not document and not self._document:
             raise PdfError('Evaluating indirect references requires a document')
         id = (self._object_number, self._generation)
-        return (document if document else self._document).indirect_objects[id]
+        return (document if document else self._document).get_object(*id)
     @property
     def value(self):
         return self.get_object().value

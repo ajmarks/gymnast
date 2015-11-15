@@ -4,6 +4,11 @@
 
 from bidict import bidict
 
+__all__ = ['EOLS', 'WHITESPACE', 'BASE_ENCODINGS', 'GLYPH_LIST']
+
+EOLS       = {b'\r', b'\n', b'\r\n'}
+WHITESPACE = {b' ', b'\t', b'\r', b'\n', b'\f', b'\x00'}
+
 BASE_ENCODINGS = {
         'A'             : {'StandardEncoding': 0o101, 'MacRomanEncoding': 0o101, 'WinAnsiEncoding': 0o101, 'PDFDocEncoding': 0o101},
         'AE'            : {'StandardEncoding': 0o341, 'MacRomanEncoding': 0o256, 'WinAnsiEncoding': 0o306, 'PDFDocEncoding': 0o306},

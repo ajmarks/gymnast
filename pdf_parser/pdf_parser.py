@@ -1,9 +1,10 @@
 from contextlib import contextmanager
 import io
 
-from .exc       import *
-from .pdf_types import *
-from .misc      import ReCacher, BlackHole
+from .exc           import *
+from .pdf_types     import *
+from .misc          import ReCacher, BlackHole, buffer_data, consume_whitespace
+from .pdf_constants import EOLS, WHITESPACE
 
 #PTVS nonsense
 from builtins import *
@@ -11,228 +12,191 @@ from builtins import *
 __all__ = ['PdfParser']
 
 class PdfParser(object):
-    EOLS       = set([b'\r', b'\n', b'\r\n'])
-    WHITESPACE = EOLS.union(set([b'\x00', b'\t', b'\f', b' ']))
     DELIMITERS = set([b'/', b'<', b'(', b'{', b'[', b'%'])
     ENDERS     = WHITESPACE.union(DELIMITERS)
 
     def __init__(self, document=None):
+        """Initialize the PdfParser with a default PdfDocument"""
         from .pdf_doc import PdfDocument
         if document is None or isinstance(document, PdfDocument):
             self._doc = document
         else:
             raise PdfParseError('document must be either None or a PdfParser')
-
-    @staticmethod
-    @contextmanager
-    def file_context(file):
-        """Context manager for loading the data if needed.  If the file was 
-        opened by a different function, we're not going to close it here."""
-        if PdfParser._is_buffered_bytesio(file):
-            yield file
-        elif isinstance(file, str):
-            f = open(file, 'rb')
-            yield f
-            f.close()
-        elif isinstance(file, io.BytesIO):
-            yield io.BufferedReader(file)
-        elif isinstance(file, (bytes, bytearray)):
-            yield io.BufferedReader(io.BytesIO(file))
-        else:
-            try:
-                yield io.BufferedReader(io.BytesIO(bytes(file)))
-            except TypeError:
-                raise ValueError('Data to be parsed must be either bytes, '
-                                 'bytesarray, a file name, or a read()able stream.')
-
-    def parse(self, data, full_file=True, allow_invalid=False):
-        with PdfParser.file_context(data) as data:
-            return self._parse(data, full_file, allow_invalid)
     
-    def iterparse(self, data):
+    def parse_simple_object(self, data, position=None):
+        """Parse and return the simple object (i.e., not an indirect object)
+        described in the first argument located at either current stream 
+        position or the position specified by the optional argument.  The 
+        stream's position will be left at the end of the object.
+        
+        This method should only be used in places where an indirect object
+        reference is not valid."""
+        if position is not None:
+            data.seek(position)
+        token = self._get_next_token(data)
+        return self._process_token(data, token, None)
+
+    def parse_indirect_object(self, data, position=None):
+        """Parse and return the indirect object described in the first argument
+        located at either current stream position or the position specified by 
+        the optional argument.  The stream's position will be left at the end of the object."""
+        if position is not None:
+            data.seek(position)
+        obj_no  = self._process_token(data, self._get_next_token(data), None)
+        obj_gen = self._process_token(data, self._get_next_token(data), None)
+        if not isinstance(obj_no, int) or not isinstance(obj_gen, int):
+            raise PdfParseError('Object identification not found')
+        token   =  self._get_next_token(data)
+        if token != b'obj':
+            raise PdfParseError("Expected 'obj', got '%s'"%token)
+        return self._parse_ind_object(data, [obj_no, obj_gen])
+
+    def _get_objects(self, data, closer=None):
+        """Get all of the objects in data starting from the current position 
+        until hitting EOF or the optional closer argument.  Returns a list of
+        PdfTypes, ints, floats, and bools.
+
+        TODO: Restore PdfInt, etc."""
+        objects = []
+        while data.peek(1):
+            token = self._get_next_token(data, closer)
+            if not token: continue
+            if token == closer: break
+            element  = self._process_token(data, token, objects)
+            if token not in (b'obj', b'xref'):
+                objects.append(element)
+        return objects
+
+    def iterparse(self, data, allow_invalid=True):
         """Generator-parser for use in content streams."""
-        with PdfParser.file_context(data) as data:
-            yield from self._iterparse(data)
+        data = buffer_data(data)
+        while data.peek(1):
+            token = self._get_next_token(data)
+            if not token: continue
+            element  = self._process_token(data, token, BlackHole(), 
+                                           allow_invalid)
+            yield element
+
+    def parse(self, full_file=True, allow_invalid=False):
+        return self._parse(self._data, full_file, allow_invalid)
 
     def _parse(self, data, full_file=True, allow_invalid=False):
-        if not PdfParser._is_buffered_bytesio(data):
-            raise PdfParseError(\
-                'data must be a readable, binary io.BufferedIOBase object')
-        self._data          = data
-        self._ind_objects   = {}   # Store the indirect objects here
-        self._xrefs         = []   # Store our Xref tables here
-        self._offsets       = []   # Keep track of object offsets for ind_objects
+        self._data          = buffer_data(data)
         self._allow_invalid = allow_invalid
-        if full_file:
-            header      = self._get_header()
         doc_objects = self._get_objects()
         if full_file:
-            return header, self._ind_objects, doc_objects, self._xrefs
+            return doc_objects, self._xrefs
         else:
             return doc_objects
-
-    def _iterparse(self, data):
-        """Generator-parser for use in content streams."""
-        self._data          = data
-        self._allow_invalid = True
-        self._offsets       = BlackHole()
-        while not self._eod:
-            token = self._get_next_token(None)
-            if not token: continue
-            element  = self._process_token(token, None)
-            yield element
 
     def _iter_get_objects(self):
         objects = []
         while not self._eod:
             token = self._get_next_token(None)
             if not token: continue
-            element  = self._process_token(token, objects)
+            element  = self._process_token(token)
             yield element
 
-    def _get_objects(self, closer=None):
-        objects = []
-        while not self._eod:
-            token = self._get_next_token(closer)
-            if not token: continue
-            if token == closer: break
-            element  = self._process_token(token, objects)
-            if token not in (b'obj', b'xref'):
-                objects.append(element)
-        return objects
-
     @staticmethod
-    def _is_buffered_bytesio(file):
-        if   not isinstance(file, io.BufferedIOBase)             : return False
-        elif not file.readable()                                 : return False
-        elif isinstance(file.raw, io.BytesIO)                    : return True
-        elif isinstance(file.raw, io.FileIO) and 'b' in file.mode: return True
-        return False
-
-    @property
-    def _eod(self):
-        return not bool(self._peek(1))
+    def _eod(data):
+        return not bool(data.peek(1))
     
-    def _peek(self, n=1):
-        # TODO: make this check the return lenght, and read/seek if needed
-        return self._data.peek(n)[:n]      
+    @staticmethod
+    def _peek(data, n=1):
+        """Peek ahead, returning the requested number of characters.  If peek()
+        doesn't yield enough data, read and backup."""
+        if n <= 0: return b''
+        res = data.peek(n)[:n]
+        if len(res) == n:
+            return res
+        res += data.read(n-len(res))
+        data.seek(-len(res), 1)
+        return res
 
-    def _get_header(self):
-        if self._data.read(1) != b'%':
-            raise PdfParseError('PDF version header not found')
-        hline = self._parse_comment(None)
-        rc = ReCacher()
-        # TODO: change these to fullmatch once 3.4+ is standard
-        if   rc.match(r'PDF\-(\d+\.\d+)$', hline):
-            header = PdfHeader(rc.group(1))
-        elif rc.match(r'\!PS\?Adobe\?(\d+.\d+) PDF\?(\d+\.\d+)$', hline):
-            header = PdfHeader(rc.group(2), rc.group(1))
-        else:
-            raise PdfError('Invalid PDF version header')
-        # Optional binary line (bottom of p. 92): toss it out
-        self._consume_whitespace()
-        next_chars = self._peek(5)
-        if next_chars[:1] == b'%' and \
-          all(next_chars[i] > 128 for i in range(1,5)):
-            self._parse_comment(None)
-        return header
+    @classmethod
+    def _get_next_token(cls, data, closer=None):
+        """Get the next token in the stream, data.  Closer is an optional 
+        argument specifying the ending token of the current data structure,
+        e.g., >> for dicts."""
+        clen  = len(closer) if closer is not None else None
+        token = io.BytesIO()
+        cls._consume_whitespace(data)
+        
+        while data.peek(1) and (token.getvalue() != closer) \
+           and not cls._is_token(data, token.getvalue(), closer, clen):
+            token.write(data.read(1))
+        return token.getvalue()
 
-    def _is_token(self, value, closer=None, clen=None):
+    @classmethod
+    def _is_token(cls, data, value, closer=None, clen=None):
         """Is this a token?"""
         if closer and not clen: 
             clen = len(closer)
         
-        if self._eod  : return True
-        elif not value: return False
+        if   cls._eod(data): return True
+        elif not value     : return False
 
-        next_char = self._peek(1)
-        not_obj   = (value+next_char) not in PdfParser.obj_types
+        next_char = cls._peek(data, 1)
+        not_obj   = (value+next_char) not in cls.obj_types
 
-        if value in PdfParser.obj_types and not_obj:
+        if value in cls.obj_types and not_obj:
             return True
-        elif closer and self._peek(clen) == closer \
-            and value+self._peek(clen-len(value)) != closer: #The last clause covers an issue
-            return True                                     #the dict as the last element of a dict
-        elif next_char in PdfParser.ENDERS and not_obj:
+        elif closer and cls._peek(data, clen) == closer \
+            and value+cls._peek(data, clen-len(value)) != closer: #The last clause covers an issue with
+            return True                                      #a dict as the last element of a dict
+        elif next_char in cls.ENDERS and not_obj:
             return True
         return False
 
-    def _consume_whitespace(self, whitespace=WHITESPACE):
-        # Get an initial value for c
-        for c in whitespace:
-            break
-        while not self._eod and c in whitespace:
-            c = self._data.read(1)
-        if c not in whitespace:
-            self._data.seek(-1, 1) # Rewind 1 byte
-
-    def _get_objects(self, closer=None):
-        objects = []
-        while not self._eod:
-            token = self._get_next_token(closer)
-            if not token: continue
-            if token == closer: break
-            element  = self._process_token(token, objects)
-            if token not in (b'obj', b'xref'):
-                objects.append(element)
-        return objects
-
-    def _get_next_token(self, closer=None):
-        clen  = len(closer) if closer is not None else None
-        token = io.BytesIO()
-        self._consume_whitespace()
+    def _process_token(self, data, token, objects, allow_invalid=False):
+        """Process the data at the current position in the stream data into the
+        data type indicated by token.
         
-        while not self._eod and token.getvalue() != closer \
-           and not self._is_token(token.getvalue(), closer, clen):
-            token.write(self._data.read(1))
-        return token.getvalue()
-
-    def _process_token(self, token, objects):
-        self._store_offset(token)
+        Optional arguments:
+            objects       - A list of objects already known.
+            allow_invalid - Don't raise an exception when an invalid token is
+                            encountered, instead returning a PdfRaw object."""
         try:
-            return self.obj_types[token](self, objects)
+            return self.obj_types[token](self, data, objects)
         except KeyError:
             try:
                 return self._parse_literal(token)
             except PdfParseError:
                 #This lets us use this parse Content Streams
-                if self._allow_invalid:
-                    return PdfRaw(token)
-                else:
-                    raise
+                if allow_invalid: return PdfRaw(token)
+                else:             raise
 
-    def _store_offset(self, token):
-        """Store the offset at the begining of the token.  We'll need 
-        this to handle xrefs."""
-        self._offsets.append(self._data.tell()-len(token))
+    @staticmethod
+    def _consume_whitespace(data, whitespace=WHITESPACE):
+        consume_whitespace(data, whitespace)
 
-    def _parse_reference(self, objects):
+    def _parse_reference(self, data, objects):
         """References an indirect object, which may or may not have already
         been defined."""
         generation = objects.pop()
         obj_no     = objects.pop()
         return PdfObjectReference(obj_no, generation, self._doc)
 
-    def _parse_dict(self, objects):
-        """A dict is just a differently delimited array, so we'll call that
-        to get the elements"""
-        elems = self._parse_array(objects, b'>>')
+    def _parse_dict(self, data, objects):
+        """A dict is just represented as a differently delimited array, so 
+        we'll call that to get the elements"""
+        elems = self._parse_array(data, objects, b'>>')
         return PdfDict(zip(elems[::2], elems[1::2]))
 
-    def _parse_hex_string(self, objects):
+    def _parse_hex_string(self, data, objects):
         # TODO: Eliminate all of these getvalue() calls
-        token = io.BytesIO(self._data.read(1))
+        token = io.BytesIO(data.read(1))
         token.seek(0, 2)
-        while not self._eod and token.getvalue()[-1:] != b'>':
-            token.write(self._data.read(1))
+        while data.peek(1) and token.getvalue()[-1:] != b'>':
+            token.write(data.read(1))
         return PdfHexString(token.getvalue()[:-1])
 
-    def _parse_literal_string(self, objects):
+    def _parse_literal_string(self, data, objects):
         token   = io.BytesIO()
         parens  = 0
         escaped = False
-        while not self._eod:
-            b = self._data.read(1)
+        while data.peek(1):
+            b = data.read(1)
             if  escaped:
                 escaped = False
             elif b == b'\\':
@@ -246,92 +210,55 @@ class PdfParser(object):
                     parens -= 1
             token.write(b)
         raise PdfParseError('Unterminated string literal')
-    def _parse_array(self, objects, closer=b']'):
+    def _parse_array(self, data, objects, closer=b']'):
         """The main method aready returns a list of the objects it found,
         so that's easy"""
-        elems = self._get_objects(closer)
+        elems = self._get_objects(data, closer)
         return PdfArray(elems)
 
-    def _parse_comment(self, objects):
+    def _parse_comment(self, data, objects):
         token = io.BytesIO()
-        while not self._eod:
-            b = self._data.read(1)
-            if b in PdfParser.EOLS: break
+        while data.peek(1):
+            b = data.read(1)
+            if b in EOLS: break
             token.write(b)
         if token.getvalue() == b'%EOF':
             return PdfEOF()
         else:
             return PdfComment(token.getvalue())
 
-    def _parse_expression(self, objects):
+    def _parse_expression(self, data, objects):
         """TODO: This"""
         pass
 
-    def _parse_ind_object(self, objects):
+    def _parse_ind_object(self, data, objects):
         gen     = objects.pop()
         obj_no  = objects.pop()
         id      = (obj_no, gen)
-        offset  = self._offsets[-3]
-        obj     = self._get_objects(closer=b'endobj')
-        self._ind_objects[id] = \
-            PdfIndirectObject(obj_no, gen, offset, 
-                              obj[0] if obj else None, self._doc)
+        obj     = self._get_objects(data, closer=b'endobj')
+        return  PdfIndirectObject(obj_no, gen, obj[0] if obj else None, 
+                                  self._doc)
 
-    def _parse_stream(self, objects):
+    def _parse_stream(self, data, objects):
         header = objects.pop()
         lngth  = header['Length']
-        if self._peek(2) == b'\r\n':
-            self._data.read(2)
-        elif self._peek(1) == b'\n':
-            self._data.read(1)
-        else:
-            raise PdfParseError('stream keyword must be followed by \\r\\n or \\n')
-        s_data = self._data.read(lngth)
-        # These long peeks are not guaranteed to work
-        close = self._data.read(11)
+        if isinstance(lngth, PdfObjectReference):
+            lngth = lngth.value
+        if data.peek(1)[:1] == b'\r': data.read(1)
+        if data.peek(1)[:1] == b'\n': data.read(1)
+        s_data = data.read(lngth)
+        # Long peeks are not guaranteed to work, so we're going to do this
+        # hackish read/seek for now
+        close = data.read(11)
         if   close      == b'\r\nendstream':
             pass
         elif close[:-1] == b'\nendstream':
-            self._data.seek(-1)
+            data.seek(-1, 1)
         elif close[:-2]  == b'endstream':
-            self._data.seek(-2)
+            data.seek(-2, 1)
         else:
             raise PdfParseError('endstream not found')
         return PdfStream(header, s_data)
-
-    def _parse_xref(self, objects):
-        """See p. 93"""
-        xrefs = []
-        self._consume_whitespace(PdfParser.EOLS)
-        while self._peek(1).isdigit():
-            xrefs.append(self._get_xref_block())
-        self._xrefs.append(PdfXref(xrefs, self._offsets[-1]))
-
-    def _get_xref_block(self):
-        """This method actually gets the xref table"""
-        header = b''
-        while bytes(self._peek(1)) not in PdfParser.EOLS:
-            header += self._data.read(1)
-        self._consume_whitespace(PdfParser.EOLS)
-        id0, nlines = map(int, header.split())
-        # An xref line has _exactly_ 20 characters including the EOL
-        lines = self._data.read(20*nlines).decode().splitlines()
-        return [PdfXrefLine.from_line(id0+i, l) for i, l in enumerate(lines)]
-
-    def _parse_trailer(self, objects):
-        self._consume_whitespace()
-        if self._data.read(2) != b'<<':
-            raise PdfError('dict expected following trailer keyword')
-        trailer   = self._parse_dict(objects)
-        self._consume_whitespace()
-        return PdfTrailer(trailer)
-    
-    def _parse_startxref(self, objects):
-        self._consume_whitespace()
-        xref = self._parse_literal(self._get_next_token())
-        if not isinstance(xref, int):
-            raise PdfParseError('startxref value must be an int')
-        return PdfStartXref(xref)        
 
     @staticmethod
     def _parse_literal(token):
@@ -371,6 +298,21 @@ class PdfParser(object):
             hash_pos = name.find(b'#', hash_pos)
         return PdfName(name.decode())
 
+    #def _parse_trailer(self, objects):
+    #    self._consume_whitespace()
+    #    if self._data.read(2) != b'<<':
+    #        raise PdfError('dict expected following trailer keyword')
+    #    trailer   = self._parse_dict(objects)
+    #    self._consume_whitespace()
+    #    return PdfTrailer(trailer)
+    
+    #def _parse_startxref(self, objects):
+    #    self._consume_whitespace()
+    #    xref = self._parse_literal(self._get_next_token())
+    #    if not isinstance(xref, int):
+    #        raise PdfParseError('startxref value must be an int')
+    #    return PdfStartXref(xref)        
+
     # dict of PDF object types besides literals to look for.
     # Keys are the token that identifies that beginning of that type,
     # and values are method that does the parsing
@@ -386,9 +328,9 @@ class PdfParser(object):
                  b'R'        : _parse_reference,
                  b'obj'      : _parse_ind_object,
                  b'stream'   : _parse_stream,
-                 b'xref'     : _parse_xref,
-                 b'trailer'  : _parse_trailer,
-                 b'startxref': _parse_startxref
+                 #b'xref'     : _parse_xref,
+                 #b'trailer'  : _parse_trailer,
+                 #b'startxref': _parse_startxref
                 }
     
     # List methods 
