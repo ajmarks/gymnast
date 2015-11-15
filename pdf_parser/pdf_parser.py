@@ -67,15 +67,40 @@ class PdfParser(object):
                 objects.append(element)
         return objects
 
-    def iterparse(self, data, allow_invalid=True):
-        """Generator-parser for use in content streams."""
+    def iterparse(self, data, allow_invalid=True, 
+                  disallowed={b'R', b'obj', b'stream'}):
+        """Generator-parser primarily for use in content streams."""
         data = buffer_data(data)
         while data.peek(1):
-            token = self._get_next_token(data)
+            token = self._get_next_token(data, disallowed=disallowed)
             if not token: continue
             element  = self._process_token(data, token, BlackHole(), 
                                            allow_invalid)
             yield element
+            if isinstance(element, PdfRaw) and element == b'BI':
+                for i in self._parse_inline_image(data, disallowed):
+                    yield i
+
+    def _parse_inline_image(self, data, disallowed):
+        """Special method for handling inline images in content streams because
+        they are absolutely awful.
+        
+        See Reference pp. 352-355"""
+        attrs = []
+        token = None
+        while data.peek(1) and token != b'ID':
+            token = self._get_next_token(data, disallowed=disallowed)
+            if not token: continue
+            attrs.append(self._process_token(data,token,BlackHole, True))
+        yield PdfDict({attrs[i]:attrs[i+1] for i in range(0,len(attrs)-1,2)})
+        data.read(1)
+        img = io.BytesIO()
+        buf = bytes(2)
+        while buf != b'EI':
+            buf = buf[1:]+data.read(1)
+            img.write(buf[1:])
+        yield PdfRawData(img.getvalue()[:-2]) # This is such an ugly hack
+        yield PdfRaw(b'EI')
 
     def parse(self, full_file=True, allow_invalid=False):
         return self._parse(self._data, full_file, allow_invalid)
@@ -114,7 +139,7 @@ class PdfParser(object):
         return res
 
     @classmethod
-    def _get_next_token(cls, data, closer=None):
+    def _get_next_token(cls, data, closer=None, disallowed=set()):
         """Get the next token in the stream, data.  Closer is an optional 
         argument specifying the ending token of the current data structure,
         e.g., >> for dicts."""
@@ -123,12 +148,14 @@ class PdfParser(object):
         cls._consume_whitespace(data)
         
         while data.peek(1) and (token.getvalue() != closer) \
-           and not cls._is_token(data, token.getvalue(), closer, clen):
+           and not cls._is_token(data, token.getvalue(), 
+                                 closer, clen, disallowed):
             token.write(data.read(1))
         return token.getvalue()
 
     @classmethod
-    def _is_token(cls, data, value, closer=None, clen=None):
+    def _is_token(cls, data, value, closer=None, clen=None, 
+                  disallowed=set()):
         """Is this a token?"""
         if closer and not clen: 
             clen = len(closer)
@@ -139,7 +166,7 @@ class PdfParser(object):
         next_char = cls._peek(data, 1)
         not_obj   = (value+next_char) not in cls.obj_types
 
-        if value in cls.obj_types and not_obj:
+        if value in cls.obj_types and not_obj and value not in disallowed:
             return True
         elif closer and cls._peek(data, clen) == closer \
             and value+cls._peek(data, clen-len(value)) != closer: #The last clause covers an issue with

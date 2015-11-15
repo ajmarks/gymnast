@@ -62,7 +62,6 @@ class PdfDocument(object):
         except KeyError:
             self._id = None
 
-
     def parse_object(self, offset):
         """Parse the indirecte object located at the specified offset and add
         it to the documents objects dict, returning the stream position to its

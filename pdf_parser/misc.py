@@ -7,7 +7,7 @@ from .pdf_constants import WHITESPACE
 
 __all__ = [# Static functions
            'buffer_data', 'ensure_str', 'ensure_list', 'iterbytes', 'is_digit',
-           'get_subclasses', 'readuntil', 'force_decode', 'consume_whitespace',
+           'get_subclasses', 'read_until', 'force_decode', 'consume_whitespace',
            # Decorators
            'classproperty',  
            # Classes

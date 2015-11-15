@@ -113,3 +113,11 @@ class PdfRaw(PdfType, bytes):
         return val
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
+
+class PdfRawData(PdfType, bytes):
+    def __new__(cls, *args, **kwargs):
+        val =  bytes.__new__(cls, *args, **kwargs)
+        val.__init__(*args, **kwargs)
+        return val
+    def __init__(self, *args, **kwargs):
+        PdfType.__init__(self)
