@@ -15,15 +15,25 @@ fonts = page.Fonts.values()
 
 ##TODO (in no particular order)
 - **Features and functionality**
-  - [ ] Complete the base page renderer
+  - [ ] Rewrite the parser and document class to lazy-load the document based on the xrefs table
+  - [x] Complete the base page renderer
   - [ ] Page Rendering
     - [x] Getting the `BaseRenderer` class working
     - [x] Implement a proof of concept extractor that just dumps strings
     - [ ] Get a bit fancier, assigning textblocks to lines and such
-    - [ ] Write a fancypants, rtree-based text extracting renderer based on text-object coordinates
   - [ ] Handle page numbering more fully
     - [ ] Add a method to `PdfDocument` to get a page by number
     - [ ] Add propreties to `PdfPage` for the page number (both as an `int` and a formatted `str` according to `PdfDocument.Root.PageLabels['Nums']`)
+  - [ ] Backport to Python 2.7 (should be pretty simple; I think it's just turning `yield from` into loops)
+  - [ ] Font stuff
+    - [ ] Carve the `PdfFont` class into an abstract `PdfBaseFont` and a `PdfType1Font` implementation
+      - [ ] `PdfFont.__new__` will pick the correct subclass based on the font's Subtype element
+      - [ ] PdfBasefFont class will also have an abstract method for the glyph space to text space transformation
+    - [ ] Add subcless for Type3 fonts
+    - [ ] Add subcless for TrueType fonts
+    - [ ] Add subcless for composite fonts
+    - [ ] Add legacy support for the 14 standard fonts
+    - [ ] Font-to-unicode CMAPs
   - [ ] Implement the remaining `StreamFilter`s (will probably have the image ones return a `PIL.Image`)
     - [ ] `RunLengthDecode`
     - [ ] `CCITTFaxDecode`
@@ -38,12 +48,6 @@ fonts = page.Fonts.values()
     - [ ] `EmbeddedFile`
     - [ ] `CollectionItem` / `CollectionSubitem`
     - [ ] `XObject`
-  - [ ] Font stuff
-    - [ ] Add legacy support for the 14 standard fonts
-    - [ ] Add support for Type3 fonts
-    - [ ] Add support for TrueType fonts
-    - [ ] Add support for composite fonts
-    - [ ] Font-to-unicode CMAPs
   - [ ] Handle document encryption
   - [ ] Start on graphics stuff (maybe)
   - [ ] Interactive forms (AcroForms)
