@@ -167,7 +167,7 @@ class ReCacher(object):
 
     def __getattr__(self, name):
         try:
-            re_attr = re.__getattribute__(name)
+            re_attr = getattr(re, name)
             if callable(re_attr):
                 re_attr = self._cache_wrapper(re_attr)
             return re_attr
