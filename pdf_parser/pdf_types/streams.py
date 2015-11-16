@@ -8,7 +8,7 @@ from ..misc    import ensure_list
 class PdfStream(PdfType):
     """PDF stream type"""
     def __init__(self, header, data):
-        super().__init__()
+        super(PdfStream, self).__init__()
         self._header  = header
         self._objects = None
 

@@ -7,7 +7,7 @@ import codecs
 import six
 from .pdf_constants import BASE_ENCODINGS, GLYPH_LIST
 
-__all__ = ['register']
+__all__ = ['register_codec']
 
 ENCODING_NAME = 'pdf_doc'
 # See Appendix D.2 in the Reference.  Note that these are UTF-16BE encodings

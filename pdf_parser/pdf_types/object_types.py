@@ -6,7 +6,7 @@ from ..exc           import *
 class PdfIndirectObject(PdfType):
     """PDF indirect object definition"""
     def __init__(self, object_number, generation, obj, document):
-        super().__init__()
+        super(PdfIndirectObject, self).__init__()
         self._object_number = object_number
         self._generation    = generation
         self._object        = obj
@@ -50,7 +50,7 @@ class PdfIndirectObject(PdfType):
 class PdfObjectReference(PdfType):
     """PDF indirect object reference"""
     def __init__(self, object_number, generation, document=None):
-        super().__init__()
+        super(PdfObjectReference, self).__init__()
         self._object_number = object_number
         self._generation    = generation
         self._document      = document

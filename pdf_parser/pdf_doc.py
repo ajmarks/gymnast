@@ -235,7 +235,7 @@ class PdfElementList(object):
         self._list = list(*args, **kwargs)
     def __getitem__(self, key):
         if isinstance(key, slice):
-            return [self._get_value(i) for i in self._list(key)]
+            return [self._get_value(i) for i in self._list[key]]
         else:
             return self._get_value(self._list[key])
     def __delitem__(self, key):

@@ -32,7 +32,7 @@ class PdfElement(MutableMapping):
     def parsed_object(self):
         return self
     def __init__(self, obj, obj_key=None):
-        super().__init__()
+        super(PdfElement, self).__init__()
         self._object  = obj.value
         self._obj_key = obj_key
 
@@ -77,7 +77,7 @@ class PdfElement(MutableMapping):
             txt += ', '+pformat(self._obj_key)
         return txt +'\n)'
     def __dir__(self):
-        return set(super().__dir__()).union(set(self._object.keys()))
+        return set(super(PdfElement, self).__dir__()).union(set(self._object.keys()))
     def __all_properties(self):
         """Get all properties defined on the object.  Probably only going to
         use this in __len__.  We need to go up the mro because properties are

@@ -3,7 +3,7 @@ from ..exc        import *
 
 class TestSimpleTypes(ParserTestCase):
     def setUp(self):
-        super().__init__()
+        super(TestSimpleTypes, self).__init__()
         self.func = self.parser._parse_literal
 
     def test_int(self):

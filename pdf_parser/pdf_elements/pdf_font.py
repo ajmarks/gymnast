@@ -21,7 +21,7 @@ class FontDescriptor(PdfElement):
     """FontDescriptior object describefd in Table 5.19 on p. 456.
     Note that this will need to be overloaded to properly handle Type3 fonts."""
     def __init__(self, obj, obj_key=None):
-        super().__init__(obj, obj_key)
+        super(FontDescriptor, self).__init__(obj, obj_key)
         self._charset = False
 
     @property
@@ -46,7 +46,7 @@ class FontEncoding(PdfElement):
     VALID_ENCODINGS = set(six.next(iter(BASE_ENCODINGS.values())).keys())
 
     def __init__(self, obj, obj_key=None):
-        super().__init__(obj, obj_key)
+        super(FontEncoding, self).__init__(obj, obj_key)
         base_encoding = obj.value.get('BaseEncoding', 'StandardEncoding')
         if base_encoding not in self.VALID_ENCODINGS:
             raise ValueError('Invalid BaseEncoding')
@@ -101,7 +101,7 @@ class PdfFont(PdfElement):
         codec = codecs.Codec()
 
     def __init__(self, obj, obj_key=None):
-        super().__init__(obj, obj_key)
+        super(PdfFont, self).__init__(obj, obj_key)
         self._encoding = None
         self._codec    = None
 

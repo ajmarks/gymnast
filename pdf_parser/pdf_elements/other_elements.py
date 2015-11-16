@@ -8,4 +8,4 @@ class PdfCatalog(PdfElement):
             raise ValueError('Type "Catalog" expected, got "%s"'%obj['Type'])
         if 'Pages' not in obj:
             raise PdfError('Catalog dictionaries must contain Pages')
-        super().__init__(obj, obj_key)
+        super(PdfCatalog, self).__init__(obj, obj_key)

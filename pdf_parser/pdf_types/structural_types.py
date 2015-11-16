@@ -19,7 +19,7 @@ class PdfXref(PdfType):
         _document   = PdfDocument()
 
     def __init__(self, document, obj_no, offset, generation, in_use):
-        super().__init__()
+        super(PdfXref, self).__init__()
         self._obj_no     = obj_no
         self._offset     = offset
         self._generation = generation
@@ -68,7 +68,7 @@ class PdfXref(PdfType):
 class PdfHeader(PdfType):
     """PDF version header.  Probably not super necessary to have."""
     def __init__(self, version, adobe_version=None):
-        super().__init__()
+        super(PdfHeader, self).__init__()
         self.version       = Decimal(version)
         self.adobe_version = Decimal(adobe_version) if adobe_version else None
     def __str__(self):

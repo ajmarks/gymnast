@@ -29,7 +29,7 @@ class PdfAbstractPage(PdfElement):
     """Base class for PDF Pages and Page Nodes."""
     def __init__(self, page, obj_key=None):
         #Common and inheritable properties
-        super().__init__(page, obj_key)
+        super(PdfAbstractPage, self).__init__(page, obj_key)
         self._resources = page.get('Resources')
         self._mediabox  = page.get('MediaBox')
         self._cropbox   = page.get('CropBox')
@@ -72,7 +72,7 @@ class PdfPageNode(PdfAbstractPage):
         node = node.value
         if node['Type'] != 'Pages':
             raise ValueError('Type "Pages" expected, got "%s"'%node['Type'])
-        super().__init__(node, obj_key)
+        super(PdfPageNode, self).__init__(node, obj_key)
     @property
     def Kids(self):
         return [p.parsed_object for p in self._object['Kids'].value]
@@ -106,7 +106,7 @@ class PdfPage(PdfAbstractPage):
         page = page.value
         if page['Type'] != 'Page':
             raise PdfParseError('Page dicts must have Type = "Page"')
-        super().__init__(page, obj_key)
+        super(PdfPage, self).__init__(page, obj_key)
         self._contents  = ContentStream(page.get('Contents', []))
         self._fonts     = None # Load these when they're called
 
@@ -119,7 +119,7 @@ class PdfPage(PdfAbstractPage):
                     'TrimBox' : 'CropBox',
                     'ArtBox'  : 'CropBox'}
         try:
-            val = super().__getattr__(name)
+            val = super(PdfPage, self).__getattr__(name)
         except KeyError:
             try:
                 val = self.__dict__(defaults[name])

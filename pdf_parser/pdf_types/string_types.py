@@ -32,7 +32,7 @@ class PdfString(PdfType):
         return self.__class__.__name__+"("+self._raw_bytes.__repr__()+")"
 
     def __init__(self, data):
-        super().__init__()
+        super(PdfString, self).__init__()
         self._raw_bytes    = data
         self._parsed_bytes = self.parse_bytes(data)
 
@@ -115,7 +115,7 @@ class PdfLiteralString(str, PdfString):
 class PdfHexString(PdfString):
     """Hex strings, mostly used for ID values"""
     def __init__(self, data):
-        return super().__init__(data)
+        return super(PdfHexString, self).__init__(data)
     @property
     def _text(self):
         return '0x'+binascii.hexlify(self._parsed_bytes).decode()
