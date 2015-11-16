@@ -5,7 +5,7 @@ PDF Parser object
 from contextlib import contextmanager
 import io
 
-from .exc           import PdfParseError
+from .exc           import PdfParseError, PdfError
 from .pdf_types     import PdfRaw, PdfRawData, PdfDict, PdfObjectReference,\
                            PdfLiteralString, PdfHexString, PdfComment, \
                            PdfIndirectObject, PdfArray, PdfName, PdfStream
