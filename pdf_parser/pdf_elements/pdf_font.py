@@ -14,7 +14,6 @@ from ..pdf_parser    import PdfParser
 from ..pdf_types     import PdfLiteralString, PdfDict
 from ..exc           import *
 
-DATA_DIR  = os.path.dirname(os.path.abspath(__file__))
 AFM_DIR   = DATA_DIR + '/afm/'
 STD_FONTS = set([i[:-4] for i in os.listdir(AFM_DIR) if i[-4:] == '.afm'])
 
