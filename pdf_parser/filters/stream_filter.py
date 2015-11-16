@@ -5,7 +5,7 @@ import six
 from ..misc    import get_subclasses, ensure_str, classproperty, MetaGettable
 
 @six.add_metaclass(MetaGettable)
-class StreamFilterBase(object):
+class StreamFilter(object):
     """Abstract stream filter class.  Specify new filters by inheriting
     and setting filter_name and eod.
 

@@ -4,6 +4,7 @@ Constants needed mostly for PDF character encoding
 
 import binascii
 import os
+import six
 from bidict import bidict
 
 __all__  = ['EOLS', 'WHITESPACE', 'BASE_ENCODINGS', 'GLYPH_LIST']

@@ -20,10 +20,8 @@ More complex page renderer that extracts the text based on the following plan:
    c. Lines are sorted vertically based on their midpoints, and concatenated
       together with newlines (TODO: blank lines as appropriate).
 """
-
-
-
 import io
+import six
 from intervaltree import IntervalTree
 
 from .base_renderer  import PdfBaseRenderer
@@ -157,7 +155,7 @@ class PdfTextRenderer(PdfBaseRenderer):
         else:
             #TODO: Pick the line more intelligently when there are multiple
             #matches
-            line = next(iter(lines)).data
+            line = six.next(iter(lines)).data
         line.add_text(block)
 
     @property

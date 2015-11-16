@@ -3,6 +3,7 @@ PDF Document Page and Page Node elements
 """
 
 import io
+import six
 from datetime import datetime
 
 from .pdf_element    import PdfElement
@@ -62,7 +63,7 @@ class PdfAbstractPage(PdfElement):
     def Fonts(self):
         if self._fonts is None:
             self._fonts = {k: v.parsed_object
-                           for k,v in self.Resources.Font.items()}
+                           for k,v in six.iteritems(self.Resources.Font)}
         return self._fonts
 
 class PdfPageNode(PdfAbstractPage):

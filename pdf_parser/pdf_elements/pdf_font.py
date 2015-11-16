@@ -4,6 +4,7 @@ Font objects
 
 import codecs
 import os
+import six
 from bidict import collapsingbidict
 
 from .pdf_element    import PdfElement
@@ -43,7 +44,7 @@ class FontDescriptor(PdfElement):
 class FontEncoding(PdfElement):
     """Font encoding object as described in Appendix D"""
     #This should never change ever, but why hardcode in two places?
-    VALID_ENCODINGS = set(next(iter(BASE_ENCODINGS.values())).keys())
+    VALID_ENCODINGS = set(six.next(iter(BASE_ENCODINGS.values())).keys())
 
     def __init__(self, obj, obj_key=None):
         super().__init__(obj, obj_key)
@@ -53,7 +54,7 @@ class FontEncoding(PdfElement):
 
         #Base glyph map for the specified encoding
         self._glyphmap = collapsingbidict({k: v[base_encoding]
-                                           for k,v in BASE_ENCODINGS.items()})
+                                           for k,v in six.iteritems(BASE_ENCODINGS)})
         # Now modify it with the differences array, if specified
         diffs = obj.value.get('Differences', [])
         if not isinstance(diffs, (list, tuple)):

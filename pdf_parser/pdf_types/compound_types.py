@@ -23,4 +23,4 @@ class PdfDict(PdfType, dict):
             raise AttributeError('Object has no attribute "%s"'%name)
     def pdf_encode(self):
         return b'<<'+b' '.join(k.pdf_encode()+b' '+v.pdf_encode() 
-                               for k, v in self.items())+b'>>'
+                               for k, v in six.iteritems(self))+b'>>'

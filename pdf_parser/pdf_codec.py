@@ -4,6 +4,7 @@ Reference v1.7
 """
 
 import codecs
+import six
 from .pdf_constants import BASE_ENCODINGS, GLYPH_LIST
 
 __all__ = ['register']
@@ -77,7 +78,7 @@ DEC_TABLE = {
     0xff: '\u00FF'
     # Undefined: 0x7f, 0x9f, 0xad
     }
-ENC_TABLE = {v:k for k,v in DEC_TABLE.items()}
+ENC_TABLE = {v:k for k,v in six.iteritems(DEC_TABLE)}
 
 class Codec(codecs.Codec):
     """Codec for pdf encoding"""

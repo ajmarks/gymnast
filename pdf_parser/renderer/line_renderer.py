@@ -37,6 +37,7 @@ TODO: Support vertical writing
 
 import collections
 import io
+import six
 from intervaltree import IntervalTree
 
 from .base_renderer  import PdfBaseRenderer
@@ -123,7 +124,7 @@ class PdfLineRenderer(PdfBaseRenderer):
 
     def _return(self):
         #TODO: there's probably a better way to do this
-        lines = list(self._lines.items())
+        lines = list(six.iteritems(self._lines))
         return [i[1] for i in sorted(lines, key=lambda l: l[0][1])]
 
     @property
