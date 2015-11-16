@@ -83,15 +83,15 @@ class PdfLiteralString(str, PdfString):
                 escaped = False
                 try:
                     result.write(PdfLiteralString.ESCAPES[e_str+d])
-                except KeyError: 
-                    pass
-                else:
                     continue
+                except KeyError:
+                    pass
                 if not e_str:
                     e_str   = d
                     escaped = True
                     continue
-                elif e_str == b'\r': pass # If we're here, it means that e_str == \r, d != \n
+                elif e_str == b'\r': 
+                    pass # If we're here, it means that e_str == \r, d != \n
                 #Octals
                 elif e_str.isdigit():
                     if not d.isdigit():
@@ -103,7 +103,8 @@ class PdfLiteralString(str, PdfString):
                         e_str += d
                         escaped = True
                         continue
-                else: raise PdfParseError('Invalid escape sequence in literal string')
+                else:
+                    raise PdfParseError('Invalid escape sequence in literal string')
 
             if d == b'\\':
                 e_str   = b''

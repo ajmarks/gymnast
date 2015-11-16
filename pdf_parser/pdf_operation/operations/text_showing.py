@@ -10,6 +10,7 @@ from ...exc          import PdfError
 
 class TextOper(PdfOperation):
     optype = PdfOperation.TEXT_SHOWING
+    @staticmethod
     def do_opcode(renderer, *args):
         raise NotImplementedError
 
