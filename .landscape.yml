@@ -1,0 +1,6 @@
+ignore-paths:
+  - tests
+  - data
+pylint:
+  disable:
+    - C0326

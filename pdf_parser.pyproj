@@ -92,6 +92,7 @@
     <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\3.4" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include=".landscape.yml" />
     <Content Include="LICENSE" />
     <Content Include="local_tests.py" />
     <Content Include="pdf_parser\data\afm\Courier-Bold.afm" />

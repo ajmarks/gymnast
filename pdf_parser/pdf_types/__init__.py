@@ -14,3 +14,9 @@ from .string_types     import PdfString, PdfLiteralString, PdfHexString, PdfName
 from .streams          import PdfStream
 from .structural_types import PdfRaw, PdfHeader, PdfRawData, PdfXref
 from .common           import PdfType
+
+__all__ = ['PdfArray', 'PdfDict', 'PdfObjectReference', 'PdfIndirectObject',
+           'PdfNull', 'PdfInt', 'PdfReal', 'PdfBool', 'PdfString', 
+           'PdfLiteralString', 'PdfHexString', 'PdfName', 'PdfComment',
+           'PdfStream', 'PdfRaw', 'PdfHeader', 'PdfRawData', 'PdfXref',
+           'PdfType']
