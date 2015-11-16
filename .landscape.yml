@@ -14,7 +14,7 @@ pylint:
     - R0903 # Too few public methods.  That's cute.
     - R0401 # Cyclic import.  Doesn't get local imports.
     - C0325 # Unnecessary parens after return.  Sometimes they're good.
-    - C0101 # Invalid variable.  Spams on "except Exception as e".
+    - C0103 # Invalid variable.  Spams on "except Exception as e".
     - W0704 # Pointless except.  Sometimes you want to ignore just one exception.
     - W0141 # Shutup.  I'll use map() when I want to.
     - C0111 # Not every method needs a docstring.
