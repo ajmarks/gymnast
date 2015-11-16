@@ -1,4 +1,4 @@
-from ..pdf_types import PdfType, PdfName, PdfIndirectObject
+from ..pdf_types import PdfType, PdfName
 from itertools  import filterfalse
 from functools  import reduce
 from pprint     import pformat
@@ -9,13 +9,12 @@ except ImportError:
 
 
 
-
 class PdfElement(MutableMapping):
     """Base class for all PDF page elements.  Generally invoked by passing as
     object dictionary to PdfElement.from_object(), though a convenience
-    method, parsed_object, is defined on PdfIndirectObject and 
+    method, parsed_object, is defined on PdfIndirectObject and
     PdfObjectReference types.
-    
+
     TODO: Move the object type detection out of pdf_types.PdfIndirectObject
     to somewhere more sane, probably here."""
 
@@ -28,7 +27,7 @@ class PdfElement(MutableMapping):
     @classmethod
     def from_object(cls, obj, object_key=None):
         return cls(obj.value, object_key)
-        
+
     @property
     def parsed_object(self):
         return self
@@ -36,7 +35,7 @@ class PdfElement(MutableMapping):
         super().__init__()
         self._object  = obj.value
         self._obj_key = obj_key
-    
+
     #Mapping stuff
     def __getitem__(self, key):
         val = self._object[key]
@@ -80,11 +79,11 @@ class PdfElement(MutableMapping):
     def __dir__(self):
         return set(super().__dir__()).union(set(self._object.keys()))
     def __all_properties(self):
-        """Get all properties defined on the object.  Probably only going to 
+        """Get all properties defined on the object.  Probably only going to
         use this in __len__.  We need to go up the mro because properties are
         defined on the class, not the instance."""
-        return reduce(lambda x, y: x.union(y), 
-                      [set([k for k,v in b.__dict__.items() 
-                            if isinstance(v, property)]) 
+        return reduce(lambda x, y: x.union(y),
+                      [set([k for k,v in b.__dict__.items()
+                            if isinstance(v, property)])
                        for b in self.__class__.__mro__]
                      )

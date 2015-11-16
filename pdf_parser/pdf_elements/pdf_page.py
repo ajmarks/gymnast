@@ -47,7 +47,7 @@ class PdfAbstractPage(PdfElement):
     @property
     def CropBox(self):
         box = self._get_cropbox()
-        return box if box else self.MediaBox    
+        return box if box else self.MediaBox
     def _get_cropbox(self):
         if self._cropbox:  return self._cropbox.value
         elif self._parent: return self.Parent._get_cropbox()
@@ -60,7 +60,7 @@ class PdfAbstractPage(PdfElement):
     @property
     def Fonts(self):
         if self._fonts is None:
-            self._fonts = {k: v.parsed_object 
+            self._fonts = {k: v.parsed_object
                            for k,v in self.Resources.Font.items()}
         return self._fonts
 
@@ -91,8 +91,6 @@ class PdfPageNode(PdfAbstractPage):
    #     return len(self._kids)
    # def __str__(self):
    #     return 'PdfPageNode - %d children'%self.Count
-    
-
 
 class PdfPage(PdfAbstractPage):
     #Type hints
@@ -138,13 +136,13 @@ class ContentStream(object):
     @property
     def operations(self):
         """Iterator over the various PDF operations in the content stream.
-        Each element is an instance of a subclass of PdfOperation, which can 
+        Each element is an instance of a subclass of PdfOperation, which can
         then be rendered by the page by calling e.g. next(operations)(renderer)
         where renderer is a PdfRenderer object."""
         for stream in self._contents:
             for oper in self._extract_stream_ops(stream):
                 yield oper
-    
+
     @staticmethod
     def _extract_stream_ops(stream):
         operands = []

@@ -72,7 +72,7 @@ class PdfOperation(object, metaclass=MetaGettable):
         return '{}({})'.format(op, ', '.join(str(i) for i in self._operands))
 
 class PdfNOP(PdfOperation):
-    """Dummy opcode that does nothing.  Called when we've not 
+    """Dummy opcode that does nothing.  Called when we've not
     implemented a given opcode"""
 
     optype = PdfOperation.NOP

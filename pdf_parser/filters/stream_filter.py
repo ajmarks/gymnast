@@ -1,14 +1,14 @@
-from ..exc     import *
+"""
+Abstract base class for stream filters
+"""
+
 from ..misc    import get_subclasses, ensure_str, classproperty, MetaGettable
 
-
-
-
 class StreamFilter(object, metaclass=MetaGettable):
-    """Abstract stream filter class.  Specify new filters by inheriting 
+    """Abstract stream filter class.  Specify new filters by inheriting
     and setting filter_name and eod.
-    
-    Information on filters at can be found at 
+
+    Information on filters at can be found at
     https://partners.adobe.com/public/developer/en/ps/sdk/TN5603.Filters.pdf"""
     filter_name = None
     EOD         = None
@@ -45,7 +45,7 @@ class StreamFilter(object, metaclass=MetaGettable):
         if cls.__filters is None:
             cls.__init_filter()
         return cls.__filters
-    
+
     @staticmethod
     def __init_filter():
         # Need to do the imports here to prevent circular imports.
@@ -63,8 +63,8 @@ class StreamFilter(object, metaclass=MetaGettable):
             return cls.filters[filter_name]
         except KeyError:
             #TODO: Leave PdfStream._decoded and ._decoded_data alone
-            #this will probably mean that PdfStream objects will need to 
-            #operate on the stream, not the stream data, which, frankly, is 
+            #this will probably mean that PdfStream objects will need to
+            #operate on the stream, not the stream data, which, frankly, is
             #more elegant anyway
             return NOPFilter
 

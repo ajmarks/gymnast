@@ -9,7 +9,7 @@ __all__ = [# Static functions
            'buffer_data', 'ensure_str', 'ensure_list', 'iterbytes', 'is_digit',
            'get_subclasses', 'read_until', 'force_decode', 'consume_whitespace',
            # Decorators
-           'classproperty',  
+           'classproperty',
            # Classes
            'ReCacher', 'BlackHole',
            # Metaclasses
@@ -148,10 +148,10 @@ class ReCacher(object):
     rc = ReCacher()
     if   rc.match(<pattern1>, <string>): do_something(rc.group(3))
     elif rc.match(<pattern1>, <string>): do_something(rc.group(2))
-    
+
     The return value from the last call can also be accessed through the
     .value property."""
-    
+
     def __init__(self):
         self._retval = None
 
@@ -175,8 +175,8 @@ class ReCacher(object):
             return self._retval
         return cached
 
-class BlackHole(object):  
-    """The ultimate NOP object.  Stick it just about anywhere, 
+class BlackHole(object):
+    """The ultimate NOP object.  Stick it just about anywhere,
     and it will successfully do nothing."""
     def __get__(*args, **kwargs)     : return None
     def __set__(*args, **kwargs)     : pass

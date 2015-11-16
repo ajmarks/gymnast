@@ -3,11 +3,11 @@ Very simple matrix class for PDF transformation matrices.
 
 PDF Transformations are represented as 3x3 real matrices, the last column of
 which is always [0, 0, 1]^T.  Besides assignment, they're used in exactly two
-ways: either multiplication by another transformation matrix or left 
-multiplication by a coordinate row vector [x, y, 1], so using (and thus 
+ways: either multiplication by another transformation matrix or left
+multiplication by a coordinate row vector [x, y, 1], so using (and thus
 requiring) numpy for this seemed like massive overkill.
 
-In the interests of compatability, we're not going to rely on Python 3.5's 
+In the interests of compatability, we're not going to rely on Python 3.5's
 matrix multiplication operator, though it does support it.
 """
 
@@ -28,7 +28,7 @@ class PdfMatrix(object):
         self._e = float(e)
         self._f = float(f)
     def transform_coords(self, x, y):
-        return (self._a*+self._c*y+self._e, 
+        return (self._a*+self._c*y+self._e,
                 self._b*+self._d*y+self._f)
     def __mul__(self, other):
         """Matrix multiplication.

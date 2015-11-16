@@ -30,12 +30,12 @@ class PdfString(PdfType):
     def __hash__(self):      return self._parsed_bytes.__hash__()
     def __repr__(self):
         return self.__class__.__name__+"("+self._raw_bytes.__repr__()+")"
-    
+
     def __init__(self, data):
         super().__init__()
         self._raw_bytes    = data
         self._parsed_bytes = self.parse_bytes(data)
-                
+
     @staticmethod
     def parse_bytes(data):
         raise NotImplementedError
@@ -55,7 +55,7 @@ class PdfLiteralString(str, PdfString):
         # Are we UTF-16BE?  Good.
         if data[:2] == '\xFE\xFF':
             return data.decode('utf_16_be')
-        # If the string isn't UTF-16BE, it follows PDF standard encoding 
+        # If the string isn't UTF-16BE, it follows PDF standard encoding
         # described in Appendix D of the reference.
         return data.decode('pdf_doc')
 
@@ -71,7 +71,7 @@ class PdfLiteralString(str, PdfString):
                b'\n'  : b'',
               #b'\r'  : b'' , # Stupid \r\n
                b'\r\n': b''}
-            
+
     @staticmethod
     def parse_bytes(data):
         iterb   = iterbytes(data)
@@ -134,7 +134,7 @@ class PdfComment(PdfType, str):
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
 
-class PdfName(PdfType, str):   
+class PdfName(PdfType, str):
     # Needs to be string-like for key purposes
     def __new__(cls, *args, **kwargs):
         return str.__new__(cls, *args, **kwargs)

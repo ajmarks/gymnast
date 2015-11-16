@@ -10,7 +10,7 @@ class PdfStream(PdfType):
         super().__init__()
         self._header  = header
         self._objects = None
-        
+
         # This is obnoxious, but the PDF standard allows the stream header to
         # to specify another file with the data, ignoring the stream data.
         # Also, for some reason, some header keys change when that happens.
@@ -41,14 +41,14 @@ class PdfStream(PdfType):
         filters with their parameters"""
         if self._decoded == True:
             return self._decoded_data
-        # Need to use self._filter_key because, for some reason beyond my 
+        # Need to use self._filter_key because, for some reason beyond my
         # grasp, the key changes when the stream data is external
         # Also, since these may be lists, let's make that happen
         filters = ensure_list(self._header.get(self._filter_key, []))
         params  = ensure_list(self._header.get(self._params_key, []))
         if len(params) == 0:
             params = [{} for f in filters]
-        composed_filters = chain_funcs([partial(StreamFilter[f].decode, **p) 
+        composed_filters = chain_funcs([partial(StreamFilter[f].decode, **p)
                                         for f, p in zip(filters, params)])
         decoded_data = composed_filters(self._data)
         self._decoded      = True

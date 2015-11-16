@@ -1,6 +1,4 @@
 from .parser_test import ParserTestCase
-from ..pdf_types  import PdfName
-from ..exc        import *
 
 class TestStringTypes(ParserTestCase):
     def test_literal_string(self):

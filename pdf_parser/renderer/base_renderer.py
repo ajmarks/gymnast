@@ -15,18 +15,18 @@ class PdfBaseRenderer(object):
     """PdfRenderer object.  PdfOperations act on this to produce a
     representation of the contents of the pdf document.  This class primarily
     serves to maintain the global state as the page is drawn.
-    
+
     Usage:
         redered_page = PdfRenderer(page).render()
-        
+
     TODO: Better encapsulate internals with setters and getters
     TODO: Vertical writing support
     TODO: Figure out graphics stuff"""
-    
+
     #Type hints
     if False:
         _page = PdfPage()
-    
+
     def __init__(self, page):
         self._ts      = TextState()   # Text state
         self._gs      = GraphicsState() # Graphics state
@@ -35,7 +35,7 @@ class PdfBaseRenderer(object):
         self._in_text = False
         self._state_stack = []
         self._raw_glyphs = io.StringIO()
-    
+
     def _preop(self, op):
         """Method called before each operation is executed.
         TODO: Decide if I really want to keep these names."""
@@ -44,19 +44,19 @@ class PdfBaseRenderer(object):
         """Method called before each operation is executed."""
         pass
     def _render_text(self, text, new_state):
-        """Method called when a new text string is written. Arguments are the 
-        string to be written and the rendering matrix that would result based 
+        """Method called when a new text string is written. Arguments are the
+        string to be written and the rendering matrix that would result based
         on the glyph widths."""
         pass
     def _move_text_cursor(self, newT_m):
-        """Called before a TJ operand moves the next cursor.  Arugment is the 
+        """Called before a TJ operand moves the next cursor.  Arugment is the
         new updated text matrix after the move."""
         pass
     def _pre_render(self):
         """Method called at the start of page rendering"""
     def _return(self):
         """Do any required finalization and return the parsed result.
-        This is the only one of the class methods that absolutely must be 
+        This is the only one of the class methods that absolutely must be
         implemented by subclasses."""
         raise NotImplementedError
 
@@ -67,7 +67,7 @@ class PdfBaseRenderer(object):
             op(self)
             self._postop(op)
         return self._return()
-  
+
     def bytes_to_glyphs(self, string):
         """Converts a bytestring into a series of glyphs based upon the active
         font's encoding"""
@@ -92,8 +92,8 @@ class PdfBaseRenderer(object):
         T_m = kwargs.get('T_m', self._ts.T_m)
         CTM = kwargs.get('CTM', self._gs.CTM)
         ts = self._ts
-        return PdfMatrix(ts.T_fs*ts.T_h,     0, 
-                                0,        ts.T_fs, 
+        return PdfMatrix(ts.T_fs*ts.T_h,     0,
+                                0,        ts.T_fs,
                                 0,       ts.T_rise)*T_m*CTM
     @property
     def _T_rm(self):

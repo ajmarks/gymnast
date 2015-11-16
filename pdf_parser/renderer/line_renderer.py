@@ -7,19 +7,19 @@ More complex page renderer that extracts the text based on the following plan:
    b. If no line is matched, a new one is created for that text box.
 3. After the entire page is parsed, the text is extracted:
    a. The TextBlocks in each line are sorted by left-most edge.
-   b. The texts from each of the line's TextBlock are concatenated together 
+   b. The texts from each of the line's TextBlock are concatenated together
       with spaces added between LeftBlock and RightBlock based on the space
       between the two blocks and the space width in LeftBlock's font.
-   c. Lines are sorted vertically based on their midpoints, and concatenated 
+   c. Lines are sorted vertically based on their midpoints, and concatenated
       together with newlines (TODO: blank lines as appropriate).
 
-Some background on the math.  Transformation matrices are 3x3 invertible 
+Some background on the math.  Transformation matrices are 3x3 invertible
 matrices of the form
                                       [ a b 0 ]
         PdfMatrix(a, b, c, d, e, f) = [ c d 0 ].
                                       [ e f 1 ]
 Points are represented as element row vectors [x y 1] with matrices acting on
-points by right multiplication.  This is equivalent then to treating points as 
+points by right multiplication.  This is equivalent then to treating points as
 [x y], and breaking down the matrix into multiplication and addition:
 [x' y'] = [x y]*[a b;c d] + [e f].  This also matches what happens with Tm: it
 implicitly applies the line matrix transformation and a translation.
@@ -32,7 +32,7 @@ numbers, slope and y intercept.
 Slope = b/a ([1 0]*[a b;c d] = [a b])
 Intercept = f - b/a*e
 
-TODO: Support vertical writing 
+TODO: Support vertical writing
 """
 
 import collections
@@ -43,11 +43,11 @@ from .base_renderer  import PdfBaseRenderer
 from ..pdf_operation import PdfOperation
 
 class TextBlock(object):
-    """Represents a block of text in the PDF output"""  
+    """Represents a block of text in the PDF output"""
     #Type hints
     if False:
         font = PdfFont()
-    
+
     def __init__(self, space_width, cap_height, xmin, ymin,
                  text=None, xmax=None):
         self._space_width = space_width
@@ -58,7 +58,7 @@ class TextBlock(object):
         self._xmax        = xmax if xmax else self._xmin
 
     def write_text(self, text, x, width):
-        """Add new text to the next box, adding spacing based on the x 
+        """Add new text to the next box, adding spacing based on the x
         coordinate."""
         self._text.write(text)
         self._xmax += width
@@ -71,7 +71,7 @@ class TextBlock(object):
         return round(width/self._space_width)*' '
     def fill_spaces(self, x_max):
         width = x_max - self._xmax
-        self.write_text(self.get_spacing(width), 0, width)        
+        self.write_text(self.get_spacing(width), 0, width)
 
     @property
     def font_height(self):
@@ -82,9 +82,9 @@ class TextBlock(object):
         return self._text.getvalue()
 
 class PdfLineRenderer(PdfBaseRenderer):
-    """More sophisticated page renderer.  Stores the result of each text 
+    """More sophisticated page renderer.  Stores the result of each text
     showing operator in a TextBlock object, which are then assigned to lines
-    on the page based on their line matrix and positions.  After the page has 
+    on the page based on their line matrix and positions.  After the page has
     been processed, it goes over each line determining spacing based on the gap
     between successive TextBlocks in the line and width of the space character
     in the first of the two."""
@@ -132,12 +132,12 @@ class PdfLineRenderer(PdfBaseRenderer):
         slope = mat._a/mat._b
         y = mat._f - mat._e*slope
         return (slope, y)
-       
+
     @property
     def _space_width(self):
         """The width of a space in the current font"""
         # TODO: Use active_font.FontMatrix instead of division by 1000
-        w0 = self.active_font.space_width/1000.0 
+        w0 = self.active_font.space_width/1000.0
         return (w0*self._T_fs+self._T_c+self._T_w) * self._T_h
 
     @property

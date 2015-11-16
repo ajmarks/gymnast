@@ -21,7 +21,7 @@ class PdfIndirectObject(PdfType):
     @property
     def parsed_object(self):
         """The PdfElement corresponding to the object
-        
+
         TODO: Move most of this somewhere more sane."""
         from .. import pdf_elements
         obj_types = {'Page'          : pdf_elements.PdfPage,
@@ -53,12 +53,11 @@ class PdfObjectReference(PdfType):
         self._generation    = generation
         self._document      = document
 
-        
         if   not isinstance(self._object_number, int) \
           or not isinstance(self._generation,    int) \
           or self._object_number <= 0 or self._generation < 0:
             raise ValueError('Invalid indirect object identifier')
-       
+
     def get_object(self, document=None):
         if not document and not self._document:
             raise PdfError('Evaluating indirect references requires a document')
@@ -71,7 +70,7 @@ class PdfObjectReference(PdfType):
     def parsed_object(self):
         return self.get_object().parsed_object
 
-    def __str__(self): 
+    def __str__(self):
         return 'PdfObjectReference(%d, %d)'%(self._object_number, self._generation)
-    def __repr__(self): 
+    def __repr__(self):
         return 'PdfObjectReference(%d, %d)'%(self._object_number, self._generation)

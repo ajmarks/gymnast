@@ -36,7 +36,7 @@ class PdfXref(PdfType):
         return self.get_object()
 
     def get_object(self):
-        """Return the object referenced by this Xref.  If it's already parsed 
+        """Return the object referenced by this Xref.  If it's already parsed
         in the document, great, otherwise parse it."""
         if self._in_use:
             objs = self._document.indirect_objects
@@ -61,10 +61,10 @@ class PdfXref(PdfType):
             obj_id   - The xref line's object id based on the subsection header
             line     - The actual 18 to 20 byte line (possibly with whitespace)"""
         # TODO: consider using ReCacher here
-        match = re.match(cls.LINE_PAT, line) 
+        match = re.match(cls.LINE_PAT, line)
         if not match:
             raise PdfParseError('Invalid xref line')
-        return cls(document, obj_id, int(match.group(1)), int(match.group(2)), 
+        return cls(document, obj_id, int(match.group(1)), int(match.group(2)),
                    match.group(3) == 'n')
 
 

@@ -9,15 +9,15 @@ More complex page renderer that extracts the text based on the following plan:
    c. The height of the TextBlock is that of the font's capital letters.
 2. After a TextBlock is created, it is assigned to a TextLine:
    a. TextLines are assigned based on simple geometric intersection.
-   b. If no line is matched, a new one is created for that text box and is 
+   b. If no line is matched, a new one is created for that text box and is
       assigned the middle third of that TextBlock's vertical span.
    c. TODO: If multiple lines are matched, take the one with the largest overlap
 3. After the entire page is parsed, the text is extracted:
    a. The TextBlocks in each line are sorted by left-most edge.
-   b. The texts from each of the line's TextBlock are concatenated together 
+   b. The texts from each of the line's TextBlock are concatenated together
       with spaces added between LeftBlock and RightBlock based on the space
       between the two blocks and the space width in LeftBlock's font.
-   c. Lines are sorted vertically based on their midpoints, and concatenated 
+   c. Lines are sorted vertically based on their midpoints, and concatenated
       together with newlines (TODO: blank lines as appropriate).
 """
 
@@ -50,11 +50,11 @@ class TextLine(object):
         return (self._interval.start, self._interval.stop)
 
 class TextBlock(object):
-    """Represents a block of text in the PDF output"""  
+    """Represents a block of text in the PDF output"""
     #Type hints
     if False:
         font = PdfFont()
-    
+
     def __init__(self, space_width, cap_height, xmin, ymin,
                  text=None, xmax=None):
         self._space_width = space_width
@@ -65,7 +65,7 @@ class TextBlock(object):
         self._xmax        = xmax if xmax else self._xmin
 
     def write_text(self, text, x, width):
-        """Add new text to the next box, adding spacing based on the x 
+        """Add new text to the next box, adding spacing based on the x
         coordinate."""
         self._text.write(text)
         self._xmax += width
@@ -78,7 +78,7 @@ class TextBlock(object):
         return round(width/self._space_width)*' '
     def fill_spaces(self, x_max):
         width = x_max - self._xmax
-        self.write_text(self.get_spacing(width), 0, width)        
+        self.write_text(self.get_spacing(width), 0, width)
 
     @property
     def font_height(self):
@@ -96,13 +96,13 @@ class TextBlock(object):
 
 
 class PdfTextRenderer(PdfBaseRenderer):
-    """More sophisticated page renderer.  Stores the result of each text 
+    """More sophisticated page renderer.  Stores the result of each text
     showing operator in a TextBlock object, which are then assigned to lines
-    on the page based on their vertical coordinates.  After the page has been 
+    on the page based on their vertical coordinates.  After the page has been
     processed, it goes over each line determining spacing based on the gap
     between successive TextBlocks in the line and width of the space character
     in the first of the two.
-    
+
     TODO: Add support for vertical text direction and RTL languages"""
 
     # Type hints
@@ -163,7 +163,7 @@ class PdfTextRenderer(PdfBaseRenderer):
     def _space_width(self):
         """The width of a space in the current font"""
         # TODO: Use active_font.FontMatrix instead of division by 1000
-        w0 = self.active_font.space_width/1000.0 
+        w0 = self.active_font.space_width/1000.0
         return (w0*self._T_fs+self._T_c+self._T_w) * self._T_h
 
     @property

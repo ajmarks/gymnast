@@ -2,11 +2,10 @@
 The main PDF Document class
 """
 
-from .exc           import *
+from .exc           import PdfError, PdfParseError
 from .misc          import buffer_data, read_until, force_decode, \
                            consume_whitespace, is_digit, ReCacher
-from .pdf_constants import EOLS, WHITESPACE
-from .pdf_elements  import PdfCatalog, PdfPageNode
+from .pdf_constants import EOLS
 from .pdf_parser    import PdfParser
 from .pdf_types     import *
 
@@ -19,7 +18,7 @@ class PdfDocument(object):
     #IDE Type hints
     if False:
         _data   = io.BufferedReader()
-        _xrefs  = {(0,0): PdfXrefLine()}
+        _xrefs  = {(0,0): PdfXref()}
         _parser = PdfParser()
     _opened_file = False
 
@@ -29,16 +28,18 @@ class PdfDocument(object):
             self._opened_file = True
         self._data = buffer_data(data)
         self._parser = PdfParser(self)
-    
+        # These get used in parse()
+        self._pages       = None
+        self._version     = None
+        self._ind_objects = {}
+        self._xrefs       = None
+
     def parse(self):
         """Parse the data into a workable PDF document"""
-        self._pages = None
-
         header         = self._get_header(self._data)
         xrefs, trailer = self._get_structure()
 
         self._version     = header.version
-        self._ind_objects = {}
         self._xrefs       = xrefs
         self._build_doc(trailer)
         return self
@@ -111,11 +112,11 @@ class PdfDocument(object):
         else:
             raise PdfError('Invalid PDF version header')
         return header
-    
+
     @staticmethod
     def _get_startxref(data):
         """Gets the final startxref position from the data stream."""
-        # This seems like too much, but for some reason Adobe readers allow 
+        # This seems like too much, but for some reason Adobe readers allow
         # %%EOF to be anywhere in the last 1024 bytes
         data.seek(-1024, 2)
         chunk = data.read(1024)
@@ -125,7 +126,7 @@ class PdfDocument(object):
 
         #This silliness avoids a weird corner case where there's an incremental
         #update <1KB long, resulting in multiple %%EOF markers in the last KB
-        #of the file.  Of course, if Adobe would just stick to their standard 
+        #of the file.  Of course, if Adobe would just stick to their standard
         #and insist that %%EOF be the absolute last thing, we could just grab
         #the final 29 bytes above and skip this.
         eof2 = chunk.find(b'%%EOF', eof+1)
@@ -142,23 +143,23 @@ class PdfDocument(object):
         return int(lines[1])
 
     def _get_xref_table(self, offset):
-        """Get the data in an xref table located at the specified offset.  
-        These have a very specific format described on pp. 93-97 of the 
+        """Get the data in an xref table located at the specified offset.
+        These have a very specific format described on pp. 93-97 of the
         Adobe PDF Reference. Here's the short version:
 
         The first line will be just the token 'xref'.
         Following that will be one or more xref subsections consisting first of
         a line with two integers (e.g. "0 35"), which we will term obj_0 and m,
-        and m xref lines, of the form oooooooooo ggggg n eol, where o and g are 
-        digits, n is either 'f' or 'n' and eol is a two character line end 
-        sequence (though not necessarily \\r\\n; it could be, e.g., ' \\n').  
-        If the ith xref line (counting from 0) in a subsection is 
+        and m xref lines, of the form oooooooooo ggggg n eol, where o and g are
+        digits, n is either 'f' or 'n' and eol is a two character line end
+        sequence (though not necessarily \\r\\n; it could be, e.g., ' \\n').
+        If the ith xref line (counting from 0) in a subsection is
         0000001000 00007 n\\r\\n, that means that object (obj_0+i, 00007) is
         located at offset 1000 into the file and that it is in use.
-        
-        Returns a dict with keys (objno, generation) and PdfXref objects as 
+
+        Returns a dict with keys (objno, generation) and PdfXref objects as
         values."""
-        
+
         data = self._data
         data.seek(offset)
         token = self._data.read(4)
@@ -171,18 +172,18 @@ class PdfDocument(object):
         return xrefs
 
     def _get_xref_subsection(self):
-        """Exctract an Xref subsection from data.  This method assumes data's 
+        """Exctract an Xref subsection from data.  This method assumes data's
         stream position to already be at the start of the subsection and leaves
-        it at the start of the next line. Returns a dict with keys 
+        it at the start of the next line. Returns a dict with keys
         (objno, generation) and PdfXref objects as values."""
         header = read_until(self._data, EOLS)
         id0, nlines = map(int, header.split())
         consume_whitespace(self._data, EOLS)
         lines = self._data.read(20*nlines).decode().splitlines()
         consume_whitespace(self._data, EOLS)
-        return {x.key: x for x in [PdfXref.from_line(self, id0+i, l) 
+        return {x.key: x for x in [PdfXref.from_line(self, id0+i, l)
                                    for i, l in enumerate(lines)]}
-    
+
     def _get_trailer(self):
         """Gets a document trailer located at the current stream position.
         Trailers are described in the reference on pp. 96-98, and consist of
@@ -223,7 +224,7 @@ class PdfDocument(object):
     def indirect_objects(self):
         return self._ind_objects
     def get_object(self, object_number, generation):
-        try: 
+        try:
             return self._xrefs[(object_number, generation)].value
         except KeyError:
             raise PdfError('No object exists with that number and generation')
@@ -245,7 +246,7 @@ class PdfElementList(object):
         return str(self._list)
     def __repr__(self):
         return repr(self._list)
-    
+
     @staticmethod
     def _get_value(item):
         if isinstance(item, PdfObjectReference):

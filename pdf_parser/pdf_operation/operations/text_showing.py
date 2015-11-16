@@ -15,7 +15,7 @@ class TextOper(PdfOperation):
     #Type hints
     if False:
         parser.active_font = PdfFont()
-    
+
 class Tj(TextOper):
     opcode  = 'Tj'
     @staticmethod

@@ -22,13 +22,13 @@ class PdfParser(object):
             self._doc = document
         else:
             raise PdfParseError('document must be either None or a PdfParser')
-    
+
     def parse_simple_object(self, data, position=None):
         """Parse and return the simple object (i.e., not an indirect object)
-        described in the first argument located at either current stream 
-        position or the position specified by the optional argument.  The 
+        described in the first argument located at either current stream
+        position or the position specified by the optional argument.  The
         stream's position will be left at the end of the object.
-        
+
         This method should only be used in places where an indirect object
         reference is not valid."""
         if position is not None:
@@ -38,7 +38,7 @@ class PdfParser(object):
 
     def parse_indirect_object(self, data, position=None):
         """Parse and return the indirect object described in the first argument
-        located at either current stream position or the position specified by 
+        located at either current stream position or the position specified by
         the optional argument.  The stream's position will be left at the end of the object."""
         if position is not None:
             data.seek(position)
@@ -52,7 +52,7 @@ class PdfParser(object):
         return self._parse_ind_object(data, [obj_no, obj_gen])
 
     def _get_objects(self, data, closer=None):
-        """Get all of the objects in data starting from the current position 
+        """Get all of the objects in data starting from the current position
         until hitting EOF or the optional closer argument.  Returns a list of
         PdfTypes, ints, floats, and bools.
 
@@ -67,14 +67,14 @@ class PdfParser(object):
                 objects.append(element)
         return objects
 
-    def iterparse(self, data, allow_invalid=True, 
+    def iterparse(self, data, allow_invalid=True,
                   disallowed={b'R', b'obj', b'stream'}):
         """Generator-parser primarily for use in content streams."""
         data = buffer_data(data)
         while data.peek(1):
             token = self._get_next_token(data, disallowed=disallowed)
             if not token: continue
-            element  = self._process_token(data, token, BlackHole(), 
+            element  = self._process_token(data, token, BlackHole(),
                                            allow_invalid)
             yield element
             if isinstance(element, PdfRaw) and element == b'BI':
@@ -84,7 +84,7 @@ class PdfParser(object):
     def _parse_inline_image(self, data, disallowed):
         """Special method for handling inline images in content streams because
         they are absolutely awful.
-        
+
         See Reference pp. 352-355"""
         attrs = []
         token = None
@@ -125,7 +125,7 @@ class PdfParser(object):
     @staticmethod
     def _eod(data):
         return not bool(data.peek(1))
-    
+
     @staticmethod
     def _peek(data, n=1):
         """Peek ahead, returning the requested number of characters.  If peek()
@@ -140,26 +140,26 @@ class PdfParser(object):
 
     @classmethod
     def _get_next_token(cls, data, closer=None, disallowed=set()):
-        """Get the next token in the stream, data.  Closer is an optional 
+        """Get the next token in the stream, data.  Closer is an optional
         argument specifying the ending token of the current data structure,
         e.g., >> for dicts."""
         clen  = len(closer) if closer is not None else None
         token = io.BytesIO()
         cls._consume_whitespace(data)
-        
+
         while data.peek(1) and (token.getvalue() != closer) \
-           and not cls._is_token(data, token.getvalue(), 
+           and not cls._is_token(data, token.getvalue(),
                                  closer, clen, disallowed):
             token.write(data.read(1))
         return token.getvalue()
 
     @classmethod
-    def _is_token(cls, data, value, closer=None, clen=None, 
+    def _is_token(cls, data, value, closer=None, clen=None,
                   disallowed=set()):
         """Is this a token?"""
-        if closer and not clen: 
+        if closer and not clen:
             clen = len(closer)
-        
+
         if   cls._eod(data): return True
         elif not value     : return False
 
@@ -178,7 +178,7 @@ class PdfParser(object):
     def _process_token(self, data, token, objects, allow_invalid=False):
         """Process the data at the current position in the stream data into the
         data type indicated by token.
-        
+
         Optional arguments:
             objects       - A list of objects already known.
             allow_invalid - Don't raise an exception when an invalid token is
@@ -205,7 +205,7 @@ class PdfParser(object):
         return PdfObjectReference(obj_no, generation, self._doc)
 
     def _parse_dict(self, data, objects):
-        """A dict is just represented as a differently delimited array, so 
+        """A dict is just represented as a differently delimited array, so
         we'll call that to get the elements"""
         elems = self._parse_array(data, objects, b'>>')
         return PdfDict(zip(elems[::2], elems[1::2]))
@@ -262,7 +262,7 @@ class PdfParser(object):
         gen     = objects.pop()
         obj_no  = objects.pop()
         obj     = self._get_objects(data, closer=b'endobj')
-        return  PdfIndirectObject(obj_no, gen, obj[0] if obj else None, 
+        return  PdfIndirectObject(obj_no, gen, obj[0] if obj else None,
                                   self._doc)
 
     def _parse_stream(self, data, objects):
@@ -331,13 +331,13 @@ class PdfParser(object):
     #    trailer   = self._parse_dict(objects)
     #    self._consume_whitespace()
     #    return PdfTrailer(trailer)
-    
+
     #def _parse_startxref(self, objects):
     #    self._consume_whitespace()
     #    xref = self._parse_literal(self._get_next_token())
     #    if not isinstance(xref, int):
     #        raise PdfParseError('startxref value must be an int')
-    #    return PdfStartXref(xref)        
+    #    return PdfStartXref(xref)
 
     # dict of PDF object types besides literals to look for.
     # Keys are the token that identifies that beginning of that type,
@@ -358,6 +358,6 @@ class PdfParser(object):
                  #b'trailer'  : _parse_trailer,
                  #b'startxref': _parse_startxref
                 }
-    
-    # List methods 
+
+    # List methods
     def append(self):    return None

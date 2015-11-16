@@ -32,7 +32,7 @@ class Tf(PdfTextStateOp):
     def do_opcode(renderer, font, size):
         renderer._ts.T_f  = font
         renderer._ts.T_fs = size
-        
+
 class Tr(PdfTextStateOp):
     opcode  = 'Tr'
     @staticmethod

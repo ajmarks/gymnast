@@ -47,7 +47,7 @@ class FontEncoding(PdfElement):
         base_encoding = obj.value.get('BaseEncoding', 'StandardEncoding')
         if base_encoding not in self.VALID_ENCODINGS:
             raise ValueError('Invalid BaseEncoding')
-        
+
         #Base glyph map for the specified encoding
         self._glyphmap = collapsingbidict({k: v[base_encoding]
                                            for k,v in BASE_ENCODINGS.items()})
@@ -62,7 +62,7 @@ class FontEncoding(PdfElement):
         # A diffs array is a series of numbers followed by one or more glyph
         # names and remaps the characters table such that the nth glyph name
         # has character code equal to that number + (n-1).  Wash, rinse,
-        # and repeat. 
+        # and repeat.
         for d in diffs:
             if isinstance(d, int):
                 n = d
@@ -104,7 +104,7 @@ class PdfFont(PdfElement):
 
     @property
     def Encoding(self):
-        """The font's parsed Encoding object.  
+        """The font's parsed Encoding object.
         Returns a null encoding if the attribute is missing."""
         if self._encoding:
             return self._encoding
@@ -115,7 +115,7 @@ class PdfFont(PdfElement):
         else:
             if isinstance(obj, FontEncoding):
                 self._encoding = obj
-            else: 
+            else:
                 self._encoding = FontEncoding.from_name(obj)
         return self._encoding
     @property
@@ -129,12 +129,12 @@ class PdfFont(PdfElement):
         encoding."""
         self.codec.decode(string.encode('utf-16-be'))
     def decode_char(self, char):
-        """Translate a string based on the font's encoding.  This is kind of 
+        """Translate a string based on the font's encoding.  This is kind of
         twisted, so here's the basic explanation for Latin1 fonts:
-        
+
         1. First, try to use the font's ToUnicode CMap (not yet implemented)
         2. If there's no ToUnicode, use the font's Encoding:
-           a. Use the Encoding (including the Differences array, if defined) 
+           a. Use the Encoding (including the Differences array, if defined)
               to map the character code to a name.
            b. Look up that name's UTF-16 value in the Adobe Glyph List
 
@@ -151,7 +151,7 @@ class PdfFont(PdfElement):
     def get_glyph_width(self, glyph):
         """Return the width of the specified glyph in the current font.
         Note that these widths are in _glyph_ space, not _text_ space.  For
-        Type 1 fonts, the conversion is generally to divide by 1000.  For 
+        Type 1 fonts, the conversion is generally to divide by 1000.  For
         Type 3 fonts though, it's more complex.
 
         Arguments:
@@ -169,7 +169,7 @@ class PdfFont(PdfElement):
     @property
     def FontMatrix(self):
         """Transformation matrix to go from glyph space to text space.
-        Using this instead of just division by 1000 will make things easier 
+        Using this instead of just division by 1000 will make things easier
         when we add support for Type 3 fonts"""
         return self._fontmatrix
     @property
@@ -181,7 +181,7 @@ class PdfFont(PdfElement):
     def load_standard_font(cls, font_name):
         """Super, super crude method to parse a afm font file into a Type1
         PdfFont object
-        
+
         TODO: Make this not disgustingly, eye gougingly awful"""
         FILE_PAT = DATA_DIR + '/{}.afm'
 
@@ -199,13 +199,13 @@ class PdfFont(PdfElement):
             else:
                 parsed[field] = typify(attrs)
                 i += 1
-        charmets = [{i.split()[0]:typify(i.split()[1:]) 
+        charmets = [{i.split()[0]:typify(i.split()[1:])
                      for i in l.split(';') if i.strip()}
                     for l in parsed['CharMetrics']]
         first_char = min(int(i['C']) for i in charmets if i['C'] != '-1')
         last_char  = min(int(i['C']) for i in charmets)
         widths     = [i['WX']
-                      for i in sorted(charmets, key=lambda x: int(x['C'])) 
+                      for i in sorted(charmets, key=lambda x: int(x['C']))
                         if i['C'] != '-1']
         charset    = [PdfName(i['N'])  for i in charmets if i['C'] != '-1']
         intprop = lambda x: None if x not in parsed else int(parsed[x])
@@ -213,7 +213,7 @@ class PdfFont(PdfElement):
         flags =   1*int(parsed.get('IsFixedPitch') == 'true')\
               +   8*(parsed['CharacterSet'] == 'Special')    \
               +  64*(parsed['CharacterSet'] != 'Special')    \
-              + 128*(parsed['ItalicAngle'] != '0')           
+              + 128*(parsed['ItalicAngle'] != '0')
         fdesc = {PdfName('Type')       : 'FontDescriptor',
                  PdfName('FontName')   : parsed['FontName'],
                  PdfName('FontFamily') : parsed['FamilyName'],

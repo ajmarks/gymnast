@@ -19,7 +19,7 @@ class ET(PdfOperation):
     """Begin a text object, resetting the text and line matricies"""
     opcode  = 'ET'
     optype = PdfOperation.TEXT_OBJECTS
-    
+
     @staticmethod
     def do_opcode(renderer):
         if not renderer._in_text:

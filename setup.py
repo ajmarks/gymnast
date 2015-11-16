@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 from pkg_resources import parse_version
-from warnings import warn
 
 with open('pdf_parser/VERSION') as f:
     version = parse_version(f.read().strip())

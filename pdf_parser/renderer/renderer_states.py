@@ -22,7 +22,7 @@ class TextState(RendererState):
     def reset_T_m(self):
         """Reset the text matrix to the identity"""
         self.T_m  = self.id_matrix
-    
+
     def reset_T_lm(self):
         """Reset the line matrix to the general text matrix"""
         self.T_lm = copy.copy(self.T_m)
