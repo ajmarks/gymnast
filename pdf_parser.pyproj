@@ -114,6 +114,7 @@
     <Content Include="pdf_parser\data\glyphlist.txt" />
     <Content Include="pdf_parser\data\pdf_encodings.txt" />
     <Content Include="pdf_parser\pdf_operation\operations\special_graphics.py" />
+    <Content Include="pylintrc" />
     <Content Include="README.md" />
     <Content Include="pdf_parser\VERSION" />
     <Content Include="setup.cfg" />

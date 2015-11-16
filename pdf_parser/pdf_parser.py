@@ -122,14 +122,6 @@ class PdfParser(object):
         else:
             return doc_objects
 
-    def _iter_get_objects(self):
-        objects = []
-        while not self._eod:
-            token = self._get_next_token(None)
-            if not token: continue
-            element  = self._process_token(token)
-            yield element
-
     @staticmethod
     def _eod(data):
         return not bool(data.peek(1))

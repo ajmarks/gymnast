@@ -1,0 +1,6 @@
+[MASTER]
+ignore=tests
+
+[MESSAGES CONTROL]
+disable=C0326
+disable=C0321

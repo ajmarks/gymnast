@@ -97,11 +97,6 @@ class PdfPageNode(PdfAbstractPage):
 class PdfPage(PdfAbstractPage):
     """Abstract class for pages and page nodes"""
     #Type hints
-    if False:
-        _parent        = PdfIndirectObject()
-        _last_modified = datetime()
-        _resources     = dict()
-
     def __init__(self, page, obj_key=None):
         page = page.value
         if page['Type'] != 'Page':

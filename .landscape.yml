@@ -4,3 +4,4 @@ ignore-paths:
 pylint:
   disable:
     - C0326
+    - C0321

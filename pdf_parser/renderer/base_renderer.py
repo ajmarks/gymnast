@@ -26,10 +26,6 @@ class PdfBaseRenderer(object):
     TODO: Vertical writing support
     TODO: Figure out graphics stuff"""
 
-    #Type hints
-    if False:
-        _page = PdfPage()
-
     def __init__(self, page):
         self.ts      = TextState()   # Text state
         self._gs      = GraphicsState() # Graphics state

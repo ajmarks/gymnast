@@ -15,11 +15,6 @@ __all__ = ['PdfDocument']
 
 class PdfDocument(object):
     """The main PDF Document class"""
-    #IDE Type hints
-    if False:
-        _data   = io.BufferedReader()
-        _xrefs  = {(0,0): PdfXref()}
-        _parser = PdfParser()
     _opened_file = False
 
     def __init__(self, data):

@@ -16,7 +16,7 @@ from .structural_types import PdfRaw, PdfHeader, PdfRawData, PdfXref
 from .common           import PdfType
 
 __all__ = ['PdfArray', 'PdfDict', 'PdfObjectReference', 'PdfIndirectObject',
-           'PdfNull', 'PdfInt', 'PdfReal', 'PdfBool', 'PdfString', 
+           'PdfNull', 'PdfInt', 'PdfReal', 'PdfBool', 'PdfString',
            'PdfLiteralString', 'PdfHexString', 'PdfName', 'PdfComment',
            'PdfStream', 'PdfRaw', 'PdfHeader', 'PdfRawData', 'PdfXref',
            'PdfType']
