@@ -5,6 +5,7 @@ Font objects
 import codecs
 import os
 import six
+import struct
 from bidict import collapsingbidict
 
 from .pdf_element    import PdfElement
@@ -143,8 +144,9 @@ class PdfFont(PdfElement):
 
         TODO: CMap"""
         val = char.encode('utf-16-be')
+        intval = struct.unpack(">Q",b'\x00'*(8-len(val))+val)[0]
         try:
-            return GLYPH_LIST[self.get_glyph_name(int.from_bytes(val, 'big'))]
+            return GLYPH_LIST[self.get_glyph_name(intval)]
         except KeyError:
             return char
     def decode_string(self, string):

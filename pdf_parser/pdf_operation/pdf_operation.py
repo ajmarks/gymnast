@@ -37,6 +37,8 @@ class PdfOperation(object):
     MARKED_CONTENT         = 16384
     COMPATIBILITY          = 32768
 
+    _opcode = None
+
     @staticmethod
     def do_opcode(renderer, *operands):
         raise NotImplementedError

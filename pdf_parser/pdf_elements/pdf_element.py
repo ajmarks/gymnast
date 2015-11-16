@@ -3,13 +3,17 @@ PDF Element base class definition
 """
 
 import six
-from itertools  import filterfalse
+
 from functools  import reduce
 from pprint     import pformat
 try:
     from collections.abc import MutableMapping
 except ImportError:
     from collections     import MutableMapping
+try:
+    from itertools import filterfalse
+except ImportError:
+    from itertools import ifilterfalse as filterfalse
 
 from ..pdf_types import PdfType, PdfName
 

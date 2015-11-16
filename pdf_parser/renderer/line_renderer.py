@@ -131,7 +131,7 @@ class PdfLineRenderer(PdfBaseRenderer):
         """The width of a space in the current font"""
         # TODO: Use active_font.FontMatrix instead of division by 1000
         w0 = self.active_font.space_width/1000.0
-        return (w0*self.ts.T_fs+self.ts.T_c+self.ts.T_w) * self._T_h
+        return (w0*self.ts.T_fs+self.ts.T_c+self.ts.T_w) * self.ts.T_h
 
     @property
     def _cap_height(self):

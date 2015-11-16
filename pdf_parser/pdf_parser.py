@@ -110,18 +110,6 @@ class PdfParser(object):
         yield PdfRawData(img.getvalue()[:-2]) # This is such an ugly hack
         yield PdfRaw(b'EI')
 
-    def parse(self, full_file=True, allow_invalid=False):
-        return self._parse(self._data, full_file, allow_invalid)
-
-    def _parse(self, data, full_file=True, allow_invalid=False):
-        self._data          = buffer_data(data)
-        self._allow_invalid = allow_invalid
-        doc_objects = self._get_objects()
-        if full_file:
-            return doc_objects, self._xrefs
-        else:
-            return doc_objects
-
     @staticmethod
     def _eod(data):
         return not bool(data.peek(1))

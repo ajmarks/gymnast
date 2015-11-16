@@ -39,6 +39,7 @@ class PdfString(PdfType):
         super(PdfString, self).__init__()
         self._raw_bytes    = data
         self._parsed_bytes = self.parse_bytes(data)
+        self._text         = None
 
     @staticmethod
     def parse_bytes(data):
@@ -128,7 +129,7 @@ class PdfHexString(PdfString):
         hstr = token.decode()
         if len(hstr) % 2:
             hstr += '0'
-        return bytes.fromhex(hstr)
+        return codecs.decode(hstr, 'hex_codec')
     def __repr__(self):
         return str(self)
 
