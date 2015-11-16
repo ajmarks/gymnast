@@ -30,7 +30,6 @@ class PdfString(PdfType):
     def __ge__(self, other): return self._parsed_bytes.__ge__(other)
     def __bool__(self):      return self._parsed_bytes.__bool__()
     def __bytes__(self):     return self._parsed_bytes
-    def __str__(self):       return self._text
     def __hash__(self):      return self._parsed_bytes.__hash__()
     def __repr__(self):
         return self.__class__.__name__+"("+self._raw_bytes.__repr__()+")"
@@ -39,7 +38,6 @@ class PdfString(PdfType):
         super(PdfString, self).__init__()
         self._raw_bytes    = data
         self._parsed_bytes = self.parse_bytes(data)
-        self._text         = None
 
     @staticmethod
     def parse_bytes(data):

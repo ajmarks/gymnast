@@ -4,7 +4,7 @@ ignore-paths:
 
 pylint:
   disable:
-    - bad-whitespace
+    - C0326
     - C0321
 pep8:
   disable:

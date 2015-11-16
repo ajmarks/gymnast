@@ -144,7 +144,7 @@ class PdfFont(PdfElement):
 
         TODO: CMap"""
         val = char.encode('utf-16-be')
-        intval = struct.unpack(">Q",b'\x00'*(8-len(val))+val)[0]
+        intval = struct.unpack(">Q", b'\x00'*(8-len(val))+val)[0]
         try:
             return GLYPH_LIST[self.get_glyph_name(intval)]
         except KeyError:
