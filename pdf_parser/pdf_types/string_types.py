@@ -7,7 +7,7 @@ import codecs
 import io
 
 from .common     import PdfType
-from ..exc       import *
+from ..exc       import PdfParseError
 from ..misc      import iterbytes
 from ..pdf_codec import register_codec
 
@@ -63,7 +63,6 @@ class PdfLiteralString(str, PdfString):
         # described in Appendix D of the reference.
         return data.decode('pdf_doc')
 
-    """Class for PDF literal strings"""
     ESCAPES = {b'n'   : b'\n',
                b'r'   : b'\r',
                b't'   : b'\t',

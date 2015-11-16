@@ -7,7 +7,7 @@ from .misc          import buffer_data, read_until, force_decode, \
                            consume_whitespace, is_digit, ReCacher
 from .pdf_constants import EOLS
 from .pdf_parser    import PdfParser
-from .pdf_types     import *
+from .pdf_types     import PdfHeader, PdfXref, PdfObjectReference, PdfDict
 
 import io
 

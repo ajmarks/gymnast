@@ -3,7 +3,6 @@ Base page renderer class
 """
 
 from .renderer_states import TextState, GraphicsState
-from ..exc           import *
 from ..pdf_elements  import PdfPage
 from ..pdf_matrix    import PdfMatrix
 
@@ -27,10 +26,10 @@ class PdfBaseRenderer(object):
     TODO: Figure out graphics stuff"""
 
     def __init__(self, page):
-        self.ts      = TextState()   # Text state
-        self._gs      = GraphicsState() # Graphics state
-        self._page    = page
-        self._fonts   = page.Fonts
+        self.ts      = TextState()     # Text state
+        self._gs     = GraphicsState() # Graphics state
+        self._page   = page
+        self._fonts  = page.Fonts
         self.in_text = False
         self._state_stack = []
         self._raw_glyphs = io.StringIO()

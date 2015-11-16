@@ -6,7 +6,7 @@ import re
 from decimal   import Decimal
 
 from .common       import PdfType
-from ..exc         import *
+from ..exc         import PdfParseError
 
 class PdfXref(PdfType):
     """Cross reference objects.  These forms the basic scaffolding of the PDF
@@ -15,7 +15,7 @@ class PdfXref(PdfType):
 
     #IDE type hints
     if False:
-        from ..pdf_doc     import PdfDocument
+        from ..pdf_doc import PdfDocument
         _id         = 0
         _offset     = 0
         _generation = 0

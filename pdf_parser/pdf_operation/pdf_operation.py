@@ -5,7 +5,7 @@ PDF Operations base class
 import six
 import warnings
 
-from ..exc  import *
+from ..exc  import PdfOpWarning
 from ..misc import get_subclasses, classproperty, ensure_str, MetaGettable
 
 __all__ =['PdfOperation']

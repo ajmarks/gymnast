@@ -13,7 +13,7 @@ from ..pdf_constants import BASE_ENCODINGS, GLYPH_LIST, DATA_DIR
 from ..pdf_matrix    import PdfMatrix
 from ..pdf_parser    import PdfParser
 from ..pdf_types     import PdfLiteralString, PdfDict, PdfName
-from ..exc           import *
+from ..exc           import PdfError
 
 AFM_DIR   = DATA_DIR + '/afm/'
 STD_FONTS = set([i[:-4] for i in os.listdir(AFM_DIR) if i[-4:] == '.afm'])

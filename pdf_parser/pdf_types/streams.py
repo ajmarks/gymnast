@@ -5,7 +5,6 @@ PDF stream objects - Reference p. 60
 from functools import partial, reduce
 
 from .common   import PdfType
-from ..exc     import *
 from ..filters import StreamFilter
 from ..misc    import ensure_list
 

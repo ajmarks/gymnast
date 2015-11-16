@@ -1,5 +1,5 @@
 from .pdf_element import PdfElement
-from ..exc        import *
+from ..exc        import PdfError
 
 class PdfCatalog(PdfElement):
     """PDF Root catalog element."""
