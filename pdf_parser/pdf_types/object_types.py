@@ -4,7 +4,7 @@ PdfTypes for indirect objects and references to them
 
 from .common         import PdfType
 from .compound_types import PdfDict
-from ..exc           import *
+from ..exc           import PdfError
 
 
 class PdfIndirectObject(PdfType):
@@ -80,3 +80,6 @@ class PdfObjectReference(PdfType):
         return 'PdfObjectReference(%d, %d)'%(self._object_number, self._generation)
     def __repr__(self):
         return 'PdfObjectReference(%d, %d)'%(self._object_number, self._generation)
+    def pdf_encode(self):
+        return '{} {} R'.format(self._object_number,
+                                self._generation).encode()

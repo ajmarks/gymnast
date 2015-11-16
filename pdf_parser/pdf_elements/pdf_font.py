@@ -2,7 +2,6 @@
 Font objects
 """
 
-import codecs
 import os
 import six
 import struct
@@ -16,7 +15,7 @@ from ..pdf_types     import PdfLiteralString, PdfDict, PdfName
 from ..exc           import PdfError
 
 AFM_DIR   = DATA_DIR + '/afm/'
-STD_FONTS = set([i[:-4] for i in os.listdir(AFM_DIR) if i[-4:] == '.afm'])
+STD_FONTS = set([f[:-4] for f in os.listdir(AFM_DIR) if f[-4:] == '.afm'])
 
 class FontDescriptor(PdfElement):
     """FontDescriptior object describefd in Table 5.19 on p. 456.
@@ -191,8 +190,9 @@ class PdfFont(PdfElement):
             lines = [l for l in f.read().splitlines() if l[:8]!='Comment ']
 
         parsed = {}
-        i = 1
+        
         typify = lambda a: None if not a else (a[0] if len(a) == 1 else a)
+        i = 1
         while i < len(lines):
             elems = lines[i].strip().split()
             field = elems[0]

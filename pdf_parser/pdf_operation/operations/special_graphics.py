@@ -1,4 +1,6 @@
-import copy
+"""
+Special graphics state operations - p. 219
+"""
 
 from ..pdf_operation import PdfOperation
 from ...pdf_matrix   import PdfMatrix

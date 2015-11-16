@@ -3,7 +3,6 @@ Miscellaneous functions and classes that get used in various places
 """
 
 import io
-import numbers
 import re
 from functools import wraps
 

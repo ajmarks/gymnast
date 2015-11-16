@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 
 import codecs
 import six
-from .pdf_constants import BASE_ENCODINGS, GLYPH_LIST
+from .pdf_constants import GLYPH_LIST
 
 __all__ = ['register_codec']
 

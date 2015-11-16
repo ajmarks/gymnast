@@ -82,6 +82,8 @@ class PdfRaw(PdfType, bytes):
         return val
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
+    def pdf_encode(self):
+        return self
 
 class PdfRawData(PdfType, bytes):
     """Raw, unparsed PDF data that should be treated as data, not a token."""
@@ -91,3 +93,5 @@ class PdfRawData(PdfType, bytes):
         return val
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
+    def pdf_encode(self):
+        return self

@@ -29,8 +29,8 @@ class PdfMatrix(object):
         self.e = float(e)
         self.f = float(f)
     def transform_coords(self, x, y):
-        return (self.a*+self.c*y+self.e,
-                self.b*+self.d*y+self.f)
+        return (self.a*x+self.c*y+self.e,
+                self.b*x+self.d*y+self.f)
     def __mul__(self, other):
         """Matrix multiplication.
         Given the type constraint below, this will be self*other"""

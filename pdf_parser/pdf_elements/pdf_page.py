@@ -2,9 +2,7 @@
 PDF Document Page and Page Node elements
 """
 
-import io
 import six
-from datetime import datetime
 
 from .pdf_element    import PdfElement
 from ..exc           import PdfParseError, PdfError

@@ -10,6 +10,8 @@ from ...exc          import PdfError
 
 class TextOper(PdfOperation):
     optype = PdfOperation.TEXT_SHOWING
+    def do_opcode(renderer, *args):
+        raise NotImplementedError
 
 class Tj(TextOper):
     opcode  = 'Tj'
@@ -21,7 +23,6 @@ class TJ(TextOper):
     opcode  = 'TJ'
     @staticmethod
     def do_opcode(renderer, args):
-        x=1
         for op in args:
             if isinstance(op, str):
                 renderer.render_text(op, True)

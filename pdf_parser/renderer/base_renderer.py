@@ -3,7 +3,6 @@ Base page renderer class
 """
 
 from .renderer_states import TextState, GraphicsState
-from ..pdf_elements  import PdfPage
 from ..pdf_matrix    import PdfMatrix
 
 import copy

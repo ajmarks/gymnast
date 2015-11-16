@@ -2,7 +2,6 @@
 PDF Parser object
 """
 
-from contextlib import contextmanager
 import io
 
 from .exc           import PdfParseError, PdfError

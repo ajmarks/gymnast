@@ -83,8 +83,10 @@ class PdfLiteralString(str, PdfString):
                 escaped = False
                 try:
                     result.write(PdfLiteralString.ESCAPES[e_str+d])
+                except KeyError: 
+                    pass
+                else:
                     continue
-                except KeyError: pass
                 if not e_str:
                     e_str   = d
                     escaped = True

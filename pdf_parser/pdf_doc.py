@@ -9,8 +9,6 @@ from .pdf_constants import EOLS
 from .pdf_parser    import PdfParser
 from .pdf_types     import PdfHeader, PdfXref, PdfObjectReference, PdfDict
 
-import io
-
 __all__ = ['PdfDocument']
 
 class PdfDocument(object):
