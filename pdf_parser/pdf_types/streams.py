@@ -5,9 +5,6 @@ from ..exc     import *
 from ..filters import StreamFilter
 from ..misc    import ensure_list
 
-
-
-
 class PdfStream(PdfType):
     def __init__(self, header, data):
         super().__init__()

@@ -261,7 +261,6 @@ class PdfParser(object):
     def _parse_ind_object(self, data, objects):
         gen     = objects.pop()
         obj_no  = objects.pop()
-        id      = (obj_no, gen)
         obj     = self._get_objects(data, closer=b'endobj')
         return  PdfIndirectObject(obj_no, gen, obj[0] if obj else None, 
                                   self._doc)

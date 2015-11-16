@@ -7,10 +7,6 @@ from ..exc       import *
 from ..misc      import iterbytes
 from ..pdf_codec import register_codec
 
-
-
-
-
 # Go ahead and register the codec here, I guess.
 register_codec()
 
@@ -78,12 +74,12 @@ class PdfLiteralString(str, PdfString):
             
     @staticmethod
     def parse_bytes(data):
-        iter    = iterbytes(data)
+        iterb   = iterbytes(data)
         escaped = 0 # (0, 1, 2, 3) = (Unescaped, Normal escape, escape-\r, escape-digit)
         e_str   = b''
         result  = io.BytesIO()
         #TODO: Make this less disgusting
-        for d in iter:
+        for d in iterb:
             if escaped:
                 escaped = False
                 try:

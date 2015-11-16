@@ -7,10 +7,6 @@ from .pdf_parser    import PdfParser
 from .pdf_types     import *
 
 
-
-
-
-
 __all__ = ['PdfDocument']
 
 class PdfDocument(object):
@@ -21,11 +17,11 @@ class PdfDocument(object):
         _parser = PdfParser()
     _opened_file = False
 
-    def __init__(self, file):
-        if isinstance(file, str):
-            file = open(file, 'rb')
+    def __init__(self, data):
+        if isinstance(data, str):
+            data = open(data, 'rb')
             self._opened_file = True
-        self._data = buffer_data(file)
+        self._data = buffer_data(data)
         self._parser = PdfParser(self)
     
     def parse(self):

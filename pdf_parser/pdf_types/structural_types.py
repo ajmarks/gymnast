@@ -53,18 +53,18 @@ class PdfXref(PdfType):
               +('n' if self._in_use else 'f')
 
     @classmethod
-    def from_line(cls, document, id, line):
+    def from_line(cls, document, obj_id, line):
         """Takes a line in an xref subsection and returns a PdfXref object.
 
         Arguments:
             document - The PdfDocument in which the line resides
-            id       - The xref line's object id based on the subsection header
+            obj_id   - The xref line's object id based on the subsection header
             line     - The actual 18 to 20 byte line (possibly with whitespace)"""
         # TODO: consider using ReCacher here
         match = re.match(cls.LINE_PAT, line) 
         if not match:
             raise PdfParseError('Invalid xref line')
-        return cls(document, id, int(match.group(1)), int(match.group(2)), 
+        return cls(document, obj_id, int(match.group(1)), int(match.group(2)), 
                    match.group(3) == 'n')
 
 
@@ -100,11 +100,6 @@ class PdfHeader(PdfType):
         return vers+'PDF-'+str(self.version)
     def __bytes__(self):
         return bytes(str(self))
-
-class PdfEOF(PdfType):
-    """Singleton to mark ends of files"""
-    def __new__(cls):
-        return cls
 
 class PdfRaw(PdfType, bytes):
     def __new__(cls, *args, **kwargs):

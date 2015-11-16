@@ -3,9 +3,9 @@
 #deference.  It will also help when we implement a PDF writer, allowing us
 #to simply call obj.pdf_encode()
 
-from .compound_types   import *
-from .object_types     import *
-from .simple_types     import *
-from .string_types     import *
-from .streams          import *
-from .structural_types import *
+from .compound_types   import PdfArray, PdfDict
+from .object_types     import PdfObjectReference, PdfIndirectObject
+from .simple_types     import PdfNull, PdfInt, PdfReal, PdfBool
+from .string_types     import PdfString, PdfLiteralString, PdfHexString, PdfName, PdfComment
+from .streams          import PdfStream
+from .structural_types import PdfTrailer, PdfRaw, PdfHeader, PdfRawData, PdfXref
