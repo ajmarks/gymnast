@@ -50,9 +50,6 @@ class TextLine(object):
 
 class TextBlock(object):
     """Represents a block of text in the PDF output"""
-    #Type hints
-    if False:
-        font = PdfFont()
 
     def __init__(self, space_width, cap_height, xmin, ymin,
                  text=None, xmax=None):
@@ -103,10 +100,6 @@ class PdfTextRenderer(PdfBaseRenderer):
     in the first of the two.
 
     TODO: Add support for vertical text direction and RTL languages"""
-
-    # Type hints
-    if False:
-        self._text_block = TextBlock()
 
     def _pre_render(self):
         """Prepare for rendering by initializing our lines aparatus"""

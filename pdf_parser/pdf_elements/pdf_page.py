@@ -122,7 +122,7 @@ class PdfPage(PdfAbstractPage):
             val = super(PdfPage, self).__getattr__(name)
         except KeyError:
             try:
-                val = self.__dict__(defaults[name])
+                val = self.__dict__[defaults[name]]
             except KeyError:
                 raise AttributeError('Object has no attribute "%s"'%name)
         if isinstance(val, PdfType):

@@ -162,7 +162,7 @@ class PdfParser(object):
 
     @classmethod
     def _is_token(cls, data, value, closer=None, clen=None,
-                  disallowed=set()):
+                  disallowed=frozenset()):
         """Is this a token?"""
         if closer and not clen:
             clen = len(closer)
@@ -256,8 +256,6 @@ class PdfParser(object):
             b = data.read(1)
             if b in EOLS: break
             token.write(b)
-        if token.getvalue() == b'%EOF':
-            return PdfEOF()
         else:
             return PdfComment(token.getvalue())
 

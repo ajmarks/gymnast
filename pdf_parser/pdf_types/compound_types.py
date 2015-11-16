@@ -1,3 +1,4 @@
+import six
 from .common import PdfType
 
 class PdfArray(PdfType, list):

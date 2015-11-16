@@ -45,9 +45,6 @@ from ..pdf_operation import PdfOperation
 
 class TextBlock(object):
     """Represents a block of text in the PDF output"""
-    #Type hints
-    if False:
-        font = PdfFont()
 
     def __init__(self, space_width, cap_height, xmin, ymin,
                  text=None, xmax=None):
@@ -89,10 +86,6 @@ class PdfLineRenderer(PdfBaseRenderer):
     been processed, it goes over each line determining spacing based on the gap
     between successive TextBlocks in the line and width of the space character
     in the first of the two."""
-
-    # Type hints
-    if False:
-        self._text_block = TextBlock()
 
     def _pre_render(self):
         """Prepare for rendering by initializing our lines aparatus"""

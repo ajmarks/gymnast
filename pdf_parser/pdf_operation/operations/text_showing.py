@@ -9,10 +9,6 @@ from ...pdf_elements  import PdfFont
 class TextOper(PdfOperation):
     optype = PdfOperation.TEXT_SHOWING
 
-    #Type hints
-    if False:
-        parser.active_font = PdfFont()
-
 class Tj(TextOper):
     opcode  = 'Tj'
     @staticmethod

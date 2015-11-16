@@ -1,4 +1,8 @@
-from ..pdf_types import PdfType, PdfName
+"""
+PDF Element base class definition
+"""
+
+import six
 from itertools  import filterfalse
 from functools  import reduce
 from pprint     import pformat
@@ -7,7 +11,7 @@ try:
 except ImportError:
     from collections     import MutableMapping
 
-
+from ..pdf_types import PdfType, PdfName
 
 class PdfElement(MutableMapping):
     """Base class for all PDF page elements.  Generally invoked by passing as

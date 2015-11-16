@@ -1,5 +1,6 @@
 from ..pdf_operation import PdfOperation
-from ...renderer import TextState
+from ...renderer     import TextState
+from ...exc          import PdfError
 
 class BT(PdfOperation):
     """Begin a text object, resetting the text and line matricies"""
