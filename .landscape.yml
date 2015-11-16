@@ -6,6 +6,7 @@ pylint:
   disable:
     - C0326
     - C0321
+    - E1101
 pep8:
   disable:
     - E704
