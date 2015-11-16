@@ -1,3 +1,7 @@
+"""
+The main PDF Document class
+"""
+
 from .exc           import *
 from .misc          import buffer_data, read_until, force_decode, \
                            consume_whitespace, is_digit, ReCacher
@@ -6,10 +10,12 @@ from .pdf_elements  import PdfCatalog, PdfPageNode
 from .pdf_parser    import PdfParser
 from .pdf_types     import *
 
+import io
 
 __all__ = ['PdfDocument']
 
 class PdfDocument(object):
+    """The main PDF Document class"""
     #IDE Type hints
     if False:
         _data   = io.BufferedReader()
@@ -223,6 +229,7 @@ class PdfDocument(object):
             raise PdfError('No object exists with that number and generation')
 
 class PdfElementList(object):
+    """List-like object that auto-deferences its PDF object elements"""
     def __init__(self, *args, **kwargs):
         self._list = list(*args, **kwargs)
     def __getitem__(self, key):

@@ -1,3 +1,7 @@
+"""
+Font objects
+"""
+
 import codecs
 import os
 from bidict import collapsingbidict
@@ -88,6 +92,7 @@ class FontEncoding(PdfElement):
         return cls(PdfDict({'Encoding': encoding_name}))
 
 class PdfFont(PdfElement):
+    """Base PDF Font.  Right now this is exclusively Type 1."""
     #Type hints
     if False:
         codec = codecs.Codec()

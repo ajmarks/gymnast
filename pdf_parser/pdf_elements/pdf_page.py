@@ -1,3 +1,7 @@
+"""
+PDF Document Page and Page Node elements
+"""
+
 import io
 from datetime import datetime
 

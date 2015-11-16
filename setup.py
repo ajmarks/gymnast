@@ -34,4 +34,4 @@ setup(name='pdf_parser',
       description='PDF document parser in Python 3',
       classifiers=classifiers,
       include_package_data=True,
-      )
+     )
