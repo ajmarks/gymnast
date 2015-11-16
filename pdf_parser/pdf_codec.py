@@ -2,6 +2,7 @@
 codec implementing the PDF codec described in Appendix D of the Adobe PDF
 Reference v1.7
 """
+from __future__ import unicode_literals
 
 import codecs
 import six
@@ -81,21 +82,21 @@ ENC_TABLE = {v:k for k,v in six.iteritems(DEC_TABLE)}
 
 class Codec(codecs.Codec):
     """Codec for pdf encoding"""
-    def decode(self, input, errors='strict'):
-        return codecs.charmap_decode(input, errors, DEC_TABLE)
-        #utf16 = bytes(codecs.charmap_decode(input, errors, DEC_TABLE))
+    def decode(self, input_str, errors='strict'):
+        return codecs.charmap_decode(input_str, errors, DEC_TABLE)
+        #utf16 = bytes(codecs.charmap_decode(input_str, errors, DEC_TABLE))
         #return (0xFE0xFF'+utf16).decode('utf_16')
-    def encode(self, input, errors='strict'):
-        return codecs.charmap_encode(input, errors, ENC_TABLE)
+    def encode(self, input_str, errors='strict'):
+        return codecs.charmap_encode(input_str, errors, ENC_TABLE)
 
 class IncrementalDecoder(codecs.IncrementalDecoder):
     """Incremental decoder for our PDF codec"""
-    def decode(self, input, final=False):
-        return codecs.charmap_decode(input, self.errors, DEC_TABLE)[0]
+    def decode(self, input_str, final=False):
+        return codecs.charmap_decode(input_str, self.errors, DEC_TABLE)[0]
 class IncrementalEncoder(codecs.IncrementalEncoder):
     """Incremental encoder for our PDF codec"""
-    def encode(self, input, final=False):
-        return codecs.charmap_encode(input, self.errors, ENC_TABLE)[0]
+    def encode(self, input_str, final=False):
+        return codecs.charmap_encode(input_str, self.errors, ENC_TABLE)[0]
 
 class StreamWriter(Codec, codecs.StreamWriter):
     """StreamWriter for our PDF codec"""
