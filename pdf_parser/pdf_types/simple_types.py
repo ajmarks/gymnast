@@ -1,6 +1,8 @@
+import six
 from .common import PdfType
 from ..misc  import MetaNonelike, classproperty
 
+@six.add_metaclass(MetaNonelike)
 class PdfNull(PdfType, metaclass=MetaNonelike):
     """None-like singleton representing PDF's equivalent of None."""
     @classproperty

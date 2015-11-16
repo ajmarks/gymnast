@@ -8,7 +8,7 @@ with open('README.md', encoding='utf8') as f:
     long_description = f.read()
 
 url = 'https://github.com/ajmarks/pdf_parser/'
-requires = ['Pillow>=2.7', 'bidict>=0.9']
+requires = ['Pillow>=2.7', 'bidict>=0.9', 'six>=1.0']
 classifiers = ['Development Status :: 3 - Alpha',
                'Intended Audience :: Developers',
                'License :: OSI Approved :: MIT License',

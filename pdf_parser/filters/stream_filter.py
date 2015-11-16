@@ -1,10 +1,11 @@
 """
 Abstract base class for stream filters
 """
-
+import six
 from ..misc    import get_subclasses, ensure_str, classproperty, MetaGettable
 
-class StreamFilter(object, metaclass=MetaGettable):
+@six.add_metaclass(MetaGettable)
+class StreamFilterBase(object):
     """Abstract stream filter class.  Specify new filters by inheriting
     and setting filter_name and eod.
 

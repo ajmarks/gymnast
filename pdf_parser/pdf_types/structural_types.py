@@ -2,11 +2,7 @@ import re
 from decimal   import Decimal
 
 from .common       import PdfType
-from .object_types import PdfObjectReference
 from ..exc         import *
-
-
-
 
 class PdfXref(PdfType):
     """Cross reference objects.  These forms the basic scaffolding of the PDF

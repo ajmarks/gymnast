@@ -1,3 +1,4 @@
+import six
 import warnings
 
 from ..exc  import *
@@ -7,7 +8,7 @@ from ..misc import get_subclasses, classproperty, ensure_str, MetaGettable
 
 
 __all__ =['PdfOperation']
-
+@six.add_metaclass(MetaGettable)
 class PdfOperation(object, metaclass=MetaGettable):
     """PDF content stream operations."""
     opcode = None

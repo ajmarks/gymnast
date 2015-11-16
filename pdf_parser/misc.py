@@ -186,7 +186,7 @@ class BlackHole(object):
     def __setitem__(self, key, value):   pass
     def __delitem__(self, key):          pass
     def __contains__(self, item):        return False
-    def __iter__(self):                  return args[0]
+    def __iter__(self):                  return iter([])
     def __next__(self):                  raise StopIteration
     def __bool__(self):                  return False
     def __repr__(self):                  return ''
