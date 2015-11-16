@@ -1,7 +1,11 @@
 ignore-paths:
   - tests
   - data
+
 pylint:
   disable:
-    - C0326
+    - bad-whitespace
     - C0321
+pep8:
+  disable:
+    - E704
