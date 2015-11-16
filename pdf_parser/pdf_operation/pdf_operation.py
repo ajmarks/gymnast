@@ -3,8 +3,8 @@ import warnings
 from ..exc  import *
 from ..misc import get_subclasses, classproperty, ensure_str, MetaGettable
 
-#PTVS nonsense
-from builtins import *
+
+
 
 __all__ =['PdfOperation']
 

@@ -6,8 +6,8 @@ from .pdf_types     import *
 from .misc          import ReCacher, BlackHole, buffer_data, consume_whitespace
 from .pdf_constants import EOLS, WHITESPACE
 
-#PTVS nonsense
-from builtins import *
+
+
 
 __all__ = ['PdfParser']
 

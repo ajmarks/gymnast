@@ -9,8 +9,6 @@ from ..pdf_parser    import PdfParser
 from ..pdf_types     import PdfLiteralString, PdfDict
 from ..exc           import *
 
-#PTVS nonsense
-from builtins import *
 
 DATA_DIR  = os.path.dirname(os.path.abspath(__file__)) + '/../data/afm/'
 STD_FONTS = set([i[:-4] for i in os.listdir(DATA_DIR) if i[-4:] == '.afm'])
@@ -176,10 +174,10 @@ class PdfFont(PdfElement):
 
     @classmethod
     def load_standard_font(cls, font_name):
-        """Super, super crude method to parse a font file into a Type1 
+        """Super, super crude method to parse a afm font file into a Type1
         PdfFont object
         
-        TODO: Refine this (very, very low priority)"""
+        TODO: Make this not disgustingly, eye gougingly awful"""
         FILE_PAT = DATA_DIR + '/{}.afm'
 
         with open(FILE_PAT.format(font_name)) as f:

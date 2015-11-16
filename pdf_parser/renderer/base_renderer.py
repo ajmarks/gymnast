@@ -9,7 +9,7 @@ import io
 
 
 #Nonsense to make PTVS happy
-from builtins import *
+
 
 class PdfBaseRenderer(object):
     """PdfRenderer object.  PdfOperations act on this to produce a

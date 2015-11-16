@@ -2,8 +2,8 @@ from .common         import PdfType
 from .compound_types import PdfDict
 from ..exc           import *
 
-#PTVS nonsense
-from builtins import *
+
+
 
 
 class PdfIndirectObject(PdfType):

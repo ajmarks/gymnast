@@ -1,5 +1,5 @@
-#PTVS nonsense
-from builtins import *
+
+
 
 class PdfType(object):
     """Abstract base class for PDF objects"""

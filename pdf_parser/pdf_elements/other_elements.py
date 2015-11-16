@@ -1,8 +1,8 @@
 from .pdf_element import PdfElement
 from ..exc        import *
 
-#PTVS nonsense
-from builtins import *
+
+
 
 class PdfCatalog(PdfElement):
     def __init__(self, obj, obj_key=None):

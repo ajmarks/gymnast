@@ -3,8 +3,8 @@ from .stream_filter import StreamFilter
 from io import BytesIO
 import zlib
 
-#PTVS nonsense
-from builtins import *
+
+
 
 class LZWDecode(StreamFilter):
     filter_name = 'LZWDecode'

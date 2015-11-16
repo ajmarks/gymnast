@@ -8,8 +8,8 @@ from .pdf_types     import *
 
 
 
-#PTVS nonsense
-from builtins import *
+
+
 
 __all__ = ['PdfDocument']
 

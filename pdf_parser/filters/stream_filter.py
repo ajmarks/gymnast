@@ -1,8 +1,8 @@
 from ..exc     import *
 from ..misc    import get_subclasses, ensure_str, classproperty, MetaGettable
 
-#PTVS nonsense
-from builtins import *
+
+
 
 class StreamFilter(object, metaclass=MetaGettable):
     """Abstract stream filter class.  Specify new filters by inheriting 

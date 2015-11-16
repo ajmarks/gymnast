@@ -3,8 +3,8 @@ from .stream_filter import StreamFilter
 import base64
 import codecs
 
-#PTVS nonsense
-from builtins import *
+
+
 
 class ASCIIHexDecode(StreamFilter):
     filter_name = 'ASCIIHexDecode'

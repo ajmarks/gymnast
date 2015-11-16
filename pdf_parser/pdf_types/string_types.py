@@ -7,8 +7,8 @@ from ..exc       import *
 from ..misc      import iterbytes
 from ..pdf_codec import register_codec
 
-#PTVS nonsense
-from builtins import *
+
+
 
 
 # Go ahead and register the codec here, I guess.

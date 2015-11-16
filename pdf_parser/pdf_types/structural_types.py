@@ -5,8 +5,8 @@ from .common       import PdfType
 from .object_types import PdfObjectReference
 from ..exc         import *
 
-#PTVS nonsense
-from builtins import *
+
+
 
 class PdfXref(PdfType):
     LINE_PAT = re.compile(r'^(\d{10}) (\d{5}) (n|f)\s{0,2}$')

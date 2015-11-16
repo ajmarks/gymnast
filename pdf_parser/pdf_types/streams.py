@@ -5,8 +5,8 @@ from ..exc     import *
 from ..filters import StreamFilter
 from ..misc    import ensure_list
 
-#PTVS nonsense
-from builtins import *
+
+
 
 class PdfStream(PdfType):
     def __init__(self, header, data):

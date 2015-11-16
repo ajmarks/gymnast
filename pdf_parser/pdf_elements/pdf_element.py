@@ -7,8 +7,8 @@ try:
 except ImportError:
     from collections     import MutableMapping
 
-#PTVS nonsense
-from builtins import *
+
+
 
 class PdfElement(MutableMapping):
     """Base class for all PDF page elements.  Generally invoked by passing as

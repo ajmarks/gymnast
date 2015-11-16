@@ -6,8 +6,8 @@ from ...misc          import classproperty
 from ...pdf_elements  import PdfFont
 
 
-#PTVS nonsense
-from builtins import *
+
+
 
 class TextOper(PdfOperation):
     optype = PdfOperation.TEXT_SHOWING
