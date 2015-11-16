@@ -32,5 +32,6 @@ setup(name='pdf_parser',
       keywords=['pdf', 'acrobat'],
       install_requires=requires,
       description='PDF document parser in Python 3',
-      classifiers=classifiers
+      classifiers=classifiers,
+      include_package_data=True,
       )

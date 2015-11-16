@@ -1,5 +1,6 @@
-from bidict import collapsingbidict
 import codecs
+import os
+from bidict import collapsingbidict
 
 from .pdf_element    import PdfElement
 from ..pdf_constants import BASE_ENCODINGS, GLYPH_LIST
@@ -10,6 +11,9 @@ from ..exc           import *
 
 #PTVS nonsense
 from builtins import *
+
+DATA_DIR  = os.path.dirname(os.path.abspath(__file__)) + '/../data/afm/'
+STD_FONTS = set([i[:-4] for i in os.listdir(DATA_DIR) if i[-4:] == '.afm'])
 
 class FontDescriptor(PdfElement):
     """FontDescriptior object describefd in Table 5.19 on p. 456.
@@ -169,3 +173,65 @@ class PdfFont(PdfElement):
     def space_width(self):
         """Width of the space character in the current font"""
         return self.get_glyph_width(self.get_char_code('space'))
+
+    @classmethod
+    def load_standard_font(cls, font_name):
+        """Super, super crude method to parse a font file into a Type1 
+        PdfFont object
+        
+        TODO: Refine this (very, very low priority)"""
+        FILE_PAT = DATA_DIR + '/{}.afm'
+
+        with open(FILE_PAT.format(font_name)) as f:
+            lines = [l for l in f.read().splitlines() if l[:8]!='Comment ']
+
+        parsed = {}
+        i = 1
+        typify = lambda a: None if not a else (a[0] if len(a) == 1 else a)
+        while i < len(lines):
+            field, *attrs = lines[i].strip().split()
+            if field[:5] == 'Start' and attrs:
+                parsed[field[5:]] = lines[i+1:int(attrs[0])+i+1]
+                i += int(attrs[0])+1
+            else:
+                parsed[field] = typify(attrs)
+                i += 1
+        charmets = [{i.split()[0]:typify(i.split()[1:]) 
+                     for i in l.split(';') if i.strip()}
+                    for l in parsed['CharMetrics']]
+        first_char = min(int(i['C']) for i in charmets if i['C'] != '-1')
+        last_char  = min(int(i['C']) for i in charmets)
+        widths     = [i['WX']
+                      for i in sorted(charmets, key=lambda x: int(x['C'])) 
+                        if i['C'] != '-1']
+        charset    = [PdfName(i['N'])  for i in charmets if i['C'] != '-1']
+        intprop = lambda x: None if x not in parsed else int(parsed[x])
+
+        flags =   1*int(parsed.get('IsFixedPitch') == 'true')\
+              +   8*(parsed['CharacterSet'] == 'Special')    \
+              +  64*(parsed['CharacterSet'] != 'Special')    \
+              + 128*(parsed['ItalicAngle'] != '0')           
+        fdesc = {PdfName('Type')       : 'FontDescriptor',
+                 PdfName('FontName')   : parsed['FontName'],
+                 PdfName('FontFamily') : parsed['FamilyName'],
+                 PdfName('FontWeight') : parsed['Weight'],
+                 PdfName('Flags')      : flags,
+                 PdfName('FontBBox')   : [int(i) for i in parsed['FontBBox']],
+                 PdfName('ItalicAngle'): intprop('ItalicAngle'),
+                 PdfName('Ascent')     : intprop('Ascender'),
+                 PdfName('Descent')    : intprop('Descender'),
+                 PdfName('CapHeight')  : intprop('CapHeight'),
+                 PdfName('XHeight')    : intprop('XHeight'),
+                 PdfName('StemV')      : intprop('StdHW'),
+                 PdfName('StemH')      : intprop('StdVW'),
+                 PdfName('Charset')    : charset,
+                }
+        font  = {PdfName('Type')     : 'Font',
+                 PdfName('Subtype')  : 'Type1',
+                 PdfName('BaseFont') : parsed['FontName'],
+                 PdfName('FirstChar'): first_char,
+                 PdfName('LastChar') : last_char,
+                 PdfName('Widths')   : widths,
+                 PdfName('FontDescriptor'): PdfDict(fdesc),
+                }
+        return cls(PdfDict(font))
