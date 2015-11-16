@@ -6,10 +6,6 @@ import binascii
 import os
 from bidict import bidict
 
-#PTVS nonsense
-if False:
-    from builtins import *
-
 __all__  = ['EOLS', 'WHITESPACE', 'BASE_ENCODINGS', 'GLYPH_LIST']
 DATA_DIR = os.path.dirname(os.path.abspath(__file__))+'/data/'
 
