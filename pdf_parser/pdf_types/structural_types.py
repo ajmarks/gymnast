@@ -13,15 +13,6 @@ class PdfXref(PdfType):
     file, indicating where in the file each object is located."""
     LINE_PAT = re.compile(r'^(\d{10}) (\d{5}) (n|f)\s{0,2}$')
 
-    #IDE type hints
-    if False:
-        from ..pdf_doc import PdfDocument
-        _id         = 0
-        _offset     = 0
-        _generation = 0
-        _in_use     = True
-        _document   = PdfDocument()
-
     def __init__(self, document, obj_no, offset, generation, in_use):
         super(PdfXref, self).__init__()
         self._obj_no     = obj_no

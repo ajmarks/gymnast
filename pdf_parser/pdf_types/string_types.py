@@ -17,10 +17,6 @@ register_codec()
 class PdfString(PdfType):
     """Base class from which all of our string-like classes
     will inherit"""
-    #Type hints for the IDE
-    if False:
-        _parsed_bytes = bytes()
-        _raw_bytes    = bytes()
 
     def __lt__(self, other): return self._parsed_bytes.__lt__(other)
     def __le__(self, other): return self._parsed_bytes.__le__(other)

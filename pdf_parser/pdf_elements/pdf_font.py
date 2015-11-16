@@ -97,9 +97,6 @@ class FontEncoding(PdfElement):
 
 class PdfFont(PdfElement):
     """Base PDF Font.  Right now this is exclusively Type 1."""
-    #Type hints
-    if False:
-        codec = codecs.Codec()
 
     def __init__(self, obj, obj_key=None):
         super(PdfFont, self).__init__(obj, obj_key)
