@@ -2,7 +2,7 @@
 Stream filters for encryption
 """
 
-from .stream_filter import StreamFilter
+from ..stream_filter import StreamFilter
 
 class Crypt(StreamFilter):
     """Encryption filter"""

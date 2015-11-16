@@ -2,7 +2,7 @@
 Stream filters for parsing ASCII-encoded binary data
 """
 
-from .stream_filter import StreamFilter
+from ..stream_filter import StreamFilter
 
 import base64
 import codecs

@@ -50,13 +50,10 @@ class StreamFilter(object):
     @staticmethod
     def __init_filter():
         # Need to do the imports here to prevent circular imports.
-        from .ascii_filters import ASCIIHexDecode, ASCII85Decode
-        from .crypt_filters import Crypt
-        from .image_filters import DCTDecode
-        from .lzw_and_flate import LZWDecode, FlateDecode
-        filters = {ensure_str(o.filter_name): o
-                   for o in get_subclasses(StreamFilter) if o.filter_name}
-        StreamFilter.__filters = filters
+        from . import filters
+        sfilts = {ensure_str(o.filter_name): o
+                  for o in get_subclasses(StreamFilter) if o.filter_name}
+        StreamFilter.__filters = sfilts
     @classmethod
     def __getitem__(cls, filter_name):
         filter_name = ensure_str(filter_name)

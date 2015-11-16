@@ -2,7 +2,7 @@
 Stream filters for the various image encodings
 """
 
-from .stream_filter import StreamFilter
+from ..stream_filter import StreamFilter
 
 import PIL
 

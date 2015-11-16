@@ -2,7 +2,7 @@
 Compression filters
 """
 
-from .stream_filter import StreamFilter
+from ..stream_filter import StreamFilter
 
 from io import BytesIO
 import zlib

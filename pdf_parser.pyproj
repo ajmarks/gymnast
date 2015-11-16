@@ -23,6 +23,7 @@
     <PtvsTargetsFile>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets</PtvsTargetsFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="pdf_parser\filters\filters\__init__.py" />
     <Compile Include="pdf_parser\pdf_operation\operations\text_objects.py" />
     <Compile Include="pdf_parser\pdf_operation\operations\text_positioning.py" />
     <Compile Include="pdf_parser\pdf_operation\operations\text_showing.py" />
@@ -53,10 +54,10 @@
     <Compile Include="setup.py" />
     <Compile Include="test.py" />
     <Compile Include="pdf_parser\exc.py" />
-    <Compile Include="pdf_parser\filters\crypt_filters.py" />
-    <Compile Include="pdf_parser\filters\lzw_and_flate.py" />
-    <Compile Include="pdf_parser\filters\ascii_filters.py" />
-    <Compile Include="pdf_parser\filters\image_filters.py">
+    <Compile Include="pdf_parser\filters\filters\crypt_filters.py" />
+    <Compile Include="pdf_parser\filters\filters\lzw_and_flate.py" />
+    <Compile Include="pdf_parser\filters\filters\ascii_filters.py" />
+    <Compile Include="pdf_parser\filters\filters\image_filters.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pdf_parser\filters\__init__.py" />
@@ -79,6 +80,7 @@
     <Folder Include="pdf_parser\filters\" />
     <Folder Include="pdf_parser\" />
     <Folder Include="pdf_parser\data\" />
+    <Folder Include="pdf_parser\filters\filters\" />
     <Folder Include="pdf_parser\pdf_operation\operations\" />
     <Folder Include="pdf_parser\renderer\" />
     <Folder Include="pdf_parser\pdf_elements\" />
