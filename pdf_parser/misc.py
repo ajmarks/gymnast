@@ -1,3 +1,7 @@
+"""
+Miscellaneous functions and classes that get used in various places
+"""
+
 import io
 import numbers
 import re
@@ -5,16 +9,17 @@ from functools import wraps
 
 from .pdf_constants import WHITESPACE
 
-__all__ = [# Static functions
-           'buffer_data', 'ensure_str', 'ensure_list', 'iterbytes', 'is_digit',
-           'get_subclasses', 'read_until', 'force_decode', 'consume_whitespace',
-           # Decorators
-           'classproperty',
-           # Classes
-           'ReCacher', 'BlackHole',
-           # Metaclasses
-           'MetaGettable', 'MetaNonelike',
-          ]
+__all__ = [
+    # Static functions
+    'buffer_data', 'ensure_str', 'ensure_list', 'iterbytes', 'is_digit',
+    'get_subclasses', 'read_until', 'force_decode', 'consume_whitespace',
+    # Decorators
+    'classproperty',
+    # Classes
+    'ReCacher', 'BlackHole',
+    # Metaclasses
+    'MetaGettable', 'MetaNonelike',
+    ]
 
 def _is_buffered_bytesio(data):
     """Check if the argument is a buffered bytes io object"""

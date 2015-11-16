@@ -11,7 +11,7 @@ from .pdf_element    import PdfElement
 from ..pdf_constants import BASE_ENCODINGS, GLYPH_LIST, DATA_DIR
 from ..pdf_matrix    import PdfMatrix
 from ..pdf_parser    import PdfParser
-from ..pdf_types     import PdfLiteralString, PdfDict
+from ..pdf_types     import PdfLiteralString, PdfDict, PdfName
 from ..exc           import *
 
 AFM_DIR   = DATA_DIR + '/afm/'

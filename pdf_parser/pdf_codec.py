@@ -75,8 +75,7 @@ DEC_TABLE = {
     0xf3: '\u00F3', 0xf4: '\u00F4', 0xf5: '\u00F5', 0xf6: '\u00F6',
     0xf7: '\u00F7', 0xf8: '\u00F8', 0xf9: '\u00F9', 0xfa: '\u00FA',
     0xfb: '\u00FB', 0xfc: '\u00FC', 0xfd: '\u00FD', 0xfe: '\u00FE',
-    0xff: '\u00FF'
-    # Undefined: 0x7f, 0x9f, 0xad
+    0xff: '\u00FF'# Undefined: 0x7f, 0x9f, 0xad
     }
 ENC_TABLE = {v:k for k,v in six.iteritems(DEC_TABLE)}
 

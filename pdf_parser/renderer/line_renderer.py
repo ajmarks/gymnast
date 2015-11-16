@@ -38,7 +38,6 @@ TODO: Support vertical writing
 import collections
 import io
 import six
-from intervaltree import IntervalTree
 
 from .base_renderer  import PdfBaseRenderer
 from ..pdf_operation import PdfOperation

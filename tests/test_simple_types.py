@@ -1,5 +1,5 @@
 from .parser_test import ParserTestCase
-from ..exc        import *
+from ..pdf_parser.exc        import PdfParseError
 
 class TestSimpleTypes(ParserTestCase):
     def setUp(self):

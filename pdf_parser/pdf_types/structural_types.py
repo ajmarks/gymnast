@@ -1,3 +1,7 @@
+"""
+PDF objects that represent the low-level document structure
+"""
+
 import re
 from decimal   import Decimal
 

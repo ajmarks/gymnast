@@ -1,10 +1,13 @@
+"""
+Text Showing operations - Reference p. 407
+"""
+
+
 import numbers
 
 from ..pdf_operation import PdfOperation
 from ...exc           import *
 from ...misc          import classproperty
-from ...pdf_elements  import PdfFont
-
 
 class TextOper(PdfOperation):
     optype = PdfOperation.TEXT_SHOWING

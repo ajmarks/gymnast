@@ -1,3 +1,7 @@
+"""
+Text positioning operations - Reference p. 406
+"""
+
 from ..pdf_operation import PdfOperation
 from ...pdf_matrix   import PdfMatrix
 

@@ -1,3 +1,8 @@
+"""
+Text state operations - Reference p. 398
+"""
+
+
 from ..pdf_operation import PdfOperation
 
 class PdfTextStateOp(PdfOperation):

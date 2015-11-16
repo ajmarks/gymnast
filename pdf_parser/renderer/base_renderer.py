@@ -1,8 +1,11 @@
-from .renderer_states import TextState, GraphicsState, RendererState
+"""
+Base page renderer class
+"""
+
+from .renderer_states import TextState, GraphicsState
 from ..exc           import *
 from ..pdf_elements  import PdfPage
 from ..pdf_matrix    import PdfMatrix
-from ..pdf_operation import PdfOperation
 
 import copy
 import io

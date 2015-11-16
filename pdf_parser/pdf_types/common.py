@@ -1,5 +1,6 @@
-
-
+"""
+Base PDFType class from which all of the other data types inherit
+"""
 
 class PdfType(object):
     """Abstract base class for PDF objects"""

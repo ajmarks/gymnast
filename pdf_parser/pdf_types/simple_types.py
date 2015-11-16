@@ -1,3 +1,8 @@
+"""
+Simple PDF types (numbers, nulls, and booleans).  These mostly exist so that we
+will be able to write PDFs by calling their .pdf_encode() methods
+"""
+
 import six
 from .common import PdfType
 from ..misc  import MetaNonelike, classproperty
@@ -34,4 +39,3 @@ class PdfBool(PdfType):
     """TODO: This"""
     def pdf_encode(self):
         return b'true' if self else b'false'
-    

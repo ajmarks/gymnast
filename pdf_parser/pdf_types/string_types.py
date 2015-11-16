@@ -1,3 +1,7 @@
+"""
+PDF string-like objects
+"""
+
 import binascii
 import codecs
 import io
@@ -115,7 +119,7 @@ class PdfLiteralString(str, PdfString):
 class PdfHexString(PdfString):
     """Hex strings, mostly used for ID values"""
     def __init__(self, data):
-        return super(PdfHexString, self).__init__(data)
+        super(PdfHexString, self).__init__(data)
     @property
     def _text(self):
         return '0x'+binascii.hexlify(self._parsed_bytes).decode()

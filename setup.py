@@ -1,3 +1,7 @@
+"""
+Let's make this into a nice package
+"""
+
 from setuptools import setup, find_packages
 from pkg_resources import parse_version
 

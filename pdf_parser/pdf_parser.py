@@ -1,13 +1,14 @@
+"""
+PDF Parser object
+"""
+
 from contextlib import contextmanager
 import io
 
 from .exc           import *
 from .pdf_types     import *
-from .misc          import ReCacher, BlackHole, buffer_data, consume_whitespace
+from .misc          import BlackHole, buffer_data, consume_whitespace
 from .pdf_constants import EOLS, WHITESPACE
-
-
-
 
 __all__ = ['PdfParser']
 
@@ -285,7 +286,7 @@ class PdfParser(object):
             pass
         elif close[:-1] == b'\nendstream':
             data.seek(-1, 1)
-        elif close[:-2]  == b'endstream':
+        elif close[:-2] == b'endstream':
             data.seek(-2, 1)
         else:
             raise PdfParseError('endstream not found')

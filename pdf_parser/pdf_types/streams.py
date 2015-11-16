@@ -1,3 +1,7 @@
+"""
+PDF stream objects - Reference p. 60
+"""
+
 from functools import partial, reduce
 
 from .common   import PdfType

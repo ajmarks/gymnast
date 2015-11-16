@@ -1,3 +1,7 @@
+"""
+PdfTypes for indirect objects and references to them
+"""
+
 from .common         import PdfType
 from .compound_types import PdfDict
 from ..exc           import *

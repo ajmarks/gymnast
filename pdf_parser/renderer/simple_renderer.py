@@ -1,3 +1,7 @@
+"""
+Simple renderer example that just extracts the text with no processing
+"""
+
 import io
 from .base_renderer import PdfBaseRenderer
 

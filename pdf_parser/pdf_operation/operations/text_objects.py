@@ -1,3 +1,7 @@
+"""
+Text Object operations - Reference p. 405
+"""
+
 from ..pdf_operation import PdfOperation
 from ...renderer     import TextState
 from ...exc          import PdfError
