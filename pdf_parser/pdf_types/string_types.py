@@ -90,7 +90,7 @@ class PdfLiteralString(str, PdfString):
                     e_str   = d
                     escaped = True
                     continue
-                elif e_str == b'\r': 
+                elif e_str == b'\r':
                     pass # If we're here, it means that e_str == \r, d != \n
                 #Octals
                 elif e_str.isdigit():

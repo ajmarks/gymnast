@@ -74,23 +74,23 @@ class PdfPageNode(PdfAbstractPage):
     @property
     def Kids(self):
         return [p.parsed_object for p in self._object['Kids'].value]
-   # def __getitem__(self, key):
-   #     return self._kids[key]
-   # def __contains__(self, item):
-   #     return self._kids.__contains__(item)
-   # def __setitem__(self, key, value):
-   #     return self._kids.__setitem__(key, value)
-   # def __delitem__(self, key, value):
-   #     return self._kids.__delitem__(key)
-   # def __iter__(self):
-   #     return self._kids.__iter__()
-   # def __reversed__(self):
-   #     return self._kids.__reversed__()
-   # @property
-   # def Count(self):
-   #     return len(self._kids)
-   # def __str__(self):
-   #     return 'PdfPageNode - %d children'%self.Count
+    #def __getitem__(self, key):
+    #    return self._kids[key]
+    #def __contains__(self, item):
+    #    return self._kids.__contains__(item)
+    #def __setitem__(self, key, value):
+    #    return self._kids.__setitem__(key, value)
+    #def __delitem__(self, key, value):
+    #    return self._kids.__delitem__(key)
+    #def __iter__(self):
+    #    return self._kids.__iter__()
+    #def __reversed__(self):
+    #    return self._kids.__reversed__()
+    #@property
+    #def Count(self):
+    #    return len(self._kids)
+    #def __str__(self):
+    #    return 'PdfPageNode - %d children'%self.Count
 
 class PdfPage(PdfAbstractPage):
     """Abstract class for pages and page nodes"""

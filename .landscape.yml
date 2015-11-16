@@ -3,6 +3,8 @@ ignore-paths:
   - data
 
 pylint:
+  #It's ridiculous how many of these I need to disable to make it not insanely
+  #spammy
   disable:
     - C0326 # Space around :, =, etc. Tripped by aligning dict values
     - C0321 # def __str__(self): return self._text
@@ -13,6 +15,11 @@ pylint:
     - R0401 # Cyclic import.  Doesn't get local imports.
     - C0325 # Unnecessary parens after return.  Sometimes they're good.
     - C0101 # Invalid variable.  Spams on "except Exception as e".
+    - W0704 # Pointless except.  Sometimes you want to ignore just one exception.
+    - W0141 # Shutup.  I'll use map() when I want to.
+    - C0111 # Not every method needs a docstring.
+    - W0142 # Don't be a baby. * and ** magic are super useful.
+    - R0201 # Generally, this is good.  But not here.
 pep8:
   disable:
     - E704

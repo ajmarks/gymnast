@@ -43,7 +43,7 @@ class PdfStream(PdfType):
     def decode(self):
         """Decode the data in the stream by sequentially applying the
         filters with their parameters"""
-        if self._decoded == True:
+        if self._decoded:
             return self._decoded_data
         # Need to use self._filter_key because, for some reason beyond my
         # grasp, the key changes when the stream data is external
