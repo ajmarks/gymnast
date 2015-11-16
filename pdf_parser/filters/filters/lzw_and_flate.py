@@ -47,7 +47,11 @@ class FlateDecode(StreamFilter):
     EOD         = None
 
     @staticmethod
-    def decode_data(data, CloseTarget=False, Predictor=None,
-                    Columns=None, BitsPerComponent=None):
+    def decode_data(data, **kwargs):
         #TODO: use these parameters
         return zlib.decompress(data)
+
+    @staticmethod
+    def encode_data(data, **kwargs):
+        #TODO: use these parameters
+        return zlib.compress(data)
