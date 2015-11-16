@@ -4,6 +4,7 @@ from ..exc           import *
 
 
 class PdfIndirectObject(PdfType):
+    """PDF indirect object definition"""
     def __init__(self, object_number, generation, obj, document):
         super().__init__()
         self._object_number = object_number
@@ -47,6 +48,7 @@ class PdfIndirectObject(PdfType):
         return val
 
 class PdfObjectReference(PdfType):
+    """PDF indirect object reference"""
     def __init__(self, object_number, generation, document=None):
         super().__init__()
         self._object_number = object_number

@@ -12,6 +12,7 @@ from ..pdf_parser    import PdfParser
 from ..pdf_operation import PdfOperation
 
 def parse_page(obj):
+    """Parse a page like object into the appropraite subclass"""
     obj = obj.value
     if   obj['Type'] == 'Pages':
         return PdfPageNode(obj)
@@ -93,6 +94,7 @@ class PdfPageNode(PdfAbstractPage):
    #     return 'PdfPageNode - %d children'%self.Count
 
 class PdfPage(PdfAbstractPage):
+    """Abstract class for pages and page nodes"""
     #Type hints
     if False:
         _parent        = PdfIndirectObject()

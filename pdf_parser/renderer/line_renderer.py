@@ -118,7 +118,7 @@ class PdfLineRenderer(PdfBaseRenderer):
 
     def _postop(self, op):
         if op.optype == PdfOperation.TEXT_SHOWING:
-             self._lines[self._line_id].append(self._text_block)
+            self._lines[self._line_id].append(self._text_block)
         self._text_block = None
 
     def _return(self):
@@ -128,20 +128,20 @@ class PdfLineRenderer(PdfBaseRenderer):
 
     @property
     def _line_id(self):
-        mat = self._ts.T_m
-        slope = mat._a/mat._b
-        y = mat._f - mat._e*slope
-        return (slope, y)
+        """Get a unique id for this line.  See module docstring."""
+        mat = self.ts.T_m
+        slope = mat.a/mat.b
+        return (slope, mat.f - mat.e*slope)
 
     @property
     def _space_width(self):
         """The width of a space in the current font"""
         # TODO: Use active_font.FontMatrix instead of division by 1000
         w0 = self.active_font.space_width/1000.0
-        return (w0*self._T_fs+self._T_c+self._T_w) * self._T_h
+        return (w0*self.ts.T_fs+self.ts.T_c+self.ts.T_w) * self._T_h
 
     @property
     def _cap_height(self):
         """The height of a capital letter in the current font"""
         # TODO: Use active_font.FontMatrix instead of division by 1000
-        return self.active_font.FontDescriptor.CapHeight/1000.0*self._T_fs
+        return self.active_font.FontDescriptor.CapHeight/1000.0*self.ts.T_fs

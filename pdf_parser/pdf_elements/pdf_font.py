@@ -13,13 +13,8 @@ from ..pdf_parser    import PdfParser
 from ..pdf_types     import PdfLiteralString, PdfDict
 from ..exc           import *
 
-#PTVS nonsense
-if False:
-    from builtins import *
-
-
 DATA_DIR  = os.path.dirname(os.path.abspath(__file__))
-AFM_DIR   = DATA_DIR + '/../data/afm/'
+AFM_DIR   = DATA_DIR + '/afm/'
 STD_FONTS = set([i[:-4] for i in os.listdir(AFM_DIR) if i[-4:] == '.afm'])
 
 class FontDescriptor(PdfElement):
@@ -31,11 +26,14 @@ class FontDescriptor(PdfElement):
 
     @property
     def CharSet(self):
-
+        """Returns the CharSet property as a list of PdfNames instead of one
+        long string"""
         if self._charset is False: # We need None
             chars = self._object.value.get('CharSet')
-            if isinstance(chars, (bytes, PdfLiteralString)):
-                self._charset = PdfParser().parse(chars, False)
+            if isinstance(chars, bytes):
+                self._charset = PdfParser().parse_list(chars)
+            elif isinstance(chars, PdfLiteralString):
+                self._charset = PdfParser().parse_list(chars._raw_bytes)
             elif chars is None:
                 self._charset = chars
             else:
@@ -44,7 +42,6 @@ class FontDescriptor(PdfElement):
 
 class FontEncoding(PdfElement):
     """Font encoding object as described in Appendix D"""
-
     #This should never change ever, but why hardcode in two places?
     VALID_ENCODINGS = set(next(iter(BASE_ENCODINGS.values())).keys())
 

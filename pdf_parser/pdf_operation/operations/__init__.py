@@ -1,3 +1,8 @@
+"""
+PDF content stream operations.  Ones that are not implemented are filled in
+by a subclass of PdfNOP
+"""
+
 from .text_objects     import BT, ET
 from .text_state       import Tc, Tw, Tz, TL, Tf, Tr, Ts
 from .text_positioning import Td, TD, Tm, Tstar

@@ -41,6 +41,7 @@ class PdfString(PdfType):
         raise NotImplementedError
 
 class PdfLiteralString(str, PdfString):
+    """PDF Literal strings"""
     def __new__(cls, data):
         try:
             string = cls._decode_bytes(cls.parse_bytes(data))
@@ -65,8 +66,8 @@ class PdfLiteralString(str, PdfString):
                b't'   : b'\t',
                b'b'   : b'\b',
                b'f'   : b'\f',
-               b'('   : b'(' ,
-               b')'   : b')' ,
+               b'('   : b'(',
+               b')'   : b')',
                b'\\'  : b'\\',
                b'\n'  : b'',
               #b'\r'  : b'' , # Stupid \r\n
@@ -94,7 +95,7 @@ class PdfLiteralString(str, PdfString):
                 #Octals
                 elif e_str.isdigit():
                     if not d.isdigit():
-                        result.write(bytes((min(int(e_str  , 8),255),)))
+                        result.write(bytes((min(int(e_str,   8),255),)))
                     elif len(e_str) == 2:
                         result.write(bytes((min(int(e_str+d, 8),255),)))
                         continue
@@ -112,6 +113,7 @@ class PdfLiteralString(str, PdfString):
         return bytes(result.getvalue())
 
 class PdfHexString(PdfString):
+    """Hex strings, mostly used for ID values"""
     def __init__(self, data):
         return super().__init__(data)
     @property
@@ -127,14 +129,17 @@ class PdfHexString(PdfString):
         return str(self)
 
 class PdfComment(PdfType, str):
+    """Comments"""
     def __new__(cls, obj):
         if isinstance(obj, (bytes, bytearray)):
             obj = obj.decode(errors='surrogateescape')
         return str.__new__(cls, obj)
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
+    def pdf_encode(self):
+        return b'%' + bytes(self.parsed_object)
 
 class PdfName(PdfType, str):
-    # Needs to be string-like for key purposes
+    """PDF name objects, mostly use for dict keys"""
     def __new__(cls, *args, **kwargs):
         return str.__new__(cls, *args, **kwargs)

@@ -16,7 +16,7 @@ class TestSimpleTypes(ParserTestCase):
     def test_bool(self):
         self.assertIs(self.func(b'true'),  True)
         self.assertIs(self.func(b'false'), False)
-    def test_real(self):
+    def test_null(self):
         self.assertIsNone(self.func(b'null'))
     def test_invalid(self):
         bad_vals = [b'slfkj', b'none', b'True', b'False', b'12..54',

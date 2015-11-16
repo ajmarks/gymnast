@@ -17,9 +17,10 @@ __all__ = [# Static functions
           ]
 
 def _is_buffered_bytesio(data):
-    if   not isinstance(data, io.BufferedIOBase)             : return False
-    elif not data.readable()                                 : return False
-    elif isinstance(data.raw, io.BytesIO)                    : return True
+    """Check if the argument is a buffered bytes io object"""
+    if   not isinstance(data, io.BufferedIOBase):              return False
+    elif not data.readable():                                  return False
+    elif isinstance(data.raw, io.BytesIO):                     return True
     elif isinstance(data.raw, io.FileIO) and 'b' in data.mode: return True
     return False
 
@@ -68,8 +69,8 @@ def buffer_data(data):
         try:
             return io.BufferedReader(io.BytesIO(bytes(data)))
         except TypeError:
-            return ValueError('Data to be parsed must be either bytes, '
-                                'bytesarray, or a read()able stream.')
+            raise TypeError('Data to be parsed must be either bytes, '
+                            'bytesarray, or a read()able stream.')
 
 class classproperty(object):
     """Like the @property method, but for classes instead of instances"""
@@ -178,35 +179,38 @@ class ReCacher(object):
 class BlackHole(object):
     """The ultimate NOP object.  Stick it just about anywhere,
     and it will successfully do nothing."""
-    def __get__(*args, **kwargs)     : return None
-    def __set__(*args, **kwargs)     : pass
-    def __getitem__(*args, **kwargs) : return None
-    def __setitem__(*args, **kwargs) : pass
-    def __delitem__(*args, **kwargs) : pass
-    def __contains__(*args, **kwargs): return False
-    def __iter__(*args, **kwargs)    : return args[0]
-    def __next__(*args, **kwargs)    : raise StopIteration
-    def __bool__(*args, **kwargs)    : return False
-    def __str__(*args, **kwargs)     : return ''
-    def __bytes__(*args, **kwargs)   : return b''
-    def __len__(*args, **kwargs)     : return 0
-    def __int__(*args, **kwargs)     : return 0
-    def __float__(*args, **kwargs)   : return 0.0
-    def __complex__(*args, **kwargs) : return complex()
-    def __round__(self, n)           : return round(self.float, n)
-    def __call__(*args, **kwargs)    : pass
-    def __add__(self, other)         : return other
-    def __sub__(self, other)         : return other
-    def __mul__(self, other)         : return other
-    def __matmul__(self, other)      : return other
-    def __truediv__(self, other)     : return other
-    def __floordiv__(self, other)    : return other
-    def __mod__(self, other)         : return other
-    def __divmod__(self, other)      : return other
-    def __pow__(self, other, *args)  : return other
-    def __lshift__(self, other)      : return other
-    def __rshift__(self, other)      : return other
-    def __and__(self, other)         : return other
-    def __xor__(self, other)         : return other
-    def __or__(self, other)          : return other
-    def __getattr__(*args, **kwargs) : return BlackHole()
+    def __get__(self, instance, owner):  return BlackHole()
+    def __set__(self, instance, value):  pass
+    def __delete__(self, instance):      pass
+    def __getitem__(self, key):          return BlackHole()
+    def __setitem__(self, key, value):   pass
+    def __delitem__(self, key):          pass
+    def __contains__(self, item):        return False
+    def __iter__(self):                  return args[0]
+    def __next__(self):                  raise StopIteration
+    def __bool__(self):                  return False
+    def __repr__(self):                  return ''
+    def __str__(self):                   return ''
+    def __bytes__(self):                 return b''
+    def __len__(self):                   return 0
+    def __int__(self):                   return 0
+    def __float__(self):                 return 0.0
+    def __complex__(self):               return complex()
+    def __round__(self, n=0):            return round(self.float, n)
+    def __call__(self, *args, **kwargs): pass
+    def __add__(self, other):            return other
+    def __sub__(self, other):            return other
+    def __mul__(self, other):            return other
+    def __matmul__(self, other):         return other
+    def __truediv__(self, other):        return other
+    def __floordiv__(self, other):       return other
+    def __mod__(self, other):            return other
+    def __divmod__(self, other):         return other
+    def __pow__(self, other):            return other
+    def __lshift__(self, other):         return other
+    def __rshift__(self, other):         return other
+    def __and__(self, other):            return other
+    def __xor__(self, other):            return other
+    def __or__(self, other):             return other
+    def __getattr__(self, name):         return BlackHole()
+    def __setattr__(self, name, value):  pass

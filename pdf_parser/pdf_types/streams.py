@@ -6,6 +6,7 @@ from ..filters import StreamFilter
 from ..misc    import ensure_list
 
 class PdfStream(PdfType):
+    """PDF stream type"""
     def __init__(self, header, data):
         super().__init__()
         self._header  = header
@@ -56,7 +57,7 @@ class PdfStream(PdfType):
         return self._decoded_data
     @property
     def data(self):
-       return self.decode()
+        return self.decode()
 
 def chain_funcs(funcs):
     return lambda x: reduce(lambda f1, f2: f2(f1), funcs, x)

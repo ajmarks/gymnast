@@ -4,9 +4,12 @@ from ..pdf_matrix import PdfMatrix
 __all__ = ['TextState', 'GraphicsState']
 
 class RendererState(object):
+    """Base class for renderer states"""
     id_matrix = PdfMatrix(1, 0, 0, 1, 0, 0)
 
 class TextState(RendererState):
+    """Renderer text state.  Has all of the various text rendering 
+    parameters"""
     def __init__(self):
         self.T_c     = 0.0  # Char space
         self.T_w     = 0.0  # Word space
@@ -28,5 +31,7 @@ class TextState(RendererState):
         self.T_lm = copy.copy(self.T_m)
 
 class GraphicsState(RendererState):
+    """Renderer graphics state.  Has all of the various graphical state 
+    parameters, including the current transformation matrix."""
     def __init__(self):
         self.CTM    = self.id_matrix # Current transformation matrix

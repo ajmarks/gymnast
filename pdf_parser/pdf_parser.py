@@ -12,6 +12,8 @@ from .pdf_constants import EOLS, WHITESPACE
 __all__ = ['PdfParser']
 
 class PdfParser(object):
+    """Parser for PDF files.  Takes raw PDF data and turns it into PDF _types_,
+    which can then be assembled into a document and document elements."""
     DELIMITERS = set([b'/', b'<', b'(', b'{', b'[', b'%'])
     ENDERS     = WHITESPACE.union(DELIMITERS)
 
@@ -67,8 +69,13 @@ class PdfParser(object):
                 objects.append(element)
         return objects
 
+    def parse_list(self, data, allow_invalid=False, disallowed=frozenset()):
+        """Parse the data and return a list"""
+        data = buffer_data(data)
+        return [i for i in self.iterparse(data, allow_invalid, disallowed)]
+
     def iterparse(self, data, allow_invalid=True,
-                  disallowed={b'R', b'obj', b'stream'}):
+                  disallowed=frozenset({b'R', b'obj', b'stream'})):
         """Generator-parser primarily for use in content streams."""
         data = buffer_data(data)
         while data.peek(1):
@@ -139,7 +146,7 @@ class PdfParser(object):
         return res
 
     @classmethod
-    def _get_next_token(cls, data, closer=None, disallowed=set()):
+    def _get_next_token(cls, data, closer=None, disallowed=frozenset()):
         """Get the next token in the stream, data.  Closer is an optional
         argument specifying the ending token of the current data structure,
         e.g., >> for dicts."""
@@ -161,7 +168,7 @@ class PdfParser(object):
             clen = len(closer)
 
         if   cls._eod(data): return True
-        elif not value     : return False
+        elif not value:      return False
 
         next_char = cls._peek(data, 1)
         not_obj   = (value+next_char) not in cls.obj_types
@@ -169,8 +176,8 @@ class PdfParser(object):
         if value in cls.obj_types and not_obj and value not in disallowed:
             return True
         elif closer and cls._peek(data, clen) == closer \
-            and value+cls._peek(data, clen-len(value)) != closer: #The last clause covers an issue with
-            return True                                      #a dict as the last element of a dict
+            and value+cls._peek(data, clen-len(value)) != closer: #Last clause covers an issue with
+            return True                                       #a dict as the last element of a dict
         elif next_char in cls.ENDERS and not_obj:
             return True
         return False
@@ -290,9 +297,9 @@ class PdfParser(object):
     def _parse_literal(token):
         """Parse a simple literal number, boolean, or null"""
         token = bytes(token)
-        if   token == b'true' : return True
+        if   token == b'true':  return True
         elif token == b'false': return False
-        elif token == b'null' : return None
+        elif token == b'null':  return None
         elif token[:1] == b'/':
             return PdfParser._parse_name(token)
         else:

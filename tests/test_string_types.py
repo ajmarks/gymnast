@@ -7,9 +7,9 @@ class TestStringTypes(ParserTestCase):
         self.assertEqual(func(None)._parsed_bytes, b'simple string')
         self.set_data(b'simple (string))')
         self.assertEqual(func(None)._parsed_bytes, b'simple (string)')
-        self.set_data(b'simple \((string))')
+        self.set_data(b'simple \\((string))')
         self.assertEqual(func(None)._parsed_bytes, b'simple ((string)')
-        self.set_data(b'simple (string\)))')
+        self.set_data(b'simple (string\\)))')
         self.assertEqual(func(None)._parsed_bytes, b'simple (string))')
 
     def test_hex_string(self):

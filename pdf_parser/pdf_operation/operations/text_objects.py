@@ -8,11 +8,11 @@ class BT(PdfOperation):
 
     @staticmethod
     def do_opcode(renderer):
-        if renderer._in_text:
+        if renderer.in_text:
             raise PdfError('Cannot being a new text object without ending the previous')
-        renderer._in_text = True
-        renderer._ts.T_m  = TextState.id_matrix
-        renderer._ts.T_lm = TextState.id_matrix
+        renderer.in_text = True
+        renderer.ts.T_m  = TextState.id_matrix
+        renderer.ts.T_lm = TextState.id_matrix
 
 
 class ET(PdfOperation):
@@ -22,9 +22,9 @@ class ET(PdfOperation):
 
     @staticmethod
     def do_opcode(renderer):
-        if not renderer._in_text:
+        if not renderer.in_text:
             raise PdfError('ET without a corresponding BT end text object')
         else:
-            renderer._in_text = False
-            renderer._ts.T_m  = None
-            renderer._ts.T_lm = None
+            renderer.in_text = False
+            renderer.ts.T_m  = None
+            renderer.ts.T_lm = None

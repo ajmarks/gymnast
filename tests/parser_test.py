@@ -1,10 +1,8 @@
 import io
 import unittest
-from ..ppdf_parser import PdfParser
+from ..pdf_parser.pdf_parser import PdfParser
 
 class ParserTestCase(unittest.TestCase):
+    """Test the parser"""
     def setUp(self):
         self.parser = PdfParser()
-
-    def set_data(self, data):
-        self.parser._data = io.BufferedReader(io.BytesIO(data))

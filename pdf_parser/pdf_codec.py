@@ -80,6 +80,7 @@ DEC_TABLE = {
 ENC_TABLE = {v:k for k,v in DEC_TABLE.items()}
 
 class Codec(codecs.Codec):
+    """Codec for pdf encoding"""
     def decode(self, input, errors='strict'):
         return codecs.charmap_decode(input, errors, DEC_TABLE)
         #utf16 = bytes(codecs.charmap_decode(input, errors, DEC_TABLE))
@@ -88,19 +89,24 @@ class Codec(codecs.Codec):
         return codecs.charmap_encode(input, errors, ENC_TABLE)
 
 class IncrementalDecoder(codecs.IncrementalDecoder):
+    """Incremental decoder for our PDF codec"""
     def decode(self, input, final=False):
         return codecs.charmap_decode(input, self.errors, DEC_TABLE)[0]
 class IncrementalEncoder(codecs.IncrementalEncoder):
+    """Incremental encoder for our PDF codec"""
     def encode(self, input, final=False):
         return codecs.charmap_encode(input, self.errors, ENC_TABLE)[0]
 
 class StreamWriter(Codec, codecs.StreamWriter):
+    """StreamWriter for our PDF codec"""
     pass
 
 class StreamReader(Codec, codecs.StreamReader):
+    """StreamReader for our PDF codec"""
     pass
 
 def getregentry():
+    """Get a codecs registry entry for this codec"""
     return codecs.CodecInfo(
         name=ENCODING_NAME,
         encode=Codec().encode,

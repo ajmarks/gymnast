@@ -1,3 +1,7 @@
+"""
+Stream filters module
+"""
+
 from .stream_filter import StreamFilter#, NOPFilter
 #from .ascii_filters import *
 #from .crypt_filters import *

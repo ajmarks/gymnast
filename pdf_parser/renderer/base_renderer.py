@@ -28,11 +28,11 @@ class PdfBaseRenderer(object):
         _page = PdfPage()
 
     def __init__(self, page):
-        self._ts      = TextState()   # Text state
+        self.ts      = TextState()   # Text state
         self._gs      = GraphicsState() # Graphics state
         self._page    = page
         self._fonts   = page.Fonts
-        self._in_text = False
+        self.in_text = False
         self._state_stack = []
         self._raw_glyphs = io.StringIO()
 
@@ -74,7 +74,7 @@ class PdfBaseRenderer(object):
         pass
     @property
     def active_font(self):
-        return self._fonts[self._ts.T_f]
+        return self._fonts[self.ts.T_f]
 
     @property
     def text_coords(self):
@@ -89,9 +89,9 @@ class PdfBaseRenderer(object):
         self._gs = self._state_stack.pop()
 
     def _compute_T_rm(self, **kwargs):
-        T_m = kwargs.get('T_m', self._ts.T_m)
+        T_m = kwargs.get('T_m', self.ts.T_m)
         CTM = kwargs.get('CTM', self._gs.CTM)
-        ts = self._ts
+        ts = self.ts
         return PdfMatrix(ts.T_fs*ts.T_h,     0,
                                 0,        ts.T_fs,
                                 0,       ts.T_rise)*T_m*CTM
@@ -113,18 +113,18 @@ class PdfBaseRenderer(object):
             TJ    - Are we in TJ mode (so don't auto-shift)
         TODO: Vertical writing"""
         # This shortcut works.  Check the math.
-        ts = self._ts
+        ts = self.ts
         widths = sum(self._get_glyph_width(glyph) for glyph in string)
         t_x = (widths*ts.T_fs + ts.T_c + ts.T_w) * ts.T_h
         t_y = 0.0 # <--- TODO: Vertical writing mode
         T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y) * ts.T_m
         self._render_text(string, self._compute_T_rm(T_m=T_m))
         if not TJ:
-            self._ts.T_m = T_m
+            self.ts.T_m = T_m
     def move_text_cursor(self, t):
-        ts  = self._ts
+        ts  = self.ts
         t_x = (-t/1000.0*ts.T_fs + ts.T_c + ts.T_w) * ts.T_h
         t_y = 0.0 # <--- TODO: Vertical writing mode
         T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y)*ts.T_m
         self._move_text_cursor(T_m)
-        self._ts.T_m = T_m
+        self.ts.T_m = T_m

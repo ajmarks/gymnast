@@ -2,6 +2,7 @@ import io
 from .base_renderer import PdfBaseRenderer
 
 class PdfSimpleRenderer(PdfBaseRenderer):
+    """Simple renderer example that just extracts the text with no processing"""
     def __init__(self, page):
         super().__init__(page)
         self._text = io.StringIO()

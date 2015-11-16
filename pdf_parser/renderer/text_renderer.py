@@ -31,6 +31,7 @@ from ..pdf_operation import PdfOperation
 
 
 class TextLine(object):
+    """Class representing a unique line of text on the page"""
     def __init__(self, ymin, ymax):
         self._texts     = []
         self._interval = slice(ymin, ymax)
@@ -142,7 +143,7 @@ class PdfTextRenderer(PdfBaseRenderer):
 
     def _new_line(self, ymin, ymax):
         line = TextLine(ymin, ymax)
-        self._tree[line._interval] = line
+        self._tree[line.interval] = line
         return line
 
     def _block_to_line(self):
@@ -164,10 +165,10 @@ class PdfTextRenderer(PdfBaseRenderer):
         """The width of a space in the current font"""
         # TODO: Use active_font.FontMatrix instead of division by 1000
         w0 = self.active_font.space_width/1000.0
-        return (w0*self._T_fs+self._T_c+self._T_w) * self._T_h
+        return (w0*self.ts.T_fs+self.ts.T_c+self.ts.T_w) * self.ts.T_h
 
     @property
     def _cap_height(self):
         """The height of a capital letter in the current font"""
         # TODO: Use active_font.FontMatrix instead of division by 1000
-        return self.active_font.FontDescriptor.CapHeight/1000.0*self._T_fs
+        return self.active_font.FontDescriptor.CapHeight/1000.0*self.ts.T_fs

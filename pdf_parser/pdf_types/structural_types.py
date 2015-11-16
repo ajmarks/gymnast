@@ -9,6 +9,8 @@ from ..exc         import *
 
 
 class PdfXref(PdfType):
+    """Cross reference objects.  These forms the basic scaffolding of the PDF
+    file, indicating where in the file each object is located."""
     LINE_PAT = re.compile(r'^(\d{10}) (\d{5}) (n|f)\s{0,2}$')
 
     #IDE type hints
@@ -67,28 +69,8 @@ class PdfXref(PdfType):
         return cls(document, obj_id, int(match.group(1)), int(match.group(2)),
                    match.group(3) == 'n')
 
-
-class PdfTrailer(PdfType, dict):
-    #Type hints:
-    if False:
-        _root = PdfObjectReference()
-        _info = PdfObjectReference()
-
-    def __init__(self, trailer):
-        PdfType.__init__(self)
-        dict.__init__(self, trailer)
-        #self._document = document
-        #self._size     = trailer['Size']
-        #self._root     = trailer['Root']
-        #self._prev     = trailer.get('Prev')
-        #self._encrypt  = trailer.get('Encrypt')
-        #self._info     = trailer.get('Info', {})
-        #self._id       = trailer.get('ID')
-    @property
-    def root(self):
-        return self._root.value
-
 class PdfHeader(PdfType):
+    """PDF version header.  Probably not super necessary to have."""
     def __init__(self, version, adobe_version=None):
         super().__init__()
         self.version       = Decimal(version)
@@ -102,6 +84,7 @@ class PdfHeader(PdfType):
         return bytes(str(self))
 
 class PdfRaw(PdfType, bytes):
+    """Raw PDF token"""
     def __new__(cls, *args, **kwargs):
         val =  bytes.__new__(cls, *args, **kwargs)
         val.__init__(*args, **kwargs)
@@ -110,6 +93,7 @@ class PdfRaw(PdfType, bytes):
         PdfType.__init__(self)
 
 class PdfRawData(PdfType, bytes):
+    """Raw, unparsed PDF data that should be treated as data, not a token."""
     def __new__(cls, *args, **kwargs):
         val =  bytes.__new__(cls, *args, **kwargs)
         val.__init__(*args, **kwargs)

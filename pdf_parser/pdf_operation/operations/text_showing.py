@@ -6,9 +6,6 @@ from ...misc          import classproperty
 from ...pdf_elements  import PdfFont
 
 
-
-
-
 class TextOper(PdfOperation):
     optype = PdfOperation.TEXT_SHOWING
 
