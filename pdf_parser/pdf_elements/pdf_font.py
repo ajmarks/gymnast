@@ -195,7 +195,9 @@ class PdfFont(PdfElement):
         i = 1
         typify = lambda a: None if not a else (a[0] if len(a) == 1 else a)
         while i < len(lines):
-            field, *attrs = lines[i].strip().split()
+            elems = lines[i].strip().split()
+            field = elems[0]
+            attrs = elems[1:]
             if field[:5] == 'Start' and attrs:
                 parsed[field[5:]] = lines[i+1:int(attrs[0])+i+1]
                 i += int(attrs[0])+1
