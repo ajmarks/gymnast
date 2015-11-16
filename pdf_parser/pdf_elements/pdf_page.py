@@ -7,8 +7,8 @@ import six
 from datetime import datetime
 
 from .pdf_element    import PdfElement
-from ..exc           import *
-from ..pdf_types     import *
+from ..exc           import PdfParseError, PdfError
+from ..pdf_types     import PdfType, PdfRaw
 from ..pdf_parser    import PdfParser
 from ..pdf_operation import PdfOperation
 
