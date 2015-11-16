@@ -7,15 +7,20 @@ import os
 from bidict import collapsingbidict
 
 from .pdf_element    import PdfElement
-from ..pdf_constants import BASE_ENCODINGS, GLYPH_LIST
+from ..pdf_constants import BASE_ENCODINGS, GLYPH_LIST, DATA_DIR
 from ..pdf_matrix    import PdfMatrix
 from ..pdf_parser    import PdfParser
 from ..pdf_types     import PdfLiteralString, PdfDict
 from ..exc           import *
 
+#PTVS nonsense
+if False:
+    from builtins import *
 
-DATA_DIR  = os.path.dirname(os.path.abspath(__file__)) + '/../data/afm/'
-STD_FONTS = set([i[:-4] for i in os.listdir(DATA_DIR) if i[-4:] == '.afm'])
+
+DATA_DIR  = os.path.dirname(os.path.abspath(__file__))
+AFM_DIR   = DATA_DIR + '/../data/afm/'
+STD_FONTS = set([i[:-4] for i in os.listdir(AFM_DIR) if i[-4:] == '.afm'])
 
 class FontDescriptor(PdfElement):
     """FontDescriptior object describefd in Table 5.19 on p. 456.
@@ -26,6 +31,7 @@ class FontDescriptor(PdfElement):
 
     @property
     def CharSet(self):
+
         if self._charset is False: # We need None
             chars = self._object.value.get('CharSet')
             if isinstance(chars, (bytes, PdfLiteralString)):
@@ -183,7 +189,7 @@ class PdfFont(PdfElement):
         PdfFont object
 
         TODO: Make this not disgustingly, eye gougingly awful"""
-        FILE_PAT = DATA_DIR + '/{}.afm'
+        FILE_PAT = AFM_DIR + '/{}.afm'
 
         with open(FILE_PAT.format(font_name)) as f:
             lines = [l for l in f.read().splitlines() if l[:8]!='Comment ']

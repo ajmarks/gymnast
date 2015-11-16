@@ -6,13 +6,15 @@
     <ProjectGuid>{bea0173b-6da0-4352-97d4-705d599e6b67}</ProjectGuid>
     <ProjectHome />
     <StartupFile>local_tests.py</StartupFile>
-    <SearchPath>opcodes\</SearchPath>
+    <SearchPath>
+    </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
     <InterpreterVersion>3.4</InterpreterVersion>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -106,6 +108,8 @@
     <Content Include="pdf_parser\data\afm\Times-Italic.afm" />
     <Content Include="pdf_parser\data\afm\Times-Roman.afm" />
     <Content Include="pdf_parser\data\afm\ZapfDingbats.afm" />
+    <Content Include="pdf_parser\data\glyphlist.txt" />
+    <Content Include="pdf_parser\data\pdf_encodings.txt" />
     <Content Include="pdf_parser\pdf_operation\operations\special_graphics.py" />
     <Content Include="README.md" />
     <Content Include="pdf_parser\VERSION" />
