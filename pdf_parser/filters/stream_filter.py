@@ -2,75 +2,52 @@
 Abstract base class for stream filters
 """
 import six
-from ..misc    import get_subclasses, ensure_str, classproperty, MetaGettable
+from collections import namedtuple
+from warnings    import warn
+from ..misc   import get_subclasses, ensure_str, classproperty, MetaGettable
+
+base = namedtuple('StreamFilter', ('filter_name','decoder', 'EOD', 'encoder'))
+base.__new__.__defaults__ = (None, None)
+class StreamFilterBase(base):
+    """Stream filter class."""
+    def decode(self, data, **kwargs):
+        """Decode the encoded stream. Keyword arguments are the parameters from
+        the stream dictionary."""
+        if self.EOD:
+            end = data.find(bytes(self.EOD))
+            return self.decoder(data[:end if end > 0 else None], **kwargs)
+        else:
+            return self.decoder(data, **kwargs)
+    def encode(self, data, **kwargs):
+        """Encode the stream data. Keyword arguments are the parameters from
+        the stream dictionary."""
+        if self.encoder:
+            return self.encoder(data, **kwargs) + (self.EOD if self.EOD else b'')
+        else:
+            warn('Encoding for {} not implemented'.format(self.filter_name))
+            return data + (self.EOD if self.EOD else b'')
 
 @six.add_metaclass(MetaGettable)
 class StreamFilter(object):
-    """Abstract stream filter class.  Specify new filters by inheriting
-    and setting filter_name and eod.
+    """PDF stream filter stream dispatcher.  Stream filters are registered by
+    calling PdfOperation.register() and passing a subclass of StreamFilterBase.
 
     Information on filters at can be found at
     https://partners.adobe.com/public/developer/en/ps/sdk/TN5603.Filters.pdf"""
-    filter_name = None
-    EOD         = None
-
-    @classmethod
-    def decode(cls, data, **kwargs):
-        """Decode the encoded stream. Keyword arguments are the parameters from
-        the stream dictionary."""
-        if cls.EOD:
-            end = data.find(bytes(cls.EOD))
-            return cls.decode_data(data[:end if end > 0 else None], **kwargs)
-        else:
-            return cls.decode_data(data, **kwargs)
-
-    @classmethod
-    def encode(cls, data, **kwargs):
-        """Encode the stream data. Keyword arguments are the parameters from
-        the stream dictionary."""
-        return cls.encode_data(data, **kwargs) + (cls.EOD if cls.EOD else b'')
-
-    @staticmethod
-    def decode_data(data, **kwargs):
-        raise NotImplementedError
-
-    @staticmethod
-    def encode_data(data, **kwargs):
-        raise NotImplementedError
-
     # Nothing to see here.  Pay no attention to that man behind the curtain.
-    __filters = None
+    _filters    = {}
+    _nop_filter = StreamFilterBase('NOPFilter', lambda x: x)
 
-    @classproperty
-    def filters(cls):
-        if cls.__filters is None:
-            cls.__init_filter()
-        return cls.__filters
+    @classmethod
+    def register(cls, filter_name, decoder, eod=None, encoder=None):
+        """Register a new stream filter"""
+        new_filt = StreamFilterBase(filter_name, decoder, eod, encoder)
+        cls._filters[filter_name] = new_filt
 
-    @staticmethod
-    def __init_filter():
-        # Need to do the imports here to prevent circular imports.
-        from . import filters
-        sfilts = {ensure_str(o.filter_name): o
-                  for o in get_subclasses(StreamFilter) if o.filter_name}
-        StreamFilter.__filters = sfilts
     @classmethod
     def __getitem__(cls, filter_name):
         filter_name = ensure_str(filter_name)
         try:
-            return cls.filters[filter_name]
+            return cls._filters[filter_name]
         except KeyError:
-            #TODO: Leave PdfStream._decoded and ._decoded_data alone
-            #this will probably mean that PdfStream objects will need to
-            #operate on the stream, not the stream data, which, frankly, is
-            #more elegant anyway
-            return NOPFilter
-
-class NOPFilter(StreamFilter):
-    """NOP filter."""
-    @staticmethod
-    def decode_data(data, **kwargs):
-        return data
-    @staticmethod
-    def encode_data(data, **kwargs):
-        return data
+            return cls._nop_filter

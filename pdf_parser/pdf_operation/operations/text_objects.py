@@ -2,9 +2,9 @@
 Text Object operations - Reference p. 405
 """
 
-from ..pdf_operation import PdfOperation
-from ...exc          import PdfError
-from ...renderer     import TextState
+from ..pdf_operation             import PdfOperation
+from ...exc                      import PdfError
+from ...renderer.renderer_states import TextState
 
 def opcode_BT(renderer):
     if renderer.in_text:

@@ -16,11 +16,7 @@ __status__    = 'Alpha'
 from .pdf_doc    import PdfDocument
 from .pdf_parser import PdfParser
 
-try:
-    from pkg_resources import resource_string
-    __version__ = resource_string(__name__, 'VERSION').decode('ascii').strip()
-except Exception as e:
-    from warnings import warn
-    warn('Failed to read/set version: %r' % e)
+from pkg_resources import resource_string
+__version__ = resource_string(__name__, 'VERSION').decode('ascii').strip()
 
 __all__ = ['PdfDocument', 'PdfParser']

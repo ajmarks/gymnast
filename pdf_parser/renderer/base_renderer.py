@@ -87,7 +87,7 @@ class PdfBaseRenderer(object):
 
     def _compute_T_rm(self, **kwargs):
         T_m = kwargs.get('T_m', self.ts.T_m)
-        CTM = kwargs.get('CTM', self._gs.CTM)
+        CTM = kwargs.get('CTM', self.gs.CTM)
         ts = self.ts
         return PdfMatrix(ts.T_fs*ts.T_h,     0,
                                 0,        ts.T_fs,

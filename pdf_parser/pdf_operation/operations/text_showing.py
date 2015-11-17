@@ -6,10 +6,10 @@ import numbers
 from ..pdf_operation import PdfOperation
 from ...exc          import PdfError
 
-def opcode_Tj(renderer, string):
+def opcode_Tj(renderer, string=b''):
     renderer.render_text(string)
 
-def opcode_TJ(renderer, args):
+def opcode_TJ(renderer, args=()):
     for op in args:
         if isinstance(op, str):
             renderer.render_text(op, True)
