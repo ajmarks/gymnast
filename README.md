@@ -1,15 +1,17 @@
 # pdf_parser
 
-PDF parser written in Python 3.
+[![Code Health](https://landscape.io/github/ajmarks/pdf_parser/master/landscape.svg?style=flat)](https://landscape.io/github/ajmarks/pdf_parser/master)
+
+PDF parser written in Python 3 (backport to 2.7 in the works).  This was designed to provide a Pythonic interface to access (and, eventually, write) Adobe PDF files.  Some of attributes have non-Pythonic capitalization, but that is to match the underlying structure of the PDF document (doing otherwise would get very confusing).
 
 ##Usage
 ```python
-from pdf_parser import PdfDocument
+from pdf_parser          import PdfDocument
+from pdf_parser.renderer import SimpleRenderer
 
 file = '/path/to/file.pdf'
-pdf = PdfDocument(file).parse()
-page = pdf.Pages[-3]
-fonts = page.Fonts.values()
+pdf  = PdfDocument(file).parse()
+text = SimpleRenderer(pdf.Pages[-3]).render()
 ```
 
 
@@ -24,15 +26,15 @@ fonts = page.Fonts.values()
   - [ ] Handle page numbering more fully
     - [ ] Add a method to `PdfDocument` to get a page by number
     - [ ] Add propreties to `PdfPage` for the page number (both as an `int` and a formatted `str` according to `PdfDocument.Root.PageLabels['Nums']`)
-  - [ ] Backport to Python 2.7 (should be pretty simple; I think it's just turning `yield from` into loops)
+  - [ ] Backport to Python 2.7 (about 80% done or so)
   - [ ] Font stuff
-    - [ ] Carve the `PdfFont` class into an abstract `PdfBaseFont` and a `PdfType1Font` implementation
-      - [ ] `PdfFont.__new__` will pick the correct subclass based on the font's Subtype element
-      - [ ] PdfBasefFont class will also have an abstract method for the glyph space to text space transformation
+    - [x] Carve the `PdfFont` class into an abstract `PdfBaseFont` and a `PdfType1Font` implementation
+      - [x] `PdfFont.__new__` will pick the correct subclass based on the font's Subtype element
+      - [x] PdfBasefFont class will also have an abstract method for the glyph space to text space transformation
     - [ ] Add subcless for Type3 fonts
-    - [ ] Add subcless for TrueType fonts
+    - [x] Add subcless for TrueType fonts
     - [ ] Add subcless for composite fonts
-    - [ ] Add legacy support for the 14 standard fonts
+    - [x] Add legacy support for the 14 standard fonts
     - [ ] Font-to-unicode CMAPs
   - [ ] Implement the remaining `StreamFilter`s (will probably have the image ones return a `PIL.Image`)
     - [ ] `RunLengthDecode`
@@ -43,7 +45,7 @@ fonts = page.Fonts.values()
     - [ ] `Crypt`
   - [ ] Implement remaining object types
     - [ ] `ObjStm`
-    - [ ] `XRef`
+    - [x] `XRef`
     - [ ] `Filespec`
     - [ ] `EmbeddedFile`
     - [ ] `CollectionItem` / `CollectionSubitem`
