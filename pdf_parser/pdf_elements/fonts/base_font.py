@@ -138,8 +138,6 @@ class FontEncoding(PdfElement):
                                            for k,v in six.iteritems(BASE_ENCODINGS)})
         # Now modify it with the differences array, if specified
         diffs = obj.value.get('Differences', [])
-        if not isinstance(diffs, (list, tuple)):
-            raise ValueError('Invalid differences array')
         # Flatten if we need to (though we shouldn't need to)
         if diffs and isinstance(diffs[0], list):
             diffs = sum(diffs, [])

@@ -49,6 +49,11 @@ class PdfLiteralString(str, PdfString):
         obj = str.__new__(cls, string)
         obj.__init__(data)
         return obj
+
+    def __init__(self, *args, **kwargs):
+        PdfType.__init__(self)
+        str.__init__(self)
+
     @staticmethod
     def _decode_bytes(data):
         """Detect the encoding method and return the decoded string"""
@@ -137,6 +142,7 @@ class PdfComment(PdfType, str):
         return str.__new__(cls, obj)
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
+        str.__init__(self)
     def pdf_encode(self):
         return b'%' + bytes(self.parsed_object)
 
@@ -144,3 +150,6 @@ class PdfName(PdfType, str):
     """PDF name objects, mostly use for dict keys"""
     def __new__(cls, *args, **kwargs):
         return str.__new__(cls, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        PdfType.__init__(self)
+        str.__init__(self)
