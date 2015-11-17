@@ -20,6 +20,7 @@ pylint:
     - C0111 # Not every method needs a docstring.
     - W0142 # Don't be a baby. * and ** magic are super useful.
     - R0201 # Generally, this is good.  But not here.
+    - W0613 # Unused arguments.  Spams up because of *args, **kwargs compatibility.
 pep8:
   disable:
     - E704
