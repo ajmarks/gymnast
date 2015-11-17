@@ -1,8 +1,6 @@
 """
 TrueType Fonts
 """
-import os
-import six
 
 from .base_font       import PdfBaseFont
 

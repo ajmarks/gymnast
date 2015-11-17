@@ -2,7 +2,6 @@
 Font objects
 """
 
-import os
 import six
 import struct
 from bidict import collapsingbidict
@@ -11,7 +10,7 @@ from ..pdf_element    import PdfElement
 from ...pdf_constants import BASE_ENCODINGS, GLYPH_LIST
 from ...pdf_matrix    import PdfMatrix
 from ...pdf_parser    import PdfParser
-from ...pdf_types     import PdfLiteralString, PdfDict, PdfName
+from ...pdf_types     import PdfLiteralString, PdfDict
 from ...exc           import PdfError
 
 class PdfBaseFont(PdfElement):
@@ -22,9 +21,9 @@ class PdfBaseFont(PdfElement):
         self._encoding = None
         self._codec    = None
 
-        def text_space_coords(self, x, y):
-            """Convert a vector in glyph space to text space"""
-            raise NotImplementedError
+    def text_space_coords(self, x, y):
+        """Convert a vector in glyph space to text space"""
+        raise NotImplementedError
 
     @property
     def Encoding(self):

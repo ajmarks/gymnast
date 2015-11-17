@@ -2,14 +2,13 @@
 Type1 Fonts
 """
 import os
-import six
 
 from .base_font       import PdfBaseFont
 from ...pdf_constants import DATA_DIR
 from ...pdf_types     import PdfName, PdfDict
 
 AFM_DIR   = DATA_DIR + '/afm/'
-STD_FONTS = set([f[:-4] for f in os.listdir(AFM_DIR) if f[-4:] == '.afm'])
+STD_FONTS = set([j[:-4] for j in os.listdir(AFM_DIR) if j[-4:] == '.afm'])
 
 class Type1Font(PdfBaseFont):
     """Base PDF Font.  Right now this is exclusively Type 1."""
@@ -17,9 +16,9 @@ class Type1Font(PdfBaseFont):
     def __init__(self, obj, obj_key=None):
         """If the font has a name in the Standard 14, load defaults from there
         and then apply the settings from the definition here."""
-        obs = obj.value
+        obj = obj.value
         if obj['BaseFont'] in STD_FONTS:
-            std_font = get_std_font_dict(fname)
+            std_font = get_std_font_dict(obj['BaseFont'])
             obj = std_font.update(obj)
         super(Type1Font, self).__init__(obj, obj_key)
 
@@ -33,11 +32,12 @@ class Type1Font(PdfBaseFont):
         """Super, super crude method to parse a afm font file into a Type1
         PdfFont object"""
 
-def get_std_font_dict(fname):
+def get_std_font_dict(font_name):
     """Load a standard font and parse it into a PdfDict similar to how it would
     be stored in a PDF file"""
     FILE_PAT = AFM_DIR + '/{}.afm'
 
+    typify = lambda a: None if not a else (a[0] if len(a) == 1 else a)
     parsed = load_afm_file(FILE_PAT.format(font_name))
     charmets = [{i.split()[0]:typify(i.split()[1:])
                     for i in l.split(';') if i.strip()}
@@ -45,8 +45,8 @@ def get_std_font_dict(fname):
     first_char = min(int(i['C']) for i in charmets if i['C'] != '-1')
     last_char  = min(int(i['C']) for i in charmets)
     widths     = [i['WX']
-                    for i in sorted(charmets, key=lambda x: int(x['C']))
-                    if i['C'] != '-1']
+                  for i in sorted(charmets, key=lambda x: int(x['C']))
+                  if i['C'] != '-1']
     charset    = [PdfName(i['N'])  for i in charmets if i['C'] != '-1']
     intprop = lambda x: None if x not in parsed else int(parsed[x])
 

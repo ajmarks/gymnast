@@ -12,7 +12,7 @@ from ...exc        import NotImplementedWarning
 class PdfFont(PdfElement):
     """Switchboard class that should probably be a function.
     Returns PDF Font of the appropriate types."""
-    def __new__(self, obj, obj_key=None):
+    def __new__(cls, obj, obj_key=None):
         obj = obj.value
         if obj['Type'] != 'Font':
             raise ValueError('Not a font')
