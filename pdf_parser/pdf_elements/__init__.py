@@ -15,5 +15,5 @@ from .pdf_page       import PdfPage, PdfPageNode, PdfAbstractPage
 from .other_elements import PdfCatalog
 
 __all__ = ['PdfElement', 'PdfFont', 'FontDescriptor', 'FontEncoding',
-           'PdfPage', 'PdfPageNode', 'PdfAbstractPage', 'PdfCatalog'
+           'PdfPage', 'PdfPageNode', 'PdfAbstractPage', 'PdfCatalog',
            'PdfBaseFont']
