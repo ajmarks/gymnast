@@ -98,8 +98,8 @@ class MetaNonelike(type):
     def __bool__(cls):      return False
     def __lt__(cls, other): return (None <  other)
     def __le__(cls, other): return (None <= other)
-    def __eq__(cls, other): return (None == other)
-    def __ne__(cls, other): return (None != other)
+    def __eq__(cls, other): return (None is other)
+    def __ne__(cls, other): return (None is not other)
     def __gt__(cls, other): return (None >  other)
     def __ge__(cls, other): return (None >= other)
 
