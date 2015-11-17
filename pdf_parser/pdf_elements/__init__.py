@@ -10,7 +10,7 @@ in default values where applicable.
 """
 
 from .pdf_element    import PdfElement
-from .pdf_font       import PdfFont, FontDescriptor, FontEncoding
+from .fonts          import PdfBaseFont, FontDescriptor, FontEncoding, PdfFont
 from .pdf_page       import PdfPage, PdfPageNode, PdfAbstractPage
 from .other_elements import PdfCatalog
 
