@@ -11,6 +11,7 @@ from pdf_parser.misc       import buffer_data
 fname = 'S:/Research/Leisure/STR RevPar Data/US Weekly PDFs/Lodging Smith Travel Results 15-10-07.pdf'
 pdf = PdfDocument(fname).parse()
 page = pdf.Pages[0]
+print(page.Fonts['T1_1'].FontDescriptor.CharSet)
 print(PdfSimpleRenderer(page).render())
 #fname = 'c:/results.pdf'
 ##fname = 'S:/Research/Leisure/STR RevPar Data/US Weekly PDFs/Lodging Smith Travel Results 15-10-07.pdf'

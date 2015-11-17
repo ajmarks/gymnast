@@ -88,6 +88,7 @@ class PdfRaw(PdfType, bytes):
         return val
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
+        bytes.__init__(self)
     def pdf_encode(self):
         return self
 
@@ -99,5 +100,6 @@ class PdfRawData(PdfType, bytes):
         return val
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
+        bytes.__init__(self)
     def pdf_encode(self):
         return self

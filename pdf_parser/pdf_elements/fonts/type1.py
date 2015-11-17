@@ -22,8 +22,7 @@ class Type1Font(PdfBaseFont):
             obj = std_font.update(obj)
         super(Type1Font, self).__init__(obj, obj_key)
 
-    @staticmethod
-    def text_space_coords(x, y):
+    def text_space_coords(self, x, y):
         """Type1 fonts just scale by 1/1000 to convert from glyph space"""
         return x/1000., y/1000.
 
@@ -40,7 +39,7 @@ def get_std_font_dict(font_name):
     typify = lambda a: None if not a else (a[0] if len(a) == 1 else a)
     parsed = load_afm_file(FILE_PAT.format(font_name))
     charmets = [{i.split()[0]:typify(i.split()[1:])
-                    for i in l.split(';') if i.strip()}
+                 for i in l.split(';') if i.strip()}
                 for l in parsed['CharMetrics']]
     first_char = min(int(i['C']) for i in charmets if i['C'] != '-1')
     last_char  = min(int(i['C']) for i in charmets)

@@ -51,7 +51,7 @@ class PdfElement(MutableMapping):
         if name == 'Type':
             raise KeyError('A document object\'s type cannot be changed')
         self._object[PdfName(name)] = value
-    def __delitem__(self, name, value):
+    def __delitem__(self, name):
         if name in self.required_properties:
             raise KeyError("'%s' is a required attribute and cannot be "
                            "deleted"%name)

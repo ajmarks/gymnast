@@ -9,8 +9,7 @@ from bidict import collapsingbidict
 from ..pdf_element    import PdfElement
 from ...pdf_constants import BASE_ENCODINGS, GLYPH_LIST
 from ...pdf_matrix    import PdfMatrix
-from ...pdf_parser    import PdfParser
-from ...pdf_types     import PdfLiteralString, PdfDict
+from ...pdf_types     import PdfLiteralString, PdfDict, PdfNull, PdfName
 from ...exc           import PdfError
 
 class PdfBaseFont(PdfElement):
@@ -113,10 +112,12 @@ class FontDescriptor(PdfElement):
         if self._charset is False: # We need None
             chars = self._object.value.get('CharSet')
             if isinstance(chars, bytes):
-                self._charset = PdfParser().parse_list(chars)
+                self._charset = [PdfName(b'/'+char)
+                                 for char in chars.split('/')[1:]]
             elif isinstance(chars, PdfLiteralString):
-                self._charset = PdfParser().parse_list(chars._raw_bytes)
-            elif chars is None:
+                self._charset = [PdfName(b'/'+char)
+                                 for char in chars._raw_bytes.split('/')[1:]]
+            elif chars is None or chars is PdfNull:
                 self._charset = chars
             else:
                 raise PdfError('Invalid charset')

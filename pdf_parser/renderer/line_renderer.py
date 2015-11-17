@@ -91,8 +91,8 @@ class PdfLineRenderer(PdfBaseRenderer):
         self._lines = collections.defaultdict(list)
 
     def _render_text(self, string, new_state):
-        x0, y0 = self.text_coords
-        x1, y1 = new_state.current_coords
+        x0 = self.text_coords[0]
+        x1 = new_state.current_coords[0]
         self._text_block.write_text(string, x0, x1-x0)
 
     def _preop(self, op):
@@ -106,7 +106,7 @@ class PdfLineRenderer(PdfBaseRenderer):
                                          self.text_coords[0],
                                          self.text_coords[1])
     def _move_text_cursor(self, T_m):
-        x1, y1 = self._compute_T_rm(T_m=T_m).current_coords
+        x1 = self._compute_T_rm(T_m=T_m).current_coords[0]
         self._text_block.fill_spaces(x1)
 
     def _postop(self, op):
@@ -115,7 +115,7 @@ class PdfLineRenderer(PdfBaseRenderer):
         self._text_block = None
 
     def _return(self):
-        #TODO: there's probably a better way to do this
+        #IDEA: there's probably a better way to do this
         lines = list(six.iteritems(self._lines))
         return [i[1] for i in sorted(lines, key=lambda l: l[0][1])]
 
@@ -129,12 +129,11 @@ class PdfLineRenderer(PdfBaseRenderer):
     @property
     def _space_width(self):
         """The width of a space in the current font"""
-        # TODO: Use active_font.FontMatrix instead of division by 1000
-        w0 = self.active_font.space_width/1000.0
+        w0 = self._gs_to_ts(self.active_font.space_width, 1)[0]
         return (w0*self.ts.T_fs+self.ts.T_c+self.ts.T_w) * self.ts.T_h
 
     @property
     def _cap_height(self):
         """The height of a capital letter in the current font"""
-        # TODO: Use active_font.FontMatrix instead of division by 1000
-        return self.active_font.FontDescriptor.CapHeight/1000.0*self.ts.T_fs
+        raw_height = self.active_font.FontDescriptor.CapHeight
+        return self._gs_to_ts(0,raw_height)[1]*self.ts.T_fs

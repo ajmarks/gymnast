@@ -10,7 +10,6 @@ pylint:
     - C0321 # def __str__(self): return self._text
     - E1101 # Nonexistant member.  Doesn't understand try/except
     - E0611 # No name in module.  Doesn't understand try/except
-    - W0221 # Overiden method has different no of arugments, doesn't understand *args
     - R0903 # Too few public methods.  That's cute.
     - R0401 # Cyclic import.  Doesn't get local imports.
     - C0325 # Unnecessary parens after return.  Sometimes they're good.
@@ -24,3 +23,6 @@ pylint:
 pep8:
   disable:
     - E704
+
+#Pylint options we're reenabling
+#    - W0221 # Overiden method has different no of arugments, doesn't understand *args

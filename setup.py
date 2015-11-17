@@ -2,7 +2,7 @@
 Let's make this into a nice package
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from pkg_resources import parse_version
 
 with open('pdf_parser/VERSION') as f:

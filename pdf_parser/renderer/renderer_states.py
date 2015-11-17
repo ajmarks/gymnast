@@ -3,17 +3,15 @@ Parameter sets representing renderer states
 """
 
 import copy
+from collections import namedtuple
 from ..pdf_matrix import PdfMatrix
 
 __all__ = ['TextState', 'GraphicsState']
 
-class RendererState(object):
-    """Base class for renderer states"""
-    id_matrix = PdfMatrix(1, 0, 0, 1, 0, 0)
-
-class TextState(RendererState):
+class TextState(object):
     """Renderer text state.  Has all of the various text rendering
     parameters"""
+    id_matrix = PdfMatrix(1, 0, 0, 1, 0, 0)
     def __init__(self):
         self.T_c     = 0.0  # Char space
         self.T_w     = 0.0  # Word space
@@ -34,8 +32,6 @@ class TextState(RendererState):
         """Reset the line matrix to the general text matrix"""
         self.T_lm = copy.copy(self.T_m)
 
-class GraphicsState(RendererState):
-    """Renderer graphics state.  Has all of the various graphical state
-    parameters, including the current transformation matrix."""
-    def __init__(self):
-        self.CTM    = self.id_matrix # Current transformation matrix
+#For now, GraphicsState can be treated as a slightly tweaked namedtuple
+GraphicsState = namedtuple('GraphicsState', ['CTM'])
+GraphicsState.__new__.__defaults__ = (TextState.id_matrix,)

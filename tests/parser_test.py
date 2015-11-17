@@ -1,4 +1,3 @@
-import io
 import unittest
 from ..pdf_parser.pdf_parser import PdfParser
 

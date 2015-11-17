@@ -6,7 +6,7 @@ import six
 
 from .pdf_element    import PdfElement
 from ..exc           import PdfParseError, PdfError
-from ..pdf_types     import PdfType, PdfRaw
+from ..pdf_types     import PdfType, PdfRaw, PdfArray
 from ..pdf_parser    import PdfParser
 from ..pdf_operation import PdfOperation
 
@@ -126,7 +126,7 @@ class PdfPage(PdfAbstractPage):
 class ContentStream(object):
     """A page's content stream"""
     def __init__(self, contents):
-        if not isinstance(contents, list):
+        if not isinstance(contents, PdfArray):
             contents = [contents]
         self._contents = contents
     @property

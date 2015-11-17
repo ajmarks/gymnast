@@ -98,8 +98,15 @@ class PdfBaseRenderer(object):
         return self._compute_T_rm()
 
     def _get_glyph_width(self, glyph):
-        #TODO: use font transformations
-        return self.active_font.get_glyph_width(glyph)/1000.0
+        """Get the glyph's width in _text_ space.
+
+        IDEA: Consider adding a helper method in fonts for this"""
+        raw_width = self.active_font.get_glyph_width(glyph)
+        return self._gs_to_ts(raw_width, 0)[0]
+
+    def _gs_to_ts(self, x, y):
+        """Convert coordinates from glyph space to text space"""
+        return self.active_font.text_space_coords(x, y)
 
     def render_text(self, string, TJ=False):
         """Write the string to the text output and, depending on the mode,
