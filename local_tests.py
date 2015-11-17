@@ -7,7 +7,8 @@ from pdf_parser.renderer import PdfSimpleRenderer, PdfTextRenderer
 from pdf_parser.pdf_parser import PdfParser
 from pdf_parser.misc       import buffer_data
 
-fname = 'c:/855.pdf'
+#fname = 'c:/855.pdf'
+fname = 'S:/Research/Leisure/STR RevPar Data/US Weekly PDFs/Lodging Smith Travel Results 15-10-07.pdf'
 pdf = PdfDocument(fname).parse()
 page = pdf.Pages[0]
 print(PdfSimpleRenderer(page).render())

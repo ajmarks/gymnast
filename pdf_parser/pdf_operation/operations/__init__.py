@@ -3,14 +3,11 @@ PDF content stream operations.  Ones that are not implemented are filled in
 by a subclass of PdfNOP
 """
 
-from .text_objects     import BT, ET
-from .text_state       import Tc, Tw, Tz, TL, Tf, Tr, Ts
-from .text_positioning import Td, TD, Tm, Tstar
-from .text_showing     import Tj, TJ, Apostrophe, Quote
-from .special_graphics import cm, q, Q
+from . import text_objects
+from . import text_state
+from . import text_positioning
+from . import text_showing
+from . import special_graphics
 
-__all__ = ['BT', 'ET',
-           'Tc', 'Tw', 'Tz', 'TL', 'Tf', 'Tr', 'Ts',
-           'Td', 'TD', 'Tm', 'Tstar',
-           'Tj', 'TJ', 'Apostrophe', 'Quote',
-           'cm', 'q', 'Q']
+__all__ = ['text_objects', 'text_state', 'text_positioning', 'text_showing',
+           'special_graphics']
