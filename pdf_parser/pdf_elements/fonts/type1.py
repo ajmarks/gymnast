@@ -4,9 +4,9 @@ Type1 Fonts
 import os
 import six
 
-from .base_font   import FontDescriptor, FontEncoding, PdfBaseFont
+from .base_font       import PdfBaseFont
 from ...pdf_constants import DATA_DIR
-from ...pdf_types import PdfName, PdfDict
+from ...pdf_types     import PdfName, PdfDict
 
 AFM_DIR   = DATA_DIR + '/afm/'
 STD_FONTS = set([f[:-4] for f in os.listdir(AFM_DIR) if f[-4:] == '.afm'])
