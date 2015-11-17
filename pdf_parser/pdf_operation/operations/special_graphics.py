@@ -6,7 +6,7 @@ from ..pdf_operation import PdfOperation
 from ...pdf_matrix   import PdfMatrix
 
 def opcode_cm(renderer, a, b, c, d, e, f):
-    renderer._gs.CTM = PdfMatrix(a, b, c, d, e, f)
+    renderer.gs.CTM = PdfMatrix(a, b, c, d, e, f)
 
 def opcode_q(renderer):
     renderer.push_state()
