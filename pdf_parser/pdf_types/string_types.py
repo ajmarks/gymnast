@@ -51,7 +51,7 @@ class PdfLiteralString(str, PdfString):
         return obj
 
     def __init__(self, *args, **kwargs):
-        PdfType.__init__(self)
+        PdfString.__init__(self)
         str.__init__(self)
 
     @staticmethod
