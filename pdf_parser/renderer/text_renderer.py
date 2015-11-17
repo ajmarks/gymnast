@@ -106,8 +106,8 @@ class PdfTextRenderer(PdfBaseRenderer):
         self._tree = IntervalTree()
 
     def _render_text(self, string, new_state):
-        x0, y0 = self.text_coords
-        x1, y1 = new_state.current_coords
+        x0, _ = self.text_coords
+        x1, _ = new_state.current_coords
         self._text_block.write_text(string, x0, x1-x0)
 
     def _preop(self, op):
@@ -121,7 +121,7 @@ class PdfTextRenderer(PdfBaseRenderer):
                                          self.text_coords[0],
                                          self.text_coords[1])
     def _move_text_cursor(self, T_m):
-        x1, y1 = self._compute_T_rm(T_m=T_m).current_coords
+        x1, _ = self._compute_T_rm(T_m=T_m).current_coords
         self._text_block.fill_spaces(x1)
     def _postop(self, op):
         if op.optype == PdfOperation.TEXT_SHOWING:

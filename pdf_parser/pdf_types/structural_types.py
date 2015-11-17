@@ -40,6 +40,10 @@ class PdfXref(PdfType):
                 return objs[self.key]
         else:
             return None # TODO: implement free Xrefs
+    def pdf_encode(self):
+        fstr = '{0d10} {1d05} {2}\r\n'
+        return fstr.format(self._offset, self._generation,
+                           'n' if self._in_use else 'f').encode()
 
     def __str__(self):
         return '{:010d} {:010d} '.format(self._offset, self._generation)\
@@ -73,6 +77,8 @@ class PdfHeader(PdfType):
         return vers+'PDF-'+str(self.version)
     def __bytes__(self):
         return bytes(str(self))
+    def pdf_encode(self):
+        return str(self).encode()
 
 class PdfRaw(PdfType, bytes):
     """Raw PDF token"""

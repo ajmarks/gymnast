@@ -3,13 +3,13 @@ PDF Element base class definition
 """
 
 import six
-
-from functools  import reduce
 from pprint     import pformat
 try:
     from collections.abc import MutableMapping
 except ImportError:
     from collections     import MutableMapping
+if six.PY3:
+    from functools       import reduce
 
 from ..pdf_types import PdfType, PdfName
 

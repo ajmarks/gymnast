@@ -73,7 +73,7 @@ class PdfLiteralString(str, PdfString):
                b')'   : b')',
                b'\\'  : b'\\',
                b'\n'  : b'',
-              #b'\r'  : b'' , # Stupid \r\n
+               #b'\r'  : b'' , # Stupid \r\n
                b'\r\n': b''}
 
     @staticmethod
@@ -133,6 +133,8 @@ class PdfHexString(PdfString):
         return codecs.decode(hstr, 'hex_codec')
     def __repr__(self):
         return str(self)
+    def pdf_encode(self):
+        return b'<'+self._raw_bytes+b'>'
 
 class PdfComment(PdfType, str):
     """Comments"""

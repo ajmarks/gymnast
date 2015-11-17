@@ -4,7 +4,7 @@ Abstract base class for stream filters
 import six
 from collections import namedtuple
 from warnings    import warn
-from ..misc   import get_subclasses, ensure_str, MetaGettable
+from ..misc      import ensure_str, MetaGettable
 
 base = namedtuple('StreamFilter', ('filter_name','decoder', 'EOD', 'encoder'))
 base.__new__.__defaults__ = (None, None)
