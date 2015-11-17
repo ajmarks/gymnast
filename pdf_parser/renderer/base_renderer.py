@@ -80,10 +80,10 @@ class PdfBaseRenderer(object):
 
     def push_state(self):
         """Push the current graphics state onto the stack"""
-        self._state_stack.append(copy.deepcopy(self._gs))
+        self._state_stack.append(copy.deepcopy(self.gs))
     def pop_state(self):
         """Pop the last graphics state off the stack"""
-        self._gs = self._state_stack.pop()
+        self.gs = self._state_stack.pop()
 
     def _compute_T_rm(self, **kwargs):
         T_m = kwargs.get('T_m', self.ts.T_m)

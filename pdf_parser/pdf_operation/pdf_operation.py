@@ -6,7 +6,7 @@ import inspect
 import six
 import warnings
 from ..exc  import PdfOpWarning
-from ..misc import classproperty, ensure_str, MetaGettable
+from ..misc import ensure_str, MetaGettable
 
 __all__ =['PdfOperation']
 
@@ -61,7 +61,8 @@ class PdfOperation(object):
     @classmethod
     def _nop(cls, operator):
         """Get the corresponding NOP operation, creating it if necessary."""
-        warnings.warn("Opcode '{}' not implemented. NOP".format(operator))
+        warnings.warn("Opcode '{}' not implemented. NOP".format(operator),
+                      PdfOpWarning)
         try:
             return cls._nops[operator]
         except KeyError:
