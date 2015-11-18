@@ -186,20 +186,20 @@ class PdfParser(object):
     def _consume_whitespace(data, whitespace=WHITESPACE):
         consume_whitespace(data, whitespace)
 
-    def _parse_reference(self, data, objects):
+    def parse_reference(self, data, objects):
         """References an indirect object, which may or may not have already
         been defined."""
         generation = objects.pop()
         obj_no     = objects.pop()
         return PdfObjectReference(obj_no, generation, self._doc)
 
-    def _parse_dict(self, data, objects):
+    def parse_dict(self, data, objects):
         """A dict is just represented as a differently delimited array, so
         we'll call that to get the elements"""
         elems = self._parse_array(data, objects, b'>>')
         return PdfDict(zip(elems[::2], elems[1::2]))
 
-    def _parse_hex_string(self, data, objects):
+    def parse_hex_string(self, data, objects):
         # TODO: Eliminate all of these getvalue() calls
         token = io.BytesIO(data.read(1))
         token.seek(0, 2)
@@ -207,7 +207,7 @@ class PdfParser(object):
             token.write(data.read(1))
         return PdfHexString(token.getvalue()[:-1])
 
-    def _parse_literal_string(self, data, objects):
+    def parse_literal_string(self, data, objects):
         token   = io.BytesIO()
         parens  = 0
         escaped = False
@@ -226,13 +226,13 @@ class PdfParser(object):
                     parens -= 1
             token.write(b)
         raise PdfParseError('Unterminated string literal')
-    def _parse_array(self, data, objects, closer=b']'):
+    def parse_array(self, data, objects, closer=b']'):
         """The main method aready returns a list of the objects it found,
         so that's easy"""
         elems = self._get_objects(data, closer)
         return PdfArray(elems)
 
-    def _parse_comment(self, data, objects):
+    def parse_comment(self, data, objects):
         token = io.BytesIO()
         while data.peek(1):
             b = data.read(1)
@@ -241,7 +241,7 @@ class PdfParser(object):
         else:
             return PdfComment(token.getvalue())
 
-    def _parse_expression(self, data, objects):
+    def parse_expression(self, data, objects):
         """TODO: This"""
         pass
 
@@ -252,7 +252,7 @@ class PdfParser(object):
         return  PdfIndirectObject(obj_no, gen, obj[0] if obj else None,
                                   self._doc)
 
-    def _parse_stream(self, data, objects):
+    def parse_stream(self, data, objects):
         header = objects.pop()
         lngth  = header['Length']
         if isinstance(lngth, PdfObjectReference):
@@ -274,7 +274,7 @@ class PdfParser(object):
         return PdfStream(header, s_data)
 
     @staticmethod
-    def _parse_literal(token):
+    def parse_literal(token):
         """Parse a simple literal number, boolean, or null"""
         token = bytes(token)
         if   token == b'true':  return True
@@ -289,14 +289,14 @@ class PdfParser(object):
                 raise PdfParseError('Invalid token found: '+repr(token))
 
     @staticmethod
-    def _parse_number(token):
+    def parse_number(token):
         try:
             return int(token)
         except ValueError:
             return float(token)
 
     @staticmethod
-    def _parse_name(token):
+    def parse_name(token):
         """Parse names by stripping the leading / and replacing instances of
         #YY with the character b'\\xYY', returning a unicode string."""
         name = bytearray(token[1:])
@@ -332,15 +332,15 @@ class PdfParser(object):
     # This dict does not need to include simple literals (numerics, booleans
     # nulls, and names).  Each of these processing functions takes one argument,
     # the current scope's objects list.
-    obj_types = {b'<<'       : _parse_dict,
-                 b'<'        : _parse_hex_string,
-                 b'('        : _parse_literal_string,
-                 b'['        : _parse_array,
-                 b'%'        : _parse_comment,
-                 b'{'        : _parse_expression,      # TODO
-                 b'R'        : _parse_reference,
-                 b'obj'      : _parse_ind_object,
-                 b'stream'   : _parse_stream,
+    obj_types = {b'<<'       : parse_dict,
+                 b'<'        : parse_hex_string,
+                 b'('        : parse_literal_string,
+                 b'['        : parse_array,
+                 b'%'        : parse_comment,
+                 b'{'        : parse_expression,      # TODO
+                 b'R'        : parse_reference,
+                 b'obj'      : parse_ind_object,
+                 b'stream'   : parse_stream,
                  #b'xref'     : _parse_xref,
                  #b'trailer'  : _parse_trailer,
                  #b'startxref': _parse_startxref
