@@ -26,7 +26,7 @@ class PdfPageResources(PdfElement):
 class PdfAbstractPage(PdfElement):
     """Base class for PDF Pages and Page Nodes."""
     def __init__(self, page, obj_key=None):
-        """Create a new or node with properly inherited properties 
+        """Create a new or node with properly inherited properties
         where applicable"""
         #Common and inheritable properties
         super(PdfAbstractPage, self).__init__(page, obj_key)
