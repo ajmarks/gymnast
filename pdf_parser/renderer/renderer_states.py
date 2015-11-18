@@ -37,7 +37,7 @@ class TextState(object):
 
 
 class GraphicsState(RendererState):
-    """Renderer graphics state.  Has all of the various graphical state 
+    """Renderer graphics state.  Has all of the various graphical state
     parameters, including the current transformation matrix."""
     def __init__(self):
         self.CTM    = self.id_matrix # Current transformation matrix

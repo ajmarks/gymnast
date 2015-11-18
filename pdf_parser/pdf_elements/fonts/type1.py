@@ -60,7 +60,6 @@ def get_std_font_dict(font_name):
                   for i in sorted(charmets, key=lambda x: int(x['C']))
                   if i['C'] != '-1']
     charset    = [PdfName(i['N'])  for i in charmets if i['C'] != '-1']
-    
 
     flags =     1*(parsed.get('IsFixedPitch') == 'true')\
             +   8*(parsed['CharacterSet'] == 'Special') \

@@ -8,7 +8,6 @@ import io
 
 from .common     import PdfType
 from ..exc       import PdfParseError
-from ..misc      import iterbytes
 from ..pdf_codec import register_codec
 
 # Go ahead and register the codec here, I guess.
@@ -75,11 +74,11 @@ class PdfLiteralString(str, PdfString):
                b'\r'  : b''}
 
     @staticmethod
-    def parse_escape(data):
+    def _parse_escape(data):
         r"""Handle escape sequences in literal PDF strings.  This should be
-        pretty straightforward except that there are line continuations,
-        so \\n, \\r\n, and \\r are ignored. Moreover, actual newline characters
-        are also valid.  It's very stupid. See pp. 53-56 in the Reference if 
+        pretty straightforward except that there are line continuations, so
+        \\n, \\r\n, and \\r are ignored. Moreover, actual newline characters
+        are also valid.  It's very stupid. See pp. 53-56 in the Reference if
         you want to be annoyed.
 
         Arguments:
@@ -113,13 +112,11 @@ class PdfLiteralString(str, PdfString):
         """Extract a PDF escaped string into a nice python bytes object."""
 
         iodata  = io.BufferedReader(io.BytesIO(data))
-        escaped = 0 # (0, 1, 2, 3) = (Unescaped, Normal escape, escape-\r, escape-digit)
-        e_str   = b''
         result  = io.BytesIO()
         char = iodata.read(1)
         while char:
             if char == b'\\':
-                result.write(PdfLiteralString.parse_escape(iodata))
+                result.write(PdfLiteralString._parse_escape(iodata))
             else:
                 result.write(char)
             char = iodata.read(1)
