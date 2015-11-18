@@ -2,11 +2,11 @@
 Let's make this into a nice package
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from pkg_resources import parse_version
 
 with open('pdf_parser/VERSION') as f:
-    VERSION = parse_version(f.read().strip())
+    VERSION = parse_version(f.read().strip()).public
 
 with open('README.rst', encoding='utf8') as f:
     LONG_DESCRIPTION = f.read()
@@ -27,7 +27,7 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'Programming Language :: Python :: 3.5',
                'Topic :: Text Processing',
                'Topic :: Utilities']
-PACKAGES = find_packages(where='pdf_parser')
+PACKAGES = find_packages(exclude=['tests', 'doc'])
 
 setup(name=NAME,
       packages=PACKAGES,
@@ -36,7 +36,7 @@ setup(name=NAME,
       author_email='ajmarks@gmail.com',
       license=LICENSE,
       url=URL,
-      download_url=URL+'/tarball/'+VERSION,
+      download_url=URL+'tarball/'+VERSION,
       keywords=KEYWORDS,
       install_requires=REQUIRES,
       description='PDF document parser in Python 3',
