@@ -27,7 +27,7 @@ class PdfDict(PdfType, UserDict):
         except AttributeError:
             return self[name]
         except KeyError:
-            raise AttributeError('Object has no attribute "%s"'%name)
+            raise AttributeError('Object has no attribute "{}"'.format(name))
     def pdf_encode(self):
         return b'<<'+b' '.join(k.pdf_encode()+b' '+v.pdf_encode()
                                for k, v in six.iteritems(self))+b'>>'

@@ -40,7 +40,7 @@ def lzw_decode(data, **kwargs):
         elif k == dict_size:
             entry = w + w[0]
         else:
-            raise ValueError('Bad compressed k: %s' % k)
+            raise ValueError('Bad compressed k: {}'.format(k))
         result.write(entry)
 
         dictionary[dict_size] = w + entry[0]

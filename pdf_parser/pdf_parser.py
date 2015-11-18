@@ -52,7 +52,7 @@ class PdfParser(object):
             raise PdfParseError('Object identification not found')
         token   =  self._get_next_token(data)
         if token != b'obj':
-            raise PdfParseError("Expected 'obj', got '%s'"%token)
+            raise PdfParseError("Expected 'obj', got '{}'".format(token))
         return self._parse_ind_object(data, [obj_no, obj_gen])
 
     def _get_objects(self, data, closer=None):
@@ -305,8 +305,8 @@ class PdfParser(object):
             try:
                 new_char = bytes((int(name[hash_pos+1:hash_pos+3], 16),))
             except ValueError:
-                raise PdfError('Invalid hex code in name %s (%s)'\
-                                    %(token, name[hash_pos:hash_pos+3]))
+                msg = 'Invalid hex code in name {} ({})'
+                raise PdfError(msg.format(token, name[hash_pos:hash_pos+3]))
             name[hash_pos:hash_pos+3] = new_char
             hash_pos = name.find(b'#', hash_pos)
         return PdfName(name.decode())

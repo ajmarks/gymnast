@@ -157,7 +157,8 @@ class PdfDocument(object):
         data.seek(offset)
         token = self._data.read(4)
         if token != b'xref':
-            raise PdfParseError("Expected 'xref', found '%s'."%force_decode(token))
+            msg = "Expected 'xref', found '{}'."
+            raise PdfParseError(msg.format(force_decode(token)))
         consume_whitespace(data, EOLS)
         xrefs = {}
         while is_digit(data.peek(1)[0]):

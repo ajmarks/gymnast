@@ -69,7 +69,7 @@ class PdfPageNode(PdfAbstractPage):
     def __init__(self, node, obj_key=None):
         node = node.value
         if node['Type'] != 'Pages':
-            raise ValueError('Type "Pages" expected, got "%s"'%node['Type'])
+            raise ValueError('Type "Pages" expected, got "{}"'.format(node['Type']))
         super(PdfPageNode, self).__init__(node, obj_key)
     @property
     def Kids(self):
