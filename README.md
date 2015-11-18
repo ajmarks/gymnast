@@ -1,17 +1,28 @@
 # pdf_parser
 
-[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ajmarks/pdf_parser/blob/master/LICENSE) [![Codacy Badge](https://api.codacy.com/project/badge/grade/e2a383733cb54788b0eaafadc948398c)](https://www.codacy.com/app/ajmarks/pdf_parser)
 
 PDF parser written in Python 3 (backport to 2.7 in the works).  This was designed to provide a Pythonic interface to access (and, eventually, write) Adobe PDF files.  Some of attributes have non-Pythonic capitalization, but that is to match the underlying structure of the PDF document (doing otherwise would get very confusing).
 
 ##Usage
 ```python
+import io
 from pdf_parser          import PdfDocument
-from pdf_parser.renderer import SimpleRenderer
+from pdf_parser.renderer import PdfBaseRenderer
 
-file = '/path/to/file.pdf'
-pdf  = PdfDocument(file).parse()
-text = SimpleRenderer(pdf.Pages[-3]).render()
+class PdfSimpleRenderer(PdfBaseRenderer):
+    """Simple renderer example that just extracts text with no processing"""
+    def __init__(self, page):
+        super().__init__(page)
+        self._text = io.StringIO()
+    def _render_text(self, text, new_state):
+        self._text.write(self.active_font.decode_string(text))
+    def _return(self):
+        return self._text.getvalue()
+
+fname = '/path/to/file.pdf'
+pdf   = PdfDocument(fname).parse()
+text  = SimpleRenderer(pdf.Pages[-3]).render()
 ```
 
 
