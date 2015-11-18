@@ -116,6 +116,7 @@
     <Content Include="pylintrc" />
     <Content Include="README.md" />
     <Content Include="pdf_parser\VERSION" />
+    <Content Include="README.rst" />
     <Content Include="setup.cfg" />
     <Content Include="MANIFEST.in" />
   </ItemGroup>

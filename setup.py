@@ -6,14 +6,17 @@ from setuptools import setup
 from pkg_resources import parse_version
 
 with open('pdf_parser/VERSION') as f:
-    version = parse_version(f.read().strip())
+    VERSION = parse_version(f.read().strip())
 
-with open('README.md', encoding='utf8') as f:
-    long_description = f.read()
+with open('README.rst', encoding='utf8') as f:
+    LONG_DESCRIPTION = f.read()
 
-url = 'https://github.com/ajmarks/pdf_parser/'
-requires = ['Pillow>=2.7', 'bidict>=0.9', 'six>=1.0']
-classifiers = ['Development Status :: 3 - Alpha',
+NAME = 'pdf_parser'
+URL = 'https://github.com/ajmarks/pdf_parser/'
+REQUIRES = ['bidict>=0.9', 'six>=1.0']
+KEYWORDS = ['pdf', 'acrobat']
+LICENSE  = 'MIT License'
+CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'Intended Audience :: Developers',
                'License :: OSI Approved :: MIT License',
                'Natural Language :: English',
@@ -24,17 +27,19 @@ classifiers = ['Development Status :: 3 - Alpha',
                'Programming Language :: Python :: 3.5',
                'Topic :: Text Processing',
                'Topic :: Utilities']
+PACKAGES = find_packages(where='pdf_parser')
 
-setup(name='pdf_parser',
-      packages=['pdf_parser'],#find_packages(exclude=['tests']),
-      version=version,
+setup(name=NAME,
+      packages=PACKAGES,
+      version=VERSION,
       author='Andrew Marks',
       author_email='ajmarks@gmail.com',
-      url=url,
-      download_url=url+'/tarball/'+version,
-      keywords=['pdf', 'acrobat'],
-      install_requires=requires,
+      license=LICENSE,
+      url=URL,
+      download_url=URL+'/tarball/'+VERSION,
+      keywords=KEYWORDS,
+      install_requires=REQUIRES,
       description='PDF document parser in Python 3',
-      classifiers=classifiers,
+      classifiers=CLASSIFIERS,
       include_package_data=True,
      )

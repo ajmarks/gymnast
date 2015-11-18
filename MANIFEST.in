@@ -1,2 +1,7 @@
+include LICENSE
+include *.rst
+include *.txt
+include *.md
+include pylintrc
 include data/afm/*
 include data/*.txt
