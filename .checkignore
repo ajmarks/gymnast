@@ -1,0 +1,3 @@
+*tests.py
+test*.py
+pdf_parser/tests/*
