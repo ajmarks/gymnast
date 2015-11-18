@@ -71,52 +71,58 @@ class PdfLiteralString(str, PdfString):
                b'f'   : b'\f',
                b'('   : b'(',
                b')'   : b')',
-               b'\\'  : b'\\',
                b'\n'  : b'',
-               #b'\r'  : b'' , # Stupid \r\n
-               b'\r\n': b''}
+               b'\r'  : b''}
+
+    @staticmethod
+    def parse_escape(data):
+        r"""Handle escape sequences in literal PDF strings.  This should be
+        pretty straightforward except that there are line continuations,
+        so \\n, \\r\n, and \\r are ignored. Moreover, actual newline characters
+        are also valid.  It's very stupid. See pp. 53-56 in the Reference if 
+        you want to be annoyed.
+
+        Arguments:
+            data - io.BytesIO-like object
+
+        Returns the unescaped bytes"""
+        e_str = data.read(1)
+        try:
+            val = PdfLiteralString.ESCAPES[e_str]
+        except KeyError:
+            # Not a normal escape, hopefully it's an octal
+            if not e_str.isdigit():
+                print(e_str)
+                raise PdfParseError('Invalid escape sequence in literal string')
+        else:
+            # Handle \\r\n by skipping the next character
+            if e_str == b'\r' and data.peek(1)[:1] == b'\n':
+                data.seek(1,1)
+            return val
+        # If it's not one of the above, it must be an octal of
+        # length at most 3
+        for i in range(2):
+            e_str += data.read(1)
+            if not e_str.isdigit():
+                data.seek(-1, 1)
+                return bytes((min(int(e_str[:-1], 8),255),))
+        return bytes((min(int(e_str, 8),255),))
 
     @staticmethod
     def parse_bytes(data):
-        iterb   = iterbytes(data)
+        """Extract a PDF escaped string into a nice python bytes object."""
+
+        iodata  = io.BufferedReader(io.BytesIO(data))
         escaped = 0 # (0, 1, 2, 3) = (Unescaped, Normal escape, escape-\r, escape-digit)
         e_str   = b''
         result  = io.BytesIO()
-        #TODO: Make this less disgusting
-        for d in iterb:
-            if escaped:
-                escaped = False
-                try:
-                    result.write(PdfLiteralString.ESCAPES[e_str+d])
-                    continue
-                except KeyError:
-                    #Not a normal escape character, onward!
-                    pass
-                if not e_str:
-                    e_str   = d
-                    escaped = True
-                    continue
-                elif e_str == b'\r':
-                    pass # If we're here, it means that e_str == \r, d != \n
-                #Octals
-                elif e_str.isdigit():
-                    if not d.isdigit():
-                        result.write(bytes((min(int(e_str,   8),255),)))
-                    elif len(e_str) == 2:
-                        result.write(bytes((min(int(e_str+d, 8),255),)))
-                        continue
-                    else:
-                        e_str += d
-                        escaped = True
-                        continue
-                else:
-                    raise PdfParseError('Invalid escape sequence in literal string')
-
-            if d == b'\\':
-                e_str   = b''
-                escaped = True
+        char = iodata.read(1)
+        while char:
+            if char == b'\\':
+                result.write(PdfLiteralString.parse_escape(iodata))
             else:
-                result.write(d)
+                result.write(char)
+            char = iodata.read(1)
         return bytes(result.getvalue())
 
 class PdfHexString(PdfString):

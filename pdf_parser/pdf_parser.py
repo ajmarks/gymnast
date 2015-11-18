@@ -53,7 +53,7 @@ class PdfParser(object):
         token   =  self._get_next_token(data)
         if token != b'obj':
             raise PdfParseError("Expected 'obj', got '{}'".format(token))
-        return self._parse_ind_object(data, [obj_no, obj_gen])
+        return self.parse_ind_object(data, [obj_no, obj_gen])
 
     def _get_objects(self, data, closer=None):
         """Get all of the objects in data starting from the current position
@@ -176,7 +176,7 @@ class PdfParser(object):
             return self.obj_types[token](self, data, objects)
         except KeyError:
             try:
-                return self._parse_literal(token)
+                return self.parse_literal(token)
             except PdfParseError:
                 #This lets us use this parse Content Streams
                 if allow_invalid: return PdfRaw(token)
@@ -196,7 +196,7 @@ class PdfParser(object):
     def parse_dict(self, data, objects):
         """A dict is just represented as a differently delimited array, so
         we'll call that to get the elements"""
-        elems = self._parse_array(data, objects, b'>>')
+        elems = self.parse_array(data, objects, b'>>')
         return PdfDict(zip(elems[::2], elems[1::2]))
 
     def parse_hex_string(self, data, objects):
@@ -281,10 +281,10 @@ class PdfParser(object):
         elif token == b'false': return False
         elif token == b'null':  return None
         elif token[:1] == b'/':
-            return PdfParser._parse_name(token)
+            return PdfParser.parse_name(token)
         else:
             try:
-                return PdfParser._parse_number(token)
+                return PdfParser.parse_number(token)
             except ValueError:
                 raise PdfParseError('Invalid token found: '+repr(token))
 
@@ -311,21 +311,6 @@ class PdfParser(object):
             hash_pos = name.find(b'#', hash_pos)
         return PdfName(name.decode())
 
-    #def _parse_trailer(self, objects):
-    #    self._consume_whitespace()
-    #    if self._data.read(2) != b'<<':
-    #        raise PdfError('dict expected following trailer keyword')
-    #    trailer   = self._parse_dict(objects)
-    #    self._consume_whitespace()
-    #    return PdfTrailer(trailer)
-
-    #def _parse_startxref(self, objects):
-    #    self._consume_whitespace()
-    #    xref = self._parse_literal(self._get_next_token())
-    #    if not isinstance(xref, int):
-    #        raise PdfParseError('startxref value must be an int')
-    #    return PdfStartXref(xref)
-
     # dict of PDF object types besides literals to look for.
     # Keys are the token that identifies that beginning of that type,
     # and values are method that does the parsing
@@ -341,9 +326,6 @@ class PdfParser(object):
                  b'R'        : parse_reference,
                  b'obj'      : parse_ind_object,
                  b'stream'   : parse_stream,
-                 #b'xref'     : _parse_xref,
-                 #b'trailer'  : _parse_trailer,
-                 #b'startxref': _parse_startxref
                 }
 
     # List methods

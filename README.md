@@ -1,7 +1,6 @@
 # pdf_parser
 
-[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)]() [![Code Health](https://landscape.io/github/ajmarks/pdf_parser/master/landscape.svg?style=flat)](https://landscape.io/github/ajmarks/pdf_parser/master) [![Codacy Badge](https://api.codacy.com/project/badge/grade/e2a383733cb54788b0eaafadc948398c)](https://www.codacy.com/app/ajmarks/pdf_parser)
-
+[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
 PDF parser written in Python 3 (backport to 2.7 in the works).  This was designed to provide a Pythonic interface to access (and, eventually, write) Adobe PDF files.  Some of attributes have non-Pythonic capitalization, but that is to match the underlying structure of the PDF document (doing otherwise would get very confusing).
 

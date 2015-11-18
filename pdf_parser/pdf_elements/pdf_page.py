@@ -128,7 +128,7 @@ class PdfPage(PdfAbstractPage):
             try:
                 val = self.__dict__[defaults[name]]
             except KeyError:
-                raise AttributeError('Object has no attribute "%s"'%name)
+                raise AttributeError('Object has no attribute "{}"'.format(name))
         if isinstance(val, PdfType):
             return val.parsed_object
         else:

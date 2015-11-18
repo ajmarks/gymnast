@@ -175,8 +175,8 @@ class PdfDocument(object):
         consume_whitespace(self._data, EOLS)
         lines = self._data.read(20*nlines).decode().splitlines()
         consume_whitespace(self._data, EOLS)
-        return {x.key: x for x in [PdfXref.from_line(self, id0+i, l)
-                                   for i, l in enumerate(lines)]}
+        return {x.key: x for x in (PdfXref.from_line(self, id0+i, l)
+                                   for i, l in enumerate(lines))}
 
     def _get_trailer(self):
         """Gets a document trailer located at the current stream position.

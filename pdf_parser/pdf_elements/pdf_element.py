@@ -53,8 +53,8 @@ class PdfElement(MutableMapping):
         self._object[PdfName(name)] = value
     def __delitem__(self, name):
         if name in self.required_properties:
-            raise KeyError("'%s' is a required attribute and cannot be "
-                           "deleted"%name)
+            raise KeyError("'{}' is a required attribute and cannot be "
+                           "deleted".format(name))
         del self._object[name]
     def __len__(self):
         return len(self.__all_properties().union(self._object))
@@ -69,7 +69,7 @@ class PdfElement(MutableMapping):
             try:
                 val = self._object[name]
             except KeyError:
-                raise AttributeError('Object has no attribute "%s"'%name)
+                raise AttributeError('Object has no attribute "{}"'.format(name))
         if isinstance(val, PdfType):
             return val.parsed_object
         else:

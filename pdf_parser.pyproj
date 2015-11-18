@@ -118,7 +118,6 @@
     <Content Include="pdf_parser\VERSION" />
     <Content Include="setup.cfg" />
     <Content Include="MANIFEST.in" />
-    <Content Include="TODO.md" />
   </ItemGroup>
   <Import Project="$(PtvsTargetsFile)" Condition="Exists($(PtvsTargetsFile))" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="!Exists($(PtvsTargetsFile))" />

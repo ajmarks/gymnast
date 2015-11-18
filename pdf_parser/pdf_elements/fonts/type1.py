@@ -31,14 +31,27 @@ class Type1Font(PdfBaseFont):
         """Super, super crude method to parse a afm font file into a Type1
         PdfFont object"""
 
+def de_list(lst):
+    """Turn a list into a scalar if it's of length 1, respecting Nones."""
+    if not lst:
+        return None
+    else:
+        return (lst[0] if len(lst) == 1 else lst)
+
+def int_or_none(val):
+    """Return an int if we can, otherwise None"""
+    try:
+        return int(val)
+    except (ValueError, TypeError):
+        return None
+
 def get_std_font_dict(font_name):
     """Load a standard font and parse it into a PdfDict similar to how it would
     be stored in a PDF file"""
     FILE_PAT = AFM_DIR + '/{}.afm'
 
-    typify = lambda a: None if not a else (a[0] if len(a) == 1 else a)
     parsed = load_afm_file(FILE_PAT.format(font_name))
-    charmets = [{i.split()[0]:typify(i.split()[1:])
+    charmets = [{i.split()[0]:de_list(i.split()[1:])
                  for i in l.split(';') if i.strip()}
                 for l in parsed['CharMetrics']]
     first_char = min(int(i['C']) for i in charmets if i['C'] != '-1')
@@ -47,11 +60,11 @@ def get_std_font_dict(font_name):
                   for i in sorted(charmets, key=lambda x: int(x['C']))
                   if i['C'] != '-1']
     charset    = [PdfName(i['N'])  for i in charmets if i['C'] != '-1']
-    intprop = lambda x: None if x not in parsed else int(parsed[x])
+    
 
-    flags =   1*int(parsed.get('IsFixedPitch') == 'true')\
-            +   8*(parsed['CharacterSet'] == 'Special')    \
-            +  64*(parsed['CharacterSet'] != 'Special')    \
+    flags =     1*(parsed.get('IsFixedPitch') == 'true')\
+            +   8*(parsed['CharacterSet'] == 'Special') \
+            +  64*(parsed['CharacterSet'] != 'Special') \
             + 128*(parsed['ItalicAngle']  != '0')
     fdesc = {PdfName('Type')       : 'FontDescriptor',
              PdfName('FontName')   : parsed['FontName'],
@@ -59,13 +72,13 @@ def get_std_font_dict(font_name):
              PdfName('FontWeight') : parsed['Weight'],
              PdfName('Flags')      : flags,
              PdfName('FontBBox')   : [int(i) for i in parsed['FontBBox']],
-             PdfName('ItalicAngle'): intprop('ItalicAngle'),
-             PdfName('Ascent')     : intprop('Ascender'),
-             PdfName('Descent')    : intprop('Descender'),
-             PdfName('CapHeight')  : intprop('CapHeight'),
-             PdfName('XHeight')    : intprop('XHeight'),
-             PdfName('StemV')      : intprop('StdHW'),
-             PdfName('StemH')      : intprop('StdVW'),
+             PdfName('ItalicAngle'): int_or_none(parsed.get('ItalicAngle')),
+             PdfName('Ascent')     : int_or_none(parsed.get('Ascender')),
+             PdfName('Descent')    : int_or_none(parsed.get('Descender')),
+             PdfName('CapHeight')  : int_or_none(parsed.get('CapHeight')),
+             PdfName('XHeight')    : int_or_none(parsed.get('XHeight')),
+             PdfName('StemV')      : int_or_none(parsed.get('StdHW')),
+             PdfName('StemH')      : int_or_none(parsed.get('StdVW')),
              PdfName('Charset')    : charset,
             }
     font  = {PdfName('Type')          : 'Font',

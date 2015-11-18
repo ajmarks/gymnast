@@ -113,10 +113,10 @@ class FontDescriptor(PdfElement):
             chars = self._object.value.get('CharSet')
             if isinstance(chars, bytes):
                 self._charset = [PdfName(b'/'+char)
-                                 for char in chars.split('/')[1:]]
+                                 for char in chars.split(b'/')[1:]]
             elif isinstance(chars, PdfLiteralString):
                 self._charset = [PdfName(b'/'+char)
-                                 for char in chars._raw_bytes.split('/')[1:]]
+                                 for char in chars._raw_bytes.split(b'/')[1:]]
             elif chars is None or chars is PdfNull:
                 self._charset = chars
             else:
