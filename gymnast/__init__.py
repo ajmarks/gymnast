@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""PDF Parser
+"""Gymnast: PDF Parser
 
 Classes:
     PdfDocument - General PDF document class.

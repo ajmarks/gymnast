@@ -116,7 +116,6 @@
     <Content Include="gymnast\VERSION" />
     <Content Include="pylintrc" />
     <Content Include="README.md" />
-    <Content Include="README.rst" />
     <Content Include="setup.cfg" />
     <Content Include="MANIFEST.in" />
   </ItemGroup>
