@@ -1,4 +1,4 @@
-pdf\_parser
+Gymnast: It's not an acrobat
 ===========
 
 |GitHub license| |Code Issues|
@@ -15,8 +15,8 @@ Usage
 .. code:: python
 
     import io
-    from pdf_parser          import PdfDocument
-    from pdf_parser.renderer import PdfBaseRenderer
+    from gymnast          import PdfDocument
+    from gymnast.renderer import PdfBaseRenderer
 
     class PdfSimpleRenderer(PdfBaseRenderer):
         """Simple renderer example that just extracts text with no processing"""
@@ -85,6 +85,15 @@ TODO (in no particular order)
    -  [ ] ``EmbeddedFile``
    -  [ ] ``CollectionItem`` / ``CollectionSubitem``
    -  [ ] ``XObject``
+   -  [ ] Handle document encryption
+   -  [ ] Start on graphics stuff (maybe)
+   -  [ ] Interactive forms (AcroForms)
+-  **Administrative**
+   -  [ ] Write tests for existing code
+   -  [x] Come up with a better name
+   -  [ ] Document everything much, much better internally
+   -  [ ] Package it up neatly and pypi it
+   -  [ ] Write some proper documentation
 
 .. |GitHub license| image:: https://img.shields.io/github/license/mashape/apistatus.svg
    :target: https://github.com/ajmarks/pdf_parser/blob/master/LICENSE

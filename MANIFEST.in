@@ -3,6 +3,6 @@ include *.rst
 include *.txt
 include *.md
 include pylintrc
-include pdf_parser/data/afm/*
-include pdf_parser/data/*.txt
-include pdf_parser/VERSION
+include gymnast/data/afm/*
+include gymnast/data/*.txt
+include gymnast/VERSION

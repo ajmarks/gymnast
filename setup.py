@@ -5,13 +5,13 @@ Let's make this into a nice package
 from setuptools import setup, find_packages
 from pkg_resources import parse_version
 
-with open('pdf_parser/VERSION') as f:
+with open('gymnast/VERSION') as f:
     VERSION = parse_version(f.read().strip()).public
 
 with open('README.rst', encoding='utf8') as f:
     LONG_DESCRIPTION = f.read()
 
-NAME = 'pdf_parser'
+NAME = 'gymnast'
 URL = 'https://github.com/ajmarks/pdf_parser/'
 REQUIRES = ['bidict>=0.9', 'six>=1.0']
 KEYWORDS = ['pdf', 'acrobat']
@@ -42,4 +42,5 @@ setup(name=NAME,
       description='PDF document parser in Python 3',
       classifiers=CLASSIFIERS,
       include_package_data=True,
+      LONG_DESCRIPTION=LONG_DESCRIPTION,
      )

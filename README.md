@@ -1,4 +1,4 @@
-# pdf_parser
+# Gymnast: It's not an Acrobat
 
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ajmarks/pdf_parser/blob/master/LICENSE) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/d0106c63f4f8467586aae7498f148e94/badge.svg)](https://www.quantifiedcode.com/app/project/d0106c63f4f8467586aae7498f148e94)
 
@@ -7,8 +7,8 @@ PDF parser written in Python 3 (backport to 2.7 in the works).  This was designe
 ##Usage
 ```python
 import io
-from pdf_parser          import PdfDocument
-from pdf_parser.renderer import PdfBaseRenderer
+from gymnast          import PdfDocument
+from gymnast.renderer import PdfBaseRenderer
 
 class PdfSimpleRenderer(PdfBaseRenderer):
     """Simple renderer example that just extracts text with no processing"""
@@ -66,7 +66,7 @@ text  = SimpleRenderer(pdf.Pages[-3]).render()
   - [ ] Interactive forms (AcroForms)
 - **Administrative**
   - [ ] Write tests for existing code
-  - [ ] Come up with a better name
+  - [x] Come up with a better name
   - [ ] Document everything much, much better internally
   - [ ] Package it up neatly and pypi it
   - [ ] Write some proper documentation
