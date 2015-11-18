@@ -245,7 +245,7 @@ class PdfParser(object):
         """TODO: This"""
         pass
 
-    def _parse_ind_object(self, data, objects):
+    def parse_ind_object(self, data, objects):
         gen     = objects.pop()
         obj_no  = objects.pop()
         obj     = self._get_objects(data, closer=b'endobj')
