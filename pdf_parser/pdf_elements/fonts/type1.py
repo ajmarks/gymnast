@@ -99,7 +99,6 @@ def load_afm_file(fname):
     with open(fname) as f:
         lines =  [l for l in f.read().splitlines() if l[:8]!='Comment '][::-1]
     data = {}
-    delist = lambda x: x[0] if len(x) == 1 else x
     while lines:
         line = lines.pop().split()
         if   line[0] in DO_NOTHINGS:
@@ -108,6 +107,6 @@ def load_afm_file(fname):
             data[line[0][5:]] = lines[-int(line[1]):][::-1]
             del lines[-int(line[1])-1:]
         else:
-            data[line[0]] = delist(line[1:])
+            data[line[0]] = de_list(line[1:])
     return data
 

@@ -27,11 +27,11 @@ class PdfString(PdfType):
     def __bytes__(self):     return self._parsed_bytes
     def __hash__(self):      return self._parsed_bytes.__hash__()
     def __repr__(self):
-        return self.__class__.__name__+"("+self._raw_bytes.__repr__()+")"
+        return self.__class__.__name__+"("+self.raw_bytes.__repr__()+")"
 
     def __init__(self, data):
         super(PdfString, self).__init__()
-        self._raw_bytes    = data
+        self.raw_bytes    = data
         self._parsed_bytes = self.parse_bytes(data)
 
     @staticmethod
@@ -138,7 +138,7 @@ class PdfHexString(PdfString):
     def __repr__(self):
         return str(self)
     def pdf_encode(self):
-        return b'<'+self._raw_bytes+b'>'
+        return b'<'+self.raw_bytes+b'>'
 
 class PdfComment(PdfType, str):
     """Comments"""

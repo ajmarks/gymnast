@@ -74,14 +74,14 @@ class PdfBaseOp(object):
     """Base class for all pdf operations"""
     opcode = None
     optype = None
-    opfunc = lambda x: None
+    opfunc = None
     def __init__(self, *operands):
         self._operands = operands
     def __call__(self, renderer):
         return (self.opfunc.__func__)(renderer, *self._operands)
     def __str__(self):
         op = self.opcode if self.opcode else self._opcode
-        return '{}({})'.format(op, ', '.join(str(i) for i in self._operands))
+        return '{0}({1})'.format(op, ', '.join(str(i) for i in self._operands))
 
 def new_opcode(opcode, optype, opfunc):
     """Create a new PDF operation based on the arguments"""
