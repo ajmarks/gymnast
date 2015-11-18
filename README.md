@@ -1,6 +1,6 @@
 # Gymnast: It's not an Acrobat
 
-[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ajmarks/pdf_parser/blob/master/LICENSE) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/d0106c63f4f8467586aae7498f148e94/badge.svg)](https://www.quantifiedcode.com/app/project/d0106c63f4f8467586aae7498f148e94)
+[![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ajmarks/pdf_parser/blob/master/LICENSE) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/d0106c63f4f8467586aae7498f148e94/badge.svg)](https://www.quantifiedcode.com/app/project/d0106c63f4f8467586aae7498f148e94) [![PyPI](https://img.shields.io/pypi/v/nine.svg)](https://pypi.python.org/pypi/gymnast)
 
 PDF parser written in Python 3 (backport to 2.7 in the works).  This was designed to provide a Pythonic interface to access (and, eventually, write) Adobe PDF files.  Some of attributes have non-Pythonic capitalization, but that is to match the underlying structure of the PDF document (doing otherwise would get very confusing).
 
