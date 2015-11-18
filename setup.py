@@ -2,6 +2,10 @@
 Let's make this into a nice package
 """
 
+#Because Windows
+import os
+del os.link
+
 from setuptools import setup, find_packages
 from pkg_resources import parse_version
 
@@ -34,7 +38,7 @@ CLASSIFIERS = ['Development Status :: 3 - Alpha',
                'Programming Language :: Python :: 3.5',
                'Topic :: Text Processing',
                'Topic :: Utilities']
-PACKAGES = find_packages(exclude=['tests', 'doc'])
+PACKAGES = find_packages(exclude=['tests'])
 
 setup(name=NAME,
       packages=PACKAGES,

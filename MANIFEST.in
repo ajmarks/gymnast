@@ -1,6 +1,11 @@
 include LICENSE
 include *.md
+include *.py
 include pylintrc
 include gymnast/data/afm/*
 include gymnast/data/*.txt
 include gymnast/VERSION
+recursive-include docs *
+recursive-exclude tests
+global-exclude .project
+global-exclude .pydevproject
