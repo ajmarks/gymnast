@@ -50,7 +50,7 @@ class PdfStream(PdfType):
         # Also, since these may be lists, let's make that happen
         filters = ensure_list(self._header.get(self._filter_key, []))
         params  = ensure_list(self._header.get(self._params_key, []))
-        if len(params) == 0:
+        if params:
             params = [{} for f in filters]
         composed_filters = chain_funcs([partial(StreamFilter[f].decode, **p)
                                         for f, p in zip(filters, params)])
@@ -63,4 +63,5 @@ class PdfStream(PdfType):
         return self.decode()
 
 def chain_funcs(funcs):
+    """Compose the functions in iterable funcs"""
     return lambda x: reduce(lambda f1, f2: f2(f1), funcs, x)

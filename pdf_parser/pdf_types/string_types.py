@@ -90,6 +90,7 @@ class PdfLiteralString(str, PdfString):
                     result.write(PdfLiteralString.ESCAPES[e_str+d])
                     continue
                 except KeyError:
+                    #Not a normal escape character, onward!
                     pass
                 if not e_str:
                     e_str   = d

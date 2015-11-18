@@ -8,7 +8,7 @@ from ...pdf_constants import DATA_DIR
 from ...pdf_types     import PdfName, PdfDict
 
 AFM_DIR   = DATA_DIR + '/afm/'
-STD_FONTS = set([j[:-4] for j in os.listdir(AFM_DIR) if j[-4:] == '.afm'])
+STD_FONTS = {j[:-4] for j in os.listdir(AFM_DIR) if j[-4:] == '.afm'}
 
 class Type1Font(PdfBaseFont):
     """Base PDF Font.  Right now this is exclusively Type 1."""

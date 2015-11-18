@@ -87,7 +87,8 @@ class PdfElement(MutableMapping):
         use this in __len__.  We need to go up the mro because properties are
         defined on the class, not the instance."""
         return reduce(lambda x, y: x.union(y),
-                      [set([k for k,v in six.iteritems(b.__dict__)
-                            if isinstance(v, property)])
-                       for b in self.__class__.__mro__]
+                      [{k for k,v in six.iteritems(b.__dict__)
+                        if isinstance(v, property)
+                       } for b in self.__class__.__mro__
+                      ]
                      )

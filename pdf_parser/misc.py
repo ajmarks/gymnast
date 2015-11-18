@@ -41,7 +41,7 @@ def read_until(data, char_set):
 
 def is_digit(val):
     """Returns True if chr(val) is a digit 0-9"""
-    return (val >= 48 and val <= 57)
+    return  48 <= val <= 57
 
 def consume_whitespace(data, whitespace=WHITESPACE):
     """Reads buffered io object data until a non-whitespace byte is encountered
@@ -162,6 +162,7 @@ class ReCacher(object):
 
     @property
     def value(self):
+        """Whatever the last method call returned"""
         return self._retval
 
     def __getattr__(self, name):

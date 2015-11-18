@@ -83,7 +83,7 @@ class PdfBaseFont(PdfElement):
             glyph - a one character string"""
         if not isinstance(glyph, int):
             glyph = self.Encoding.get_char_code(GLYPH_LIST[:glyph])
-        if glyph > self.LastChar or glyph < self.FirstChar:
+        if not (self.FirstChar <= glyph <= self.LastChar):
             return self.FontDescriptor.get('MissingWidth', 0)
         return self.Widths[glyph - self.FirstChar]
 
