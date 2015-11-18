@@ -26,6 +26,8 @@ class PdfPageResources(PdfElement):
 class PdfAbstractPage(PdfElement):
     """Base class for PDF Pages and Page Nodes."""
     def __init__(self, page, obj_key=None):
+        """Create a new or node with properly inherited properties 
+        where applicable"""
         #Common and inheritable properties
         super(PdfAbstractPage, self).__init__(page, obj_key)
         self._resources = page.get('Resources')
@@ -36,29 +38,37 @@ class PdfAbstractPage(PdfElement):
 
     @property
     def Resources(self):
+        """Page resources, most notably fonts"""
         if   self._resources: return PdfPageResources.from_object(self._resources)
         elif self._parent:    return self.Parent.Resources
         else: raise PdfError('Resource dictionary not found')
     @property
     def MediaBox(self):
+        """Size of the media"""
         if self._mediabox:  return self._mediabox.value
         elif self._parent: return self.Parent.MediaBox
         else: raise PdfError('MediaBox not found')
     @property
     def CropBox(self):
-        box = self._get_cropbox()
+        """Visible area of the media"""
+        box = self.raw_cropbox
         return box if box else self.MediaBox
-    def _get_cropbox(self):
+    @property
+    def raw_cropbox(self):
+        """Inherited CropBox with no default value"""
         if self._cropbox:  return self._cropbox.value
-        elif self._parent: return self.Parent._get_cropbox()
+        elif self._parent: return self.Parent.raw_cropbox
         else:              return None
     @property
     def Rotate(self):
+        """Rotation angle.  Should be an integer multiple of 90."""
         if self._rotate:   return self._rotate
         elif self._parent: return self.Parent.Rotate
         else: return 0
     @property
     def Fonts(self):
+        """Neatly processed dict of the page's fonts.  Serves as a shortcut
+        to .Resources.Font"""
         if self._fonts is None:
             self._fonts = {k: v.parsed_object
                            for k,v in six.iteritems(self.Resources.Font)}
@@ -73,6 +83,7 @@ class PdfPageNode(PdfAbstractPage):
         super(PdfPageNode, self).__init__(node, obj_key)
     @property
     def Kids(self):
+        """Child pages and nodes"""
         return [p.parsed_object for p in self._object['Kids'].value]
     #def __getitem__(self, key):
     #    return self._kids[key]
