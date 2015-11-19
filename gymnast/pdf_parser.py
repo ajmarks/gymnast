@@ -112,10 +112,6 @@ class PdfParser(object):
         yield PdfRaw(b'EI')
 
     @staticmethod
-    def _eod(data):
-        return not bool(data.peek(1))
-
-    @staticmethod
     def _peek(data, n=1):
         """Peek ahead, returning the requested number of characters.  If peek()
         doesn't yield enough data, read and backup."""
@@ -134,7 +130,7 @@ class PdfParser(object):
         e.g., >> for dicts."""
         clen  = len(closer) if closer is not None else None
         token = io.BytesIO()
-        cls._consume_whitespace(data)
+        consume_whitespace(data, WHITESPACE)
 
         while data.peek(1) and (token.getvalue() != closer) \
            and not cls._is_token(data, token.getvalue(),
@@ -149,8 +145,8 @@ class PdfParser(object):
         if closer and not clen:
             clen = len(closer)
 
-        if   cls._eod(data): return True
-        elif not value:      return False
+        if   not data.peek(1): return True
+        elif not value:        return False
 
         next_char = cls._peek(data, 1)
         not_obj   = (value+next_char) not in cls.obj_types
@@ -182,10 +178,6 @@ class PdfParser(object):
                 if allow_invalid: return PdfRaw(token)
                 else:             raise
 
-    @staticmethod
-    def _consume_whitespace(data, whitespace=WHITESPACE):
-        consume_whitespace(data, whitespace)
-
     def parse_reference(self, data, objects):
         """References an indirect object, which may or may not have already
         been defined."""
@@ -200,7 +192,7 @@ class PdfParser(object):
         return PdfDict(zip(elems[::2], elems[1::2]))
 
     def parse_hex_string(self, data, objects):
-        # TODO: Eliminate all of these getvalue() calls
+        """Extract a PdfHexString from raw data"""
         token = io.BytesIO(data.read(1))
         token.seek(0, 2)
         while data.peek(1) and token.getvalue()[-1:] != b'>':
@@ -208,6 +200,7 @@ class PdfParser(object):
         return PdfHexString(token.getvalue()[:-1])
 
     def parse_literal_string(self, data, objects):
+        """Extract a PdfLiteralString from raw data"""
         token   = io.BytesIO()
         parens  = 0
         escaped = False
@@ -227,12 +220,12 @@ class PdfParser(object):
             token.write(b)
         raise PdfParseError('Unterminated string literal')
     def parse_array(self, data, objects, closer=b']'):
-        """The main method aready returns a list of the objects it found,
-        so that's easy"""
+        """Extract a PdfArray from the data stream"""
         elems = self._get_objects(data, closer)
         return PdfArray(elems)
 
     def parse_comment(self, data, objects):
+        """Extract a PdfComment from the data stream"""
         token = io.BytesIO()
         while data.peek(1):
             b = data.read(1)
@@ -246,6 +239,7 @@ class PdfParser(object):
         pass
 
     def parse_ind_object(self, data, objects):
+        """Extract an indirect object from the data stream"""
         gen     = objects.pop()
         obj_no  = objects.pop()
         obj     = self._get_objects(data, closer=b'endobj')
@@ -253,6 +247,7 @@ class PdfParser(object):
                                   self._doc)
 
     def parse_stream(self, data, objects):
+        """Extract a PdfStream from the data stream"""
         header = objects.pop()
         lngth  = header['Length']
         if isinstance(lngth, PdfObjectReference):
@@ -290,6 +285,7 @@ class PdfParser(object):
 
     @staticmethod
     def parse_number(token):
+        """Extract a numeric type from the data stream"""
         try:
             return int(token)
         except ValueError:
