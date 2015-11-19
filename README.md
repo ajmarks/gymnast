@@ -33,9 +33,9 @@ text  = SimpleRenderer(pdf.Pages[-3]).render()
   - [ ] Page Rendering
     - [x] Getting the `BaseRenderer` class working
     - [x] Implement a proof of concept extractor that just dumps strings
-    - [ ] Get a bit fancier, assigning textblocks to lines and such
+    - [x] Get a bit fancier, assigning textblocks to lines and such
   - [ ] Handle page numbering more fully
-    - [ ] Add a method to `PdfDocument` to get a page by number
+    - [x] Add a method to `PdfDocument` to get a page by number
     - [ ] Add propreties to `PdfPage` for the page number (both as an `int` and a formatted `str` according to `PdfDocument.Root.PageLabels['Nums']`)
   - [ ] Backport to Python 2.7 (about 80% done or so)
   - [ ] Font stuff
@@ -68,7 +68,7 @@ text  = SimpleRenderer(pdf.Pages[-3]).render()
   - [ ] Write tests for existing code
   - [x] Come up with a better name
   - [ ] Document everything much, much better internally
-  - [ ] Package it up neatly and pypi it
+  - [x] Package it up neatly and pypi it
   - [ ] Write some proper documentation
 
 [![Analytics](https://ga-beacon.appspot.com/UA-70374211-1/gymnast/readme)](https://github.com/igrigorik/ga-beacon)
