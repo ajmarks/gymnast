@@ -7,7 +7,6 @@ text.
 
 from .base_renderer   import PdfBaseRenderer
 from .simple_renderer import PdfSimpleRenderer
-from .text_renderer   import PdfTextRenderer
 from .line_renderer   import PdfLineRenderer
 from .renderer_states import TextState, GraphicsState
 

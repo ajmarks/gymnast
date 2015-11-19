@@ -19,7 +19,7 @@ class PdfDocument(object):
         """Initialize a new PdfDocument based on data.
 
         Arguments:
-            data - Either a binary string or a binary, readable stream 
+            data - Either a binary string or a binary, readable stream
                    (e.g, BytesIO or a binary mode file)"""
         if isinstance(data, str):
             data = open(data, 'rb')
@@ -221,7 +221,7 @@ class PdfDocument(object):
 
     @classmethod
     def _build_page_list(cls, page):
-        """Build the list of page objects by recursively descending the page 
+        """Build the list of page objects by recursively descending the page
         node tree"""
         try:
             return sum((cls._build_page_list(p) for p in page.Kids), [])

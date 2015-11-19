@@ -7,7 +7,7 @@ import codecs
 import io
 
 from .common     import PdfType
-from ..exc       import PdfParseError
+from ..exc       import PdfParseError, PdfError
 from ..pdf_codec import register_codec
 
 # Go ahead and register the codec here, I guess.

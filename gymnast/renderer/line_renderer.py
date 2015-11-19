@@ -29,7 +29,7 @@ For the purposes of determining lines, we don't care about scaling factors, so,
 ignoring text rotated 90 or -90 degrees, we can uniquely idenitify lines by two
 numbers, slope and y intercept, where
 
-Slope = b/a ([1 0]*[a b;c d] = [a b]) and 
+Slope = b/a ([1 0]*[a b;c d] = [a b]) and
 Intercept = f - b/a*e.
 
 These numbers are then rounded to one decimal place to prevent visually
@@ -49,14 +49,15 @@ from ..pdf_operation import PdfOperation
 class TextBlock(object):
     """Represents a block of text in the PDF output"""
 
-    def __init__(self, space_width, xmin, tab_width=None, width=0, text=''):
-        """Initialize a new text box at the specified x coordinate with and
-        space character width"""
-        self._space_width = float(space_width)
-        self._text        = io.StringIO(text)
+    def __init__(self, xmin, space_width, tab_width=None):
+        """Initialize a new text box at the specified x coordinate with the
+        space character width and tab width (in terms of spaces)"""
         self._xmin        = float(xmin)
-        self._width       = float(width)
-        self._tab_width   = float(tab_width)
+        self._space_width = float(space_width)
+        self._tab_width   = float(tab_width) if tab_width else None
+        self._text        = io.StringIO()
+        self._width       = 0
+
     @property
     def xbounds(self):
         """Horizontal coordinate lower and upper bounds"""
@@ -113,13 +114,9 @@ class PdfLineRenderer(PdfBaseRenderer):
         """If the operation is a text showing one, initialize a new textbox
         with the currently active font and size at the current coordinates."""
         if op.optype == PdfOperation.TEXT_SHOWING:
-            self._text_block = TextBlock(self._space_width,
-                                         self.text_coords[0],
-                                         tab_width=self._tab_width)
-    def _move_text_cursor(self, T_m):
-        """Add enough spaces to justify the change in x coordinate"""
-        x1 = self._compute_T_rm(m=T_m).current_coords[0]
-        self._text_block.fill_spaces(x1)
+            self._text_block = TextBlock(self.text_coords[0],
+                                         self._space_width,
+                                         self._tab_width)
 
     def _postop(self, op):
         """If we were in a text showing operation, add it to a line"""
@@ -142,8 +139,8 @@ class PdfLineRenderer(PdfBaseRenderer):
         # a new line, so we need to add a correction
         y_adj = (self.ts.rise <= -self._line_height)*self.ts.rise
         slope = mat.a/mat.b if mat.b else 0
-        return (round(slope,1), 
-                round(mat.f - self.ts.rise + mat.e*slope, 1))
+        return (round(slope,1),
+                round(mat.f - y_adj + mat.e*slope, 1))
 
     @property
     def _line_height(self):
@@ -156,7 +153,7 @@ class PdfLineRenderer(PdfBaseRenderer):
     def _space_width(self):
         """The width of a space in the current font"""
         w0 = self._gs_to_ts(self.active_font.space_width, 1)[0]
-        return (w0*self.ts.fs + self.ts.w) * self.ts.h
+        return w0 * self.ts.fs * self.ts.h
 
     @staticmethod
     def _join_blocks(blocks):

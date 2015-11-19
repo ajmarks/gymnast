@@ -3,8 +3,7 @@ PDF Parser object
 """
 
 import io
-
-from .exc           import PdfParseError, PdfError
+from .exc           import PdfParseError
 from .pdf_types     import PdfRaw, PdfRawData, PdfDict, PdfObjectReference,\
                            PdfLiteralString, PdfHexString, PdfComment, \
                            PdfIndirectObject, PdfArray, PdfName, PdfStream

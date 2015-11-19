@@ -9,18 +9,16 @@ from ...exc          import PdfError
 def opcode_Tj(renderer, string=b''):
     """Show a text string and move the position based on its length"""
     renderer.render_text(string)
-    renderer.ts.m = renderer.ts.lm
 
 def opcode_TJ(renderer, args=()):
     """Show one or more strings with individual positioning"""
     for op in args:
         if isinstance(op, str):
-            renderer.render_text(op, True)
+            renderer.render_text(op)
         elif isinstance(op, numbers.Real):
             renderer.move_text_cursor(op)
         else:
             raise PdfError('Invalid TJ operand')
-    renderer.ts.m = renderer.ts.lm
 
 def opcode_tick(renderer, string):
     """Move to the next line and show a text string"""

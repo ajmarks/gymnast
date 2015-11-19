@@ -6,7 +6,7 @@ from ..pdf_operation import PdfOperation
 from ...pdf_matrix   import PdfMatrix
 
 def opcode_Td(renderer, t_x, t_y):
-    """Move to a new line, parallel to the current one, at text space 
+    """Move to a new line, parallel to the current one, at text space
     coordinates offset from the start of the current line by (t_x, t_y)"""
     renderer.ts.m = PdfMatrix(1, 0, 0, 1, t_x, t_y)*renderer.ts.lm
     renderer.ts.reset_lm()

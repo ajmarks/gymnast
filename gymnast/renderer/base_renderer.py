@@ -77,7 +77,8 @@ class PdfBaseRenderer(object):
     @property
     def text_coords(self):
         """The current text matrix coordinates"""
-        return self._T_rm.current_coords
+        #return self._T_rm.current_coords
+        return self.ts.m.current_coords
 
     def push_state(self):
         """Push the current graphics state onto the stack"""
@@ -121,15 +122,11 @@ class PdfBaseRenderer(object):
         Equivalent to T_c + T_w in the formulae on p. 410"""
         return self.ts.w if glyph == ' ' else self.ts.w
 
-    def render_text(self, string, TJ=False):
+    def render_text(self, string):
         """Write the string to the text output and, depending on the mode,
         updates T_m.  See pp.409-10.
 
-        Arguments:
-            glyph - One character string (default: None)
-            TJ    - Are we in TJ mode (so don't auto-shift)
-        TODO: Vertical writing
-        IDEA: Don't compute t_x here, rather have Tj call move_text_cursor()"""
+        TODO: Vertical writing"""
         # This shortcut works.  Check the math.
         ts = self.ts
         widths = (self._get_glyph_width(glyph)*ts.fs + self._extra_space(glyph)
@@ -137,9 +134,9 @@ class PdfBaseRenderer(object):
         t_x = sum(widths) * ts.h
         t_y = 0.0 # <--- TODO: Vertical writing mode
         T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y) * ts.m
-        self._render_text(string, self._compute_T_rm(m=T_m))
-        if not TJ:
-            self.ts.T_m = T_m
+        #self._render_text(string, self._compute_T_rm(m=T_m))
+        self._render_text(string, T_m)
+        self.ts.m = T_m
 
     def move_text_cursor(self, t, last_glyph=b''):
         """Reposition the current text coordinates by a factor of t as is done

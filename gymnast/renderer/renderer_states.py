@@ -14,7 +14,7 @@ class RendererState(object):
 class TextState(object):
     """Renderer text state.  Has all of the various text rendering parameters
     described on pp. 396-404 in the Reference (without the leading T).
-    
+
     Attributes (all units are in text space units):
         m:  The current text matrix
         lm: Text matrix at the start of the current line
@@ -23,14 +23,14 @@ class TextState(object):
         w: Word spacing - Extra space (pre-T_h) added on encountering a space.
            Default 0.
         h: Horizontal scaling - Scaling factor applied to character width and
-           horizontal spacing (i.e., T_c and T_w).  Default 1.  
+           horizontal spacing (i.e., T_c and T_w).  Default 1.
            N.B.: The associated Tz operator sets this to its operand divided by
            100.
         l: Leading - Vertical distance between the baselines of adjacent text
            lines. Default 0.
         f: Text font - The name of the current font in the current resource
            dictionary.  No default value.
-        fs: Text font size - Scaling factor applied to the font in all 
+        fs: Text font size - Scaling factor applied to the font in all
             directions.  No default value.
         mode: Text rendering mode - Determines text shading, outlining, when
               rendering text.  Default 0 (solid fill, no stroke).
