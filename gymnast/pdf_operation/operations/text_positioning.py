@@ -14,6 +14,7 @@ def opcode_TD(renderer, t_x, t_y):
     PdfOperation['Td'](t_x, t_y)(renderer)
 
 def opcode_Tm(renderer, a, b, c, d, e, f):
+    """Set the text matrix (T_m) and line matrix (T_lm)"""
     renderer.ts.T_m = PdfMatrix(a, b, c, d, e, f)
     renderer.ts.reset_T_lm()
 

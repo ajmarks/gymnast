@@ -7,6 +7,7 @@ from ...exc                      import PdfError
 from ...renderer.renderer_states import TextState
 
 def opcode_BT(renderer):
+    """Begin a new text object, initializing the text and line metrices"""
     if renderer.in_text:
         raise PdfError('Cannot being a new text object without ending the previous')
     renderer.in_text = True
@@ -14,6 +15,7 @@ def opcode_BT(renderer):
     renderer.ts.T_lm = TextState.id_matrix
 
 def opcode_ET(renderer):
+    """End the text object"""
     if not renderer.in_text:
         raise PdfError('ET without a corresponding BT end text object')
     else:

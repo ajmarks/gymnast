@@ -7,9 +7,11 @@ from ..pdf_operation import PdfOperation
 from ...exc          import PdfError
 
 def opcode_Tj(renderer, string=b''):
+    """Show a text string and move the position based on its length"""
     renderer.render_text(string)
 
 def opcode_TJ(renderer, args=()):
+    """Show one or more strings with individual positioning"""
     for op in args:
         if isinstance(op, str):
             renderer.render_text(op, True)

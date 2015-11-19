@@ -16,6 +16,11 @@ class PdfDocument(object):
     _opened_file = False
 
     def __init__(self, data):
+        """Initialize a new PdfDocument based on data.
+
+        Arguments:
+            data - Either a binary string or a binary, readable stream 
+                   (e.g, BytesIO or a binary mode file)"""
         if isinstance(data, str):
             data = open(data, 'rb')
             self._opened_file = True
@@ -68,13 +73,12 @@ class PdfDocument(object):
         self._data.seek(pos)
 
     def __del__(self):
+        """Cleanup on deletion"""
         if self._opened_file:
             self._data.close()
 
     def _get_structure(self):
-        """Build the basic document structure.
-
-        TODO: Add support for linearized files (see Appendix F on p. 1021)"""
+        """Build the basic document structure."""
         startxref = self._get_startxref(self._data)
         xrefs    = [self._get_xref_table(startxref)]
         trailers = [self._get_trailer()]
@@ -193,6 +197,7 @@ class PdfDocument(object):
 
     @property
     def Root(self):
+        """Document's Root element"""
         return self._root
     @property
     def Info(self):
@@ -216,8 +221,10 @@ class PdfDocument(object):
 
     @property
     def indirect_objects(self):
+        """Dict-like of all of the indirect objects defined in the document"""
         return self._ind_objects
     def get_object(self, object_number, generation):
+        """Get the indirect object referenced"""
         try:
             return self._xrefs[(object_number, generation)].value
         except KeyError:

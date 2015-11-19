@@ -10,8 +10,8 @@ from .pdf_constants import WHITESPACE
 
 __all__ = [
     # Static functions
-    'buffer_data', 'ensure_str', 'ensure_list', 'iterbytes', 'is_digit',
-    'get_subclasses', 'read_until', 'force_decode', 'consume_whitespace',
+    'buffer_data', 'ensure_str', 'ensure_list', 'is_digit',
+    'read_until', 'force_decode', 'consume_whitespace',
     # Decorators
     'classproperty',
     # Classes
@@ -134,17 +134,17 @@ def ensure_list(val):
     """Converts the argument to a list, wrapping in [] if needed"""
     return val if isinstance(val, list) else [val]
 
-def iterbytes(bstring):
-    """Turn a bytes object into a generator that yields bytes instead of ints"""
-    for b in bstring:
-        yield bytes((b,))
+#def iterbytes(bstring):
+#    """Turn a bytes object into a generator that yields bytes instead of ints"""
+#    for b in bstring:
+#        yield bytes((b,))
 
-def get_subclasses(cls):
-    """Get all known subclasses of cls"""
-    subs = cls.__subclasses__()
-    for s in subs:
-        subs += get_subclasses(s)
-    return subs
+#def get_subclasses(cls):
+#    """Get all known subclasses of cls"""
+#    subs = cls.__subclasses__()
+#    for s in subs:
+#        subs += get_subclasses(s)
+#    return subs
 
 class ReCacher(object):
     """Passes calls and arguments through to re and caches the results.
