@@ -4,7 +4,7 @@ Font objects
 
 import six
 import struct
-from bidict import collapsingbidict
+from bidict    import collapsingbidict
 
 from ..pdf_element    import PdfElement
 from ...pdf_constants import BASE_ENCODINGS, GLYPH_LIST
@@ -17,8 +17,9 @@ class PdfBaseFont(PdfElement):
 
     def __init__(self, obj, obj_key=None):
         super(PdfBaseFont, self).__init__(obj, obj_key)
-        self._encoding = None
-        self._codec    = None
+        self._encoding  = None
+        self._codec     = None
+        self._avg_width = None
 
     def text_space_coords(self, x, y):
         """Convert a vector in glyph space to text space"""
@@ -73,18 +74,16 @@ class PdfBaseFont(PdfElement):
         """Convenience method to translate a string one character at a time."""
         return ''.join(self.decode_char(c) for c in string)
 
-    def get_glyph_width(self, glyph):
+    def get_glyph_width(self, glyph, missing_width=0):
         """Return the width of the specified glyph in the current font.
-        Note that these widths are in _glyph_ space, not _text_ space.  For
-        Type 1 fonts, the conversion is generally to divide by 1000.  For
-        Type 3 fonts though, it's more complex.
+        Note that these widths are in _glyph_ space, not _text_ space.
 
         Arguments:
             glyph - a one character string"""
         if not isinstance(glyph, int):
             glyph = self.Encoding.get_char_code(GLYPH_LIST[:glyph])
         if not (self.FirstChar <= glyph <= self.LastChar):
-            return self.FontDescriptor.get('MissingWidth', 0)
+            return self.FontDescriptor.get('MissingWidth', missing_width)
         return self.Widths[glyph - self.FirstChar]
 
     def get_glyph_name(self, code):
@@ -97,6 +96,21 @@ class PdfBaseFont(PdfElement):
     def space_width(self):
         """Width of the space character in the current font"""
         return self.get_glyph_width(self.get_char_code('space'))
+    @property
+    def avg_width(self):
+        """Approximate average character width.  Currently only defined for
+        latin fonts."""
+        if self._avg_width is None:
+            capwidths = [i for i in (self.get_glyph_width(i, None)
+                                     for i in range(ord('A'), ord('Z')+1)) if i]
+            lowwidths = [i for i in (self.get_glyph_width(i, None)
+                                     for i in range(ord('a'), ord('z')+1)) if i]
+            try:
+                self._avg_width = float(4*sum(lowwidths)+sum(capwidths)) \
+                                 /(4*len(lowwidths)+len(capwidths))
+            except ZeroDivisionError:
+                self._avg_width = float(sum(self.Widths))/len(self.Widths)
+        return self._avg_width
 
 class FontDescriptor(PdfElement):
     """FontDescriptior object describefd in Table 5.19 on p. 456.

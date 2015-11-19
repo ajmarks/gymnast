@@ -115,7 +115,7 @@ class PdfBaseRenderer(object):
         the current text state.
 
         Equivalent to T_c + T_w in the formulae on p. 410"""
-        return self.ts.w if glyph == ' ' else self.ts.w
+        return self.ts.c + (glyph == ' ')*self.ts.w
 
     def render_text(self, string):
         """Write the string to the text output and, depending on the mode,

@@ -10,7 +10,8 @@ fname = 'S:/Research/Leisure/STR RevPar Data/US Weekly PDFs/Lodging Smith Travel
 pdf = PdfDocument(fname).parse()
 page = pdf.Pages[4]
 print(page.Fonts['T1_1'].FontDescriptor.CharSet)
-print(PdfLineRenderer(page).render())
+text = PdfLineRenderer(page, True, None).render()
+print(text)
 #fname = 'c:/results.pdf'
 #pdf = PdfDocument(fname)
 #pdf.parse()

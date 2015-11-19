@@ -98,11 +98,17 @@ class PdfLineRenderer(PdfBaseRenderer):
     between successive TextBlocks in the line and width of the space character
     in the first of the two."""
 
-    def __init__(self, page, tab_width=4):
-        """Prepare for rendering by initializing our lines aparatus"""
+    def __init__(self, page, fw_spaces=False, tab_width=None):
+        """Text line extractor.
+
+        Arguments:
+            page - The PdfPage to parse
+            fw_spaces - Should spaces be approximate as fixed width?
+            tab_width - Replaces this many spaces with a tab (default None)"""
         super(PdfLineRenderer, self).__init__(page)
         self._lines     = collections.defaultdict(list)
         self._tab_width = tab_width
+        self._fw_spaces = fw_spaces
 
     def _render_text(self, string, new_state):
         """Add the text to the active text block"""
@@ -114,8 +120,12 @@ class PdfLineRenderer(PdfBaseRenderer):
         """If the operation is a text showing one, initialize a new textbox
         with the currently active font and size at the current coordinates."""
         if op.optype == PdfOperation.TEXT_SHOWING:
+            if self._fw_spaces:
+               space_width = self._avg_width
+            else:
+               space_width = self._space_width
             self._text_block = TextBlock(self.text_coords[0],
-                                         self._space_width,
+                                         space_width,
                                          self._tab_width)
 
     def _postop(self, op):
@@ -151,9 +161,17 @@ class PdfLineRenderer(PdfBaseRenderer):
 
     @property
     def _space_width(self):
-        """The width of a space in the current font"""
+        """The width of a space in the current font, transformed to text space
+        and then to user-space"""
         w0 = self._gs_to_ts(self.active_font.space_width, 1)[0]
-        return self.ts.m.transform_coords(w0 * self.ts.fs * self.ts.h, 0)[0]
+        return w0 * self.ts.fs * self.ts.h * self.ts.m.a
+
+    @property
+    def _avg_width(self):
+        """The width of a typical character in the current font, transformed to
+        text space and then to user-space"""
+        w0 = self._gs_to_ts(self.active_font.avg_width, 1)[0]
+        return w0 * self.ts.fs * self.ts.h * self.ts.m.a
 
     @staticmethod
     def _join_blocks(blocks):
@@ -165,4 +183,5 @@ class PdfLineRenderer(PdfBaseRenderer):
         for block in blocks[1:]:
             sio.write(prev_block.get_spacing(block.xbounds[0]))
             sio.write(block.text)
+            prev_block = block
         return sio.getvalue()
