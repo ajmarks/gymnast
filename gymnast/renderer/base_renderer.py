@@ -77,7 +77,6 @@ class PdfBaseRenderer(object):
     @property
     def text_coords(self):
         """The current text matrix coordinates"""
-        #return self._T_rm.current_coords
         return self.ts.m.current_coords
 
     def push_state(self):
@@ -98,10 +97,6 @@ class PdfBaseRenderer(object):
         return PdfMatrix(ts.fs*ts.h,    0,
                                 0,    ts.fs,
                                 0,   ts.rise)*m*CTM
-    @property
-    def _T_rm(self):
-        """Text rendering matrix.  See Referecne pp. 409-410"""
-        return self._compute_T_rm()
 
     def _get_glyph_width(self, glyph):
         """Get the glyph's width in _text_ space.
@@ -134,7 +129,6 @@ class PdfBaseRenderer(object):
         t_x = sum(widths) * ts.h
         t_y = 0.0 # <--- TODO: Vertical writing mode
         T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y) * ts.m
-        #self._render_text(string, self._compute_T_rm(m=T_m))
         self._render_text(string, T_m)
         self.ts.m = T_m
 

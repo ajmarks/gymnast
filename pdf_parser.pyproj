@@ -30,6 +30,7 @@
     <Compile Include="gymnast\pdf_elements\fonts\type1.py" />
     <Compile Include="gymnast\pdf_elements\fonts\type3.py" />
     <Compile Include="gymnast\pdf_elements\fonts\__init__.py" />
+    <Compile Include="gymnast\pdf_operation\operations\graphics_state.py" />
     <Compile Include="gymnast\pdf_operation\operations\text_objects.py" />
     <Compile Include="gymnast\pdf_operation\operations\text_positioning.py" />
     <Compile Include="gymnast\pdf_operation\operations\text_showing.py" />
