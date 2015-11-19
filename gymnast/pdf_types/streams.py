@@ -52,8 +52,8 @@ class PdfStream(PdfType):
         params  = ensure_list(self._header.get(self._params_key, []))
         if not params:
             params = [{} for f in filters]
-        composed_filters = chain_funcs([partial(StreamFilter[f].decode, **p)
-                                        for f, p in zip(filters, params)])
+        composed_filters = chain_funcs((partial(StreamFilter[f].decode, **p)
+                                        for f, p in zip(filters, params)))
         decoded_data = composed_filters(self._data)
         self._decoded      = True
         self._decoded_data = decoded_data
