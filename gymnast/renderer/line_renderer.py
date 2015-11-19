@@ -121,9 +121,9 @@ class PdfLineRenderer(PdfBaseRenderer):
         with the currently active font and size at the current coordinates."""
         if op.optype == PdfOperation.TEXT_SHOWING:
             if self._fw_spaces:
-               space_width = self._avg_width
+                space_width = self._avg_width
             else:
-               space_width = self._space_width
+                space_width = self._space_width
             self._text_block = TextBlock(self.text_coords[0],
                                          space_width,
                                          self._tab_width)
