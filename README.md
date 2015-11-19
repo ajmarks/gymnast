@@ -70,5 +70,3 @@ text  = SimpleRenderer(pdf.Pages[-3]).render()
   - [ ] Document everything much, much better internally
   - [x] Package it up neatly and pypi it
   - [ ] Write some proper documentation
-
-[![Analytics](https://ga-beacon.appspot.com/UA-70374211-1/gymnast/readme)](https://github.com/igrigorik/ga-beacon)
