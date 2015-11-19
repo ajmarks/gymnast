@@ -41,7 +41,7 @@ text  = SimpleRenderer(pdf.Pages[-3]).render()
   - [ ] Font stuff
     - [x] Carve the `PdfFont` class into an abstract `PdfBaseFont` and a `PdfType1Font` implementation
       - [x] `PdfFont.__new__` will pick the correct subclass based on the font's Subtype element
-      - [x] PdfBasefFont class will also have an abstract method for the glyph space to text space transformation
+      - [x] `PdfBasefFont` class will also have an abstract method for the glyph space to text space transformation
     - [ ] Add subcless for Type3 fonts
     - [x] Add subcless for TrueType fonts
     - [ ] Add subcless for composite fonts
