@@ -1,4 +1,4 @@
-# Gymnast: It's not an Acrobat
+# Gymnast: It's not Acrobat
 
 [![GitHub license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ajmarks/pdf_parser/blob/master/LICENSE) [![Code Issues](https://www.quantifiedcode.com/api/v1/project/d0106c63f4f8467586aae7498f148e94/badge.svg)](https://www.quantifiedcode.com/app/project/d0106c63f4f8467586aae7498f148e94) [![PyPI version](https://badge.fury.io/py/gymnast.svg)](https://badge.fury.io/py/gymnast)
 

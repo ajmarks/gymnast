@@ -20,7 +20,6 @@ class PdfBaseRenderer(object):
     Usage:
         redered_page = PdfRenderer(page).render()
 
-    TODO: Better encapsulate internals with setters and getters
     TODO: Vertical writing support
     TODO: Figure out graphics stuff"""
 
@@ -57,8 +56,9 @@ class PdfBaseRenderer(object):
         implemented by subclasses."""
         raise NotImplementedError
 
-    def render(self):
-        self._pre_render()
+    def render(self, *args, **kwargs):
+        """Render the page"""
+        self._pre_render(*args, **kwargs)
         for op in self._page.Contents.operations:
             self._preop(op)
             op(self)
@@ -71,11 +71,12 @@ class PdfBaseRenderer(object):
         pass
     @property
     def active_font(self):
-        return self._fonts[self.ts.T_f]
+        """The PdfBaseFont representing the font specified by T_f"""
+        return self._fonts[self.ts.f]
 
     @property
     def text_coords(self):
-        """Return the current text matrix coordinates"""
+        """The current text matrix coordinates"""
         return self._T_rm.current_coords
 
     def push_state(self):
@@ -85,13 +86,17 @@ class PdfBaseRenderer(object):
         """Pop the last graphics state off the stack"""
         self.gs = self._state_stack.pop()
 
-    def _compute_T_rm(self, **kwargs):
-        T_m = kwargs.get('T_m', self.ts.T_m)
-        CTM = kwargs.get('CTM', self.gs.CTM)
+    def _compute_T_rm(self, m=None, CTM=None):
+        """Compute the text rendering matrix (T_rm) based either on the current
+        text matrix and CTM, or using the specified overrides"""
         ts = self.ts
-        return PdfMatrix(ts.T_fs*ts.T_h,     0,
-                                0,        ts.T_fs,
-                                0,       ts.T_rise)*T_m*CTM
+        if not m:
+            m = ts.m
+        if not CTM:
+            CTM = self.gs.CTM
+        return PdfMatrix(ts.fs*ts.h,    0,
+                                0,    ts.fs,
+                                0,   ts.rise)*m*CTM
     @property
     def _T_rm(self):
         """Text rendering matrix.  See Referecne pp. 409-410"""
@@ -108,6 +113,14 @@ class PdfBaseRenderer(object):
         """Convert coordinates from glyph space to text space"""
         return self.active_font.text_space_coords(x, y)
 
+    def _extra_space(self, glyph):
+        """Compute the appropriate amount of extra spacing to apply based on
+        the last glyph drawn and the character- and word-spacing parameters in
+        the current text state.
+
+        Equivalent to T_c + T_w in the formulae on p. 410"""
+        return self.ts.w if glyph == ' ' else self.ts.w
+
     def render_text(self, string, TJ=False):
         """Write the string to the text output and, depending on the mode,
         updates T_m.  See pp.409-10.
@@ -115,20 +128,25 @@ class PdfBaseRenderer(object):
         Arguments:
             glyph - One character string (default: None)
             TJ    - Are we in TJ mode (so don't auto-shift)
-        TODO: Vertical writing"""
+        TODO: Vertical writing
+        IDEA: Don't compute t_x here, rather have Tj call move_text_cursor()"""
         # This shortcut works.  Check the math.
         ts = self.ts
-        widths = sum(self._get_glyph_width(glyph) for glyph in string)
-        t_x = (widths*ts.T_fs + ts.T_c + ts.T_w) * ts.T_h
+        widths = (self._get_glyph_width(glyph)*ts.fs + self._extra_space(glyph)
+                  for glyph in string)
+        t_x = sum(widths) * ts.h
         t_y = 0.0 # <--- TODO: Vertical writing mode
-        T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y) * ts.T_m
-        self._render_text(string, self._compute_T_rm(T_m=T_m))
+        T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y) * ts.m
+        self._render_text(string, self._compute_T_rm(m=T_m))
         if not TJ:
             self.ts.T_m = T_m
-    def move_text_cursor(self, t):
+
+    def move_text_cursor(self, t, last_glyph=b''):
+        """Reposition the current text coordinates by a factor of t as is done
+        in TJ operations (see Reference pp. 408-410"""
         ts  = self.ts
-        t_x = (-t/1000.0*ts.T_fs + ts.T_c + ts.T_w) * ts.T_h
+        t_x = -t/1000.0 * ts.fs * ts.h
         t_y = 0.0 # <--- TODO: Vertical writing mode
-        T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y)*ts.T_m
+        T_m = PdfMatrix(1, 0, 0, 1, t_x, t_y)*ts.m
         self._move_text_cursor(T_m)
-        self.ts.T_m = T_m
+        self.ts.m = T_m

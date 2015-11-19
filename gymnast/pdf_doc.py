@@ -214,10 +214,19 @@ class PdfDocument(object):
 
     @property
     def Pages(self):
-        """Alias for self.Root.Pages.Kids"""
+        """Flattened list of pages"""
         if self._pages is None:
-            self._pages = self.Root.Pages.Kids
+            self._pages = self._build_page_list(self.Root.Pages)
         return self._pages
+
+    @classmethod
+    def _build_page_list(cls, page):
+        """Build the list of page objects by recursively descending the page 
+        node tree"""
+        try:
+            return sum((cls._build_page_list(p) for p in page.Kids), [])
+        except AttributeError:
+            return [page]
 
     @property
     def indirect_objects(self):

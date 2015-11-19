@@ -77,8 +77,8 @@ class PdfObjectReference(PdfType):
         return self.get_object().parsed_object
 
     def __str__(self):
-        return 'PdfObjectReference({01}, {1})'.format(self._object_number,
-                                                      self._generation)
+        return 'PdfObjectReference({0}, {1})'.format(self._object_number,
+                                                       self._generation)
     def __repr__(self):
         return str(self)
     def pdf_encode(self):
