@@ -44,7 +44,7 @@ def opcode_ri(renderer, intent):
 
 def opcode_i(renderer, flatness):
     """Set the flatness tolerance (see p. 260)"""
-    renderer.gs.intent = intent
+    renderer.gs.intent = flatness
 
 #TODO: gs
 

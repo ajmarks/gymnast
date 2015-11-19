@@ -153,7 +153,7 @@ class PdfLineRenderer(PdfBaseRenderer):
     def _space_width(self):
         """The width of a space in the current font"""
         w0 = self._gs_to_ts(self.active_font.space_width, 1)[0]
-        return self.ts.m.transform_coords(w0 * self.ts.fs * self.ts.h)[0]
+        return self.ts.m.transform_coords(w0 * self.ts.fs * self.ts.h, 0)[0]
 
     @staticmethod
     def _join_blocks(blocks):
