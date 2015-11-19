@@ -293,19 +293,8 @@ class PdfParser(object):
 
     @staticmethod
     def parse_name(token):
-        """Parse names by stripping the leading / and replacing instances of
-        #YY with the character b'\\xYY', returning a unicode string."""
-        name = bytearray(token[1:])
-        hash_pos = name.find(b'#')
-        while hash_pos > 0:
-            try:
-                new_char = bytes((int(name[hash_pos+1:hash_pos+3], 16),))
-            except ValueError:
-                msg = 'Invalid hex code in name {} ({})'
-                raise PdfError(msg.format(token, name[hash_pos:hash_pos+3]))
-            name[hash_pos:hash_pos+3] = new_char
-            hash_pos = name.find(b'#', hash_pos)
-        return PdfName(name.decode())
+        """Parse the token into a PdfName"""
+        return PdfName.from_token(token)
 
     # dict of PDF object types besides literals to look for.
     # Keys are the token that identifies that beginning of that type,

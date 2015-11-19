@@ -159,3 +159,22 @@ class PdfName(PdfType, str):
     def __init__(self, *args, **kwargs):
         PdfType.__init__(self)
         str.__init__(self)
+    @classmethod
+    def from_token(cls, token):
+        """Parse names by stripping the leading / and replacing instances of
+        #YY with the character b'\\xYY' and decoding to unicode."""
+        try:
+            name = bytearray(token[token[0] == '/':].encode())
+        except AttributeError:
+            # Hopefully this means that it's bytes
+            name = bytearray(token[token[:1] == b'/':])
+        hash_pos = name.find(b'#')
+        while hash_pos > 0:
+            try:
+                new_char = bytes((int(name[hash_pos+1:hash_pos+3], 16),))
+            except ValueError:
+                msg = 'Invalid hex code in name {} ({})'
+                raise PdfError(msg.format(token, name[hash_pos:hash_pos+3]))
+            name[hash_pos:hash_pos+3] = new_char
+            hash_pos = name.find(b'#', hash_pos)
+        return cls(bytes(name).decode())
