@@ -10,5 +10,5 @@ from .simple_renderer import PdfSimpleRenderer
 from .line_renderer   import PdfLineRenderer
 from .renderer_states import TextState, GraphicsState
 
-__all__ = ['PdfBaseRenderer', 'PdfSimpleRenderer', 'PdfTextRenderer',
-           'TextState', 'GraphicsState', 'PdfLineRenderer']
+__all__ = ['PdfBaseRenderer', 'PdfSimpleRenderer', 'PdfLineRenderer',
+           'TextState', 'GraphicsState',]
