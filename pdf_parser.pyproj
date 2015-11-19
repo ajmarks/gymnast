@@ -30,7 +30,6 @@
     <Compile Include="gymnast\pdf_elements\fonts\type1.py" />
     <Compile Include="gymnast\pdf_elements\fonts\type3.py" />
     <Compile Include="gymnast\pdf_elements\fonts\__init__.py" />
-    <Compile Include="gymnast\pdf_operation\operations\graphics_state.py" />
     <Compile Include="gymnast\pdf_operation\operations\text_objects.py" />
     <Compile Include="gymnast\pdf_operation\operations\text_positioning.py" />
     <Compile Include="gymnast\pdf_operation\operations\text_showing.py" />
@@ -112,7 +111,7 @@
     <Content Include="gymnast\data\afm\ZapfDingbats.afm" />
     <Content Include="gymnast\data\glyphlist.txt" />
     <Content Include="gymnast\data\pdf_encodings.txt" />
-    <Content Include="gymnast\pdf_operation\operations\special_graphics.py" />
+    <Content Include="gymnast\pdf_operation\operations\graphics_state.py" />
     <Content Include="gymnast\VERSION" />
     <Content Include="pylintrc" />
     <Content Include="README.md" />

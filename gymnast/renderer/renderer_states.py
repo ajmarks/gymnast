@@ -67,4 +67,14 @@ class GraphicsState(RendererState):
     """Renderer graphics state.  Has all of the various graphical state
     parameters, including the current transformation matrix."""
     def __init__(self):
-        self.CTM    = self.id_matrix # Current transformation matrix
+        self.CTM         = self.id_matrix # Current transformation matrix
+        self.line_width  = 1.0
+        self.line_cap    = 0
+        self.line_join   = 0
+        self.miter_limit = 10.0
+        self.dash_array  = []   # See p. 217
+        self.dash_phase  = 0
+        self.intent      = None # See p. 260
+        self.flatness    = 0    # See S6.5.1 - p. 508
+
+

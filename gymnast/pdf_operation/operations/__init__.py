@@ -7,7 +7,7 @@ from . import text_objects
 from . import text_state
 from . import text_positioning
 from . import text_showing
-from . import special_graphics
+from . import graphics_state
 
 __all__ = ['text_objects', 'text_state', 'text_positioning', 'text_showing',
-           'special_graphics']
+           'graphics_state']
