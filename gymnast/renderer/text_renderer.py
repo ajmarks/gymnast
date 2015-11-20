@@ -63,8 +63,8 @@ class TextBlock(object):
         """Horizontal coordinate lower and upper bounds"""
         return (self._xmin, self._xmin+self._width)
 
-    def get_no_space(self, width):
-        return round(width/self._space_width)
+    def get_no_spaces(self, width):
+        return int(width/self._space_width)
 
     def write_text(self, text, width, x=None):
         """Add new text to the next box, adjusting the box width and adding
@@ -82,7 +82,7 @@ class TextBlock(object):
         if self._tab_width and spaces >= self._tab_width:
             return '\t'
         else:
-            return round(spaces)*' '
+            return int(spaces)*' '
 
     def fill_spaces(self, x):
         """Fill in enough spaces to reach the specified x coordinate"""
@@ -108,7 +108,7 @@ class PdfTextRenderer(PdfBaseRenderer):
             page - The PdfPage to parse
             fw_spaces - Should spaces be approximate as fixed width?
             tab_width - Replaces this many spaces with a tab (default None)"""
-        super(PdfLineRenderer, self).__init__(page)
+        super(PdfTextRenderer, self).__init__(page)
         self._lines       = collections.defaultdict(list)
         self._tab_width   = tab_width
         self._fixed_width = fixed_width
@@ -184,7 +184,7 @@ class PdfTextRenderer(PdfBaseRenderer):
             text = ' '
             for block in blocks:
                 width = block.xbounds[0]-self._page.CropBox[0]
-                text += ' '*(block.get_no_space(width)-len(text)) + block.text
+                text += ' '*(block.get_no_spaces(width)-len(text)) + block.text
             return text
         else:
             sio = io.StringIO()
