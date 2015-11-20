@@ -12,7 +12,7 @@ from ...exc        import NotImplementedWarning
 class PdfFont(PdfElement):
     """Switchboard class that should probably be a function.
     Returns PDF Font of the appropriate types."""
-    def __new__(cls, obj, obj_key=None):
+    def __new__(cls, obj, obj_key=None, document=None):
         obj = obj.value
         if obj['Type'] != 'Font':
             raise ValueError('Not a font')
@@ -22,4 +22,4 @@ class PdfFont(PdfElement):
             return TrueTypeFont(obj, obj_key)
         warn('Font subtype "{}" not yet supported'.format(obj['Subtype']),
              NotImplementedWarning)
-        return PdfBaseFont(obj, obj_key)
+        return PdfBaseFont(obj, obj_key, document)

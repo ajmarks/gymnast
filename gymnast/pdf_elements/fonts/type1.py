@@ -13,14 +13,14 @@ STD_FONTS = {j[:-4] for j in os.listdir(AFM_DIR) if j[-4:] == '.afm'}
 class Type1Font(PdfBaseFont):
     """Base PDF Font.  Right now this is exclusively Type 1."""
 
-    def __init__(self, obj, obj_key=None):
+    def __init__(self, obj, obj_key=None, document=None):
         """If the font has a name in the Standard 14, load defaults from there
         and then apply the settings from the definition here."""
         obj = obj.value
         if obj['BaseFont'] in STD_FONTS:
             std_font = get_std_font_dict(obj['BaseFont'])
             obj = std_font.update(obj)
-        super(Type1Font, self).__init__(obj, obj_key)
+        super(Type1Font, self).__init__(obj, obj_key, document)
 
     def text_space_coords(self, x, y):
         """Type1 fonts just scale by 1/1000 to convert from glyph space"""

@@ -25,11 +25,11 @@ class PdfPageResources(PdfElement):
 
 class PdfAbstractPage(PdfElement):
     """Base class for PDF Pages and Page Nodes."""
-    def __init__(self, page, obj_key=None):
+    def __init__(self, page, obj_key=None, document=None):
         """Create a new or node with properly inherited properties
         where applicable"""
         #Common and inheritable properties
-        super(PdfAbstractPage, self).__init__(page, obj_key)
+        super(PdfAbstractPage, self).__init__(page, obj_key, document)
         self._resources = page.get('Resources')
         self._mediabox  = page.get('MediaBox')
         self._cropbox   = page.get('CropBox')
@@ -73,14 +73,24 @@ class PdfAbstractPage(PdfElement):
             self._fonts = {k: v.parsed_object
                            for k,v in six.iteritems(self.Resources.Font)}
         return self._fonts
+    @property
+    def unique_id(self):
+        """Unique key to lookup page numbers and such in the document"""
+        return self.get('ID', self._obj_key)
+    @property
+    def pages_index(self):
+        """Zero-indexed page number in the document"""
+        return self.d
+
 
 class PdfPageNode(PdfAbstractPage):
     """Page node object"""
-    def __init__(self, node, obj_key=None):
+    def __init__(self, node, obj_key=None, document=None):
+        """Create a new PdfPageNode from an object dict"""
         node = node.value
         if node['Type'] != 'Pages':
             raise ValueError('Type "Pages" expected, got "{}"'.format(node['Type']))
-        super(PdfPageNode, self).__init__(node, obj_key)
+        super(PdfPageNode, self).__init__(node, obj_key, document)
     @property
     def Kids(self):
         """Child pages and nodes"""
@@ -106,11 +116,12 @@ class PdfPageNode(PdfAbstractPage):
 class PdfPage(PdfAbstractPage):
     """Abstract class for pages and page nodes"""
 
-    def __init__(self, page, obj_key=None):
+    def __init__(self, page, obj_key=None, document=None):
+        """Create a new PdfPage from an object dict"""
         page = page.value
         if page['Type'] != 'Page':
             raise PdfParseError('Page dicts must have Type = "Page"')
-        super(PdfPage, self).__init__(page, obj_key)
+        super(PdfPage, self).__init__(page, obj_key, document)
         self._contents  = ContentStream(page.get('Contents', []))
         self._fonts     = None # Load these when they're called
 

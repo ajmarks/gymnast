@@ -196,7 +196,7 @@ class PdfDocument(object):
         # default values, the first first may be skipped, in which case
         widths = header['W']
         if len(widths) == 2:
-            widths = [0]+widths
+            widths.insert(0, 0)
         recsize = sum(widths)
         data = stream.data
         # Divide, parse, and dictify

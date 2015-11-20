@@ -35,11 +35,24 @@ class PdfElement(MutableMapping):
 
     @property
     def parsed_object(self):
+        """Return the PdfElement"""
         return self
-    def __init__(self, obj, obj_key=None):
+    def __init__(self, obj, obj_key=None, document=None):
+        """Create a new PdfElement"""
         super(PdfElement, self).__init__()
-        self._object  = obj.value
-        self._obj_key = obj_key
+        self._object   = obj.value
+        self._obj_key  = obj_key
+        self._document = document
+
+    @property
+    def document(self):
+        """The docuement to which this element belongs"""
+        return self._document
+
+    @document.setter
+    def document(self, document):
+        """Set the element's document"""
+        self._document = document
 
     #Mapping stuff
     def __getitem__(self, key):

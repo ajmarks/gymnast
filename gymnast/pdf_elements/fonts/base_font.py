@@ -15,8 +15,8 @@ from ...exc           import PdfError
 class PdfBaseFont(PdfElement):
     """Base PDF Font.  Right now this is exclusively Type 1."""
 
-    def __init__(self, obj, obj_key=None):
-        super(PdfBaseFont, self).__init__(obj, obj_key)
+    def __init__(self, obj, obj_key=None, document=None):
+        super(PdfBaseFont, self).__init__(obj, obj_key, document)
         self._encoding  = None
         self._codec     = None
         self._avg_width = None
@@ -115,8 +115,8 @@ class PdfBaseFont(PdfElement):
 class FontDescriptor(PdfElement):
     """FontDescriptior object describefd in Table 5.19 on p. 456.
     Note that this will need to be overloaded to properly handle Type3 fonts."""
-    def __init__(self, obj, obj_key=None):
-        super(FontDescriptor, self).__init__(obj, obj_key)
+    def __init__(self, obj, obj_key=None, document=None):
+        super(FontDescriptor, self).__init__(obj, obj_key, document)
         self._charset = False
 
     @property
@@ -142,8 +142,8 @@ class FontEncoding(PdfElement):
     #This should never change ever, but why hardcode in two places?
     VALID_ENCODINGS = set(six.next(iter(BASE_ENCODINGS.values())).keys())
 
-    def __init__(self, obj, obj_key=None):
-        super(FontEncoding, self).__init__(obj, obj_key)
+    def __init__(self, obj, obj_key=None, document=None):
+        super(FontEncoding, self).__init__(obj, obj_key, document)
         base_encoding = obj.value.get('BaseEncoding', 'StandardEncoding')
         if base_encoding not in self.VALID_ENCODINGS:
             raise ValueError('Invalid BaseEncoding')
