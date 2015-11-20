@@ -32,7 +32,10 @@ class PdfStream(PdfType):
         else:
             self._decoded  = True
             self._decoded_data = self._data
-
+    @property
+    def header(self):
+        """Stream header"""
+        return self._header
     @property
     def _filter_key(self):
         return 'FFilter'      if self._filedata else 'Filter'

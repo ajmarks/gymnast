@@ -77,13 +77,15 @@ class PdfDocument(object):
         if self._opened_file:
             self._data.close()
 
-    def _get_structure(self, startxref):
+    def _get_structure(self, startxref=None):
         """Build the basic document structure.  Xrefs and trailers can come in
         two forms: either as literals in the file or as stream objects.  When
         presented as objects, the stream header also acts as the trailer, and
         the stream data is a set of xref records.  As far as I can tell, there
         is no rule against mixing and matching."""
-        startxref = self._get_startxref(self._data)
+        
+        if not startxref:
+            startxref = self._get_startxref(self._data)
 
         self._data.seek(startxref)
         if self._data.read(1).isidigit():
@@ -98,7 +100,7 @@ class PdfDocument(object):
         else:
             xrefs.update(new_xrefs)
             trailer.update(new_trailer)
-        return xref, trailer
+        return xrefs, trailer
 
     @staticmethod
     def _get_header(data):
@@ -201,7 +203,7 @@ class PdfDocument(object):
                         PdfXref(self, p['object_id'], p['offset'],
                                 p['generation'], p['in_use'])
                  for p in (parse_rec(recsize*i) for i in range(obj['Size']))}
-        return xrefs, obj._header
+        return xrefs, obj.header
 
     def _get_xref_subsection(self):
         """Exctract an Xref subsection from data.  This method assumes data's
