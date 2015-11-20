@@ -83,12 +83,12 @@ class PdfDocument(object):
         presented as objects, the stream header also acts as the trailer, and
         the stream data is a set of xref records.  As far as I can tell, there
         is no rule against mixing and matching."""
-        
+
         if not startxref:
             startxref = self._get_startxref(self._data)
 
         self._data.seek(startxref)
-        if self._data.read(1).isidigit():
+        if self._data.read(1).isdigit():
             xrefs, trailer = self._get_xref_stream(startxref)
         else:
             xrefs   = self._get_xref_table(startxref)

@@ -9,10 +9,17 @@ import zlib
 from .stream_filter import StreamFilter
 
 # The best are the ones that are already done for us
-StreamFilter.register('ASCII85Decode', base64.a85decode,
-                      b'~>', base64.a85encode)
-StreamFilter.register('FlateDecode', zlib.decompress,
-                      None, zlib.compress)
+def a85decode(data, **kwargs):
+    return base64.a85decode(data)
+def a85encode(data, **kwargs):
+    return base64.a85decode(data)
+
+def flate_decode(data, **kwargs):
+    return zlib.decompress(data)
+def flate_encode(data, **kwargs):
+    return zlib.compress(data)
+StreamFilter.register('ASCII85Decode', a85decode, b'~>', a85encode)
+StreamFilter.register('FlateDecode', flate_decode, None, flate_encode)
 
 
 def hex_decode(data):
