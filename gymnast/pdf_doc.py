@@ -169,6 +169,31 @@ class PdfDocument(object):
             xrefs.update(self._get_xref_subsection())
         return xrefs
 
+    def _get_xref_stream(self, offset):
+        """Extract Xrefs from a cross reference stream located at the specified
+        offset.  See pp. 106 - 109."""
+        obj = self._parser.parse_indirect_object(self._data, offset)
+        return self.parse_xref_obj(obj)
+
+    def parse_xref_obj(self):
+        if obj['Type'] != 'XRef':
+            raise PdfError('Type "XRef" expected, got "{}"'.format(obj['Type']))
+        id0 = obj.get('Index', 0)
+        w = obj['W']
+        recsize = sum(w)
+        data = obj.data
+
+        # TODO: Python 2.7-3.2 compatibility
+        def parse_rec(offset):
+            return {'object_id' : id0 + i,
+                    'offset'    : int.from_bytes(data[offset     :offset+w[0]], 'big'),
+                    'generation': int.from_bytes(data[offset+w[0]:offset+w[1]], 'big'),
+                    'in_use'    : bool(data[offset+w[1]:offset+w[2]])}
+        return {(p['object_id'],p['generation']):\
+                        PdfXref(self, p['object_id'], p['offset'],
+                                p['generation'], p['in_use'])
+                for p in (parse_rec(recsize*i) for i in range(obj['Size']))}
+
     def _get_xref_subsection(self):
         """Exctract an Xref subsection from data.  This method assumes data's
         stream position to already be at the start of the subsection and leaves
