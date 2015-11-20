@@ -80,7 +80,8 @@ class PdfAbstractPage(PdfElement):
     @property
     def pages_index(self):
         """Zero-indexed page number in the document"""
-        return self.d
+        if self.document:
+            return self.document.get_page_index(self)
 
 
 class PdfPageNode(PdfAbstractPage):

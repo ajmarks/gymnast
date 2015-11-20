@@ -32,6 +32,7 @@ class PdfDocument(object):
         self._version     = None
         self._ind_objects = {}
         self._xrefs       = None
+        self._page_index  = None
 
     def parse(self):
         """Parse the data into a workable PDF document"""
@@ -270,6 +271,12 @@ class PdfDocument(object):
         if self._pages is None:
             self._pages = self._build_page_list(self.Root.Pages)
         return self._pages
+
+    def get_page_index(self, page):
+        """Retrieve the index into self.Pages for the given page"""
+        if self._page_index is None:
+            self._page_index = dict(enumerate(p.unique_id for p in self.Pages))
+        return self._page_index.get(page.unique_id)
 
     @classmethod
     def _build_page_list(cls, page):
