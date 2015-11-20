@@ -4,7 +4,8 @@ The main PDF Document class
 
 from .exc           import PdfError, PdfParseError
 from .misc          import buffer_data, read_until, force_decode, \
-                           consume_whitespace, is_digit, ReCacher
+                           consume_whitespace, is_digit, ReCacher, \
+                           int_from_bytes
 from .pdf_constants import EOLS
 from .pdf_parser    import PdfParser
 from .pdf_types     import PdfHeader, PdfXref, PdfObjectReference, PdfDict
@@ -186,24 +187,39 @@ class PdfDocument(object):
         return self.parse_xref_obj(obj)
 
     def parse_xref_obj(self, obj):
-        if obj['Type'] != 'XRef':
-            raise PdfError('Type "XRef" expected, got "{}"'.format(obj['Type']))
-        id0 = obj.get('Index', 0)
-        w = obj['W']
-        recsize = sum(w)
-        data = obj.data
+        stream = obj.value
+        header = stream.header
+        if header['Type'] != 'XRef':
+            raise PdfError('Type "XRef" expected, got "{}"'.format(header['Type']))
+        id0 = header.get('Index', (0,))[0]
+        # Field widths.  Because of PDF's affinity for micro-optimation via
+        # default values, the first first may be skipped, in which case
+        widths = header['W']
+        if len(widths) == 2:
+            widths = [0]+widths
+        recsize = sum(widths)
+        data = stream.data
+        # Divide, parse, and dictify
+        recs = [(id0 + i, data[i*recsize:(i+1)*recsize])
+                for i in range(header['Size'])]
+        xrefs = (self._parse_xrefstrm_rec(r[0], r[1], widths) for r in recs)
+        xrefs = {(x['object_id'], x['generation']): x for x in xrefs}
+        return xrefs, header
 
-        # TODO: Python 2.7-3.2 compatibility
-        def parse_rec(offset, i):
-            return {'object_id' : id0 + i,
-                    'offset'    : int.from_bytes(data[offset     :offset+w[0]], 'big'),
-                    'generation': int.from_bytes(data[offset+w[0]:offset+w[1]], 'big'),
-                    'in_use'    : bool(data[offset+w[1]:offset+w[2]])}
-        xrefs = {(p['object_id'],p['generation']):\
-                        PdfXref(self, p['object_id'], p['offset'],
-                                p['generation'], p['in_use'])
-                 for p in (parse_rec(recsize*i, i) for i in range(obj['Size']))}
-        return xrefs, obj.header
+    def _parse_xrefstrm_rec(self, id, data, widths):
+        if widths[0] == 0:
+            rec_type = 1
+        else:
+            rec_type = int_from_bytes(data[:widths[0]])
+        val_2 = data[widths[0]:widths[1]]
+        val_3 = data[widths[1]:] # Type and obj_no are 1 and 2
+        if rec_type == 0:
+            return PdfXref(self, id, val_2, val_3, False)
+        if rec_type == 1:
+            return PdfXref(self, id, val_2, val_3 if widths[2] else 0, True)
+        if rec_type == 2:
+            #TODO
+            raise NotImplementedError('Object streams not yet implemented')
 
     def _get_xref_subsection(self):
         """Exctract an Xref subsection from data.  This method assumes data's

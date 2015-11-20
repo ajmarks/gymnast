@@ -4,6 +4,7 @@ Miscellaneous functions and classes that get used in various places
 
 import io
 import re
+import struct
 from functools import wraps
 
 from .pdf_constants import WHITESPACE
@@ -19,6 +20,14 @@ __all__ = [
     # Metaclasses
     'MetaGettable', 'MetaNonelike',
     ]
+
+def int_from_bytes(val):
+    """Converts val to an unsinged int assuming a BE byte order"""
+    try:
+        return int.from_bytes(val, 'big')
+    except AttributeError:
+        # Older Python, so pad it and unpack
+        return struct.unpack('>L', b'\x00'*(4-len(val))+val)[0]
 
 def _is_buffered_bytesio(data):
     """Check if the argument is a buffered bytes io object"""
