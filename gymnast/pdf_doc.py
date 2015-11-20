@@ -206,7 +206,7 @@ class PdfDocument(object):
         xrefs = {(x['object_id'], x['generation']): x for x in xrefs}
         return xrefs, header
 
-    def _parse_xrefstrm_rec(self, id, data, widths):
+    def _parse_xrefstrm_rec(self, obj_id, data, widths):
         if widths[0] == 0:
             rec_type = 1
         else:
@@ -214,9 +214,9 @@ class PdfDocument(object):
         val_2 = data[widths[0]:widths[1]]
         val_3 = data[widths[1]:] # Type and obj_no are 1 and 2
         if rec_type == 0:
-            return PdfXref(self, id, val_2, val_3, False)
+            return PdfXref(self, obj_id, val_2, val_3, False)
         if rec_type == 1:
-            return PdfXref(self, id, val_2, val_3 if widths[2] else 0, True)
+            return PdfXref(self, obj_id, val_2, val_3 if widths[2] else 0, True)
         if rec_type == 2:
             #TODO
             raise NotImplementedError('Object streams not yet implemented')

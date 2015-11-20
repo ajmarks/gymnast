@@ -141,8 +141,8 @@ class PdfTextRenderer(PdfBaseRenderer):
         """Return the extracted text"""
         #IDEA: there's probably a better way to do this
         lines = list(six.iteritems(self._lines))
-        return [self._join_blocks(i[1], self._fixed_width)
-                for i in sorted(lines, key=lambda l: -l[0][1])]
+        return '\n'.join([self._join_blocks(i[1], self._fixed_width)
+                         for i in sorted(lines, key=lambda l: -l[0][1])])
 
     @property
     def _line_id(self):
