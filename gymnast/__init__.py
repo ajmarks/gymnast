@@ -16,9 +16,9 @@ __license__   = 'MIT'
 __status__    = 'Alpha'
 
 from .pdf_doc    import PdfDocument
-from .renderer   import PdfBaseRenderer, PdfLineRenderer
+from .renderer   import PdfBaseRenderer, PdfTextRenderer
 
 from pkg_resources import resource_string
 __version__ = resource_string(__name__, 'VERSION').decode('ascii').strip()
 
-__all__ = ['PdfDocument', 'PdfBaseRenderer', 'PdfLineRenderer']
+__all__ = ['PdfDocument', 'PdfBaseRenderer', 'PdfTextRenderer']

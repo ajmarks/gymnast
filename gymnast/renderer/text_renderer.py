@@ -63,6 +63,9 @@ class TextBlock(object):
         """Horizontal coordinate lower and upper bounds"""
         return (self._xmin, self._xmin+self._width)
 
+    def get_no_space(self, width):
+        return round(width/self._space_width)
+
     def write_text(self, text, width, x=None):
         """Add new text to the next box, adjusting the box width and adding
         spacing based on the x coordinate if provided."""
@@ -90,7 +93,7 @@ class TextBlock(object):
     def text(self):
         return self._text.getvalue()
 
-class PdfLineRenderer(PdfBaseRenderer):
+class PdfTextRenderer(PdfBaseRenderer):
     """More sophisticated page renderer.  Stores the result of each text
     showing operator in a TextBlock object, which are then assigned to lines
     on the page based on their line matrix and positions.  After the page has
@@ -98,7 +101,7 @@ class PdfLineRenderer(PdfBaseRenderer):
     between successive TextBlocks in the line and width of the space character
     in the first of the two."""
 
-    def __init__(self, page, fw_spaces=False, tab_width=None):
+    def __init__(self, page, fixed_width=True, tab_width=None):
         """Text line extractor.
 
         Arguments:
@@ -106,9 +109,9 @@ class PdfLineRenderer(PdfBaseRenderer):
             fw_spaces - Should spaces be approximate as fixed width?
             tab_width - Replaces this many spaces with a tab (default None)"""
         super(PdfLineRenderer, self).__init__(page)
-        self._lines     = collections.defaultdict(list)
-        self._tab_width = tab_width
-        self._fw_spaces = fw_spaces
+        self._lines       = collections.defaultdict(list)
+        self._tab_width   = tab_width
+        self._fixed_width = fixed_width
 
     def _render_text(self, string, new_state):
         """Add the text to the active text block"""
@@ -120,7 +123,7 @@ class PdfLineRenderer(PdfBaseRenderer):
         """If the operation is a text showing one, initialize a new textbox
         with the currently active font and size at the current coordinates."""
         if op.optype == PdfOperation.TEXT_SHOWING:
-            if self._fw_spaces:
+            if self._fixed_width:
                 space_width = self._avg_width
             else:
                 space_width = self._space_width
@@ -138,7 +141,7 @@ class PdfLineRenderer(PdfBaseRenderer):
         """Return the extracted text"""
         #IDEA: there's probably a better way to do this
         lines = list(six.iteritems(self._lines))
-        return [self._join_blocks(i[1])
+        return [self._join_blocks(i[1], self._fixed_width)
                 for i in sorted(lines, key=lambda l: -l[0][1])]
 
     @property
@@ -173,15 +176,21 @@ class PdfLineRenderer(PdfBaseRenderer):
         w0 = self._gs_to_ts(self.active_font.avg_width, 1)[0]
         return w0 * self.ts.fs * self.ts.h * self.ts.m.a
 
-    @staticmethod
-    def _join_blocks(blocks):
+    def _join_blocks(self, blocks, fixed_width):
         """Join together a list of text blocks, adding space as needed"""
         blocks.sort(key=lambda b: b.xbounds[0])
-        sio = io.StringIO()
-        sio.write(blocks[0].text)
         prev_block = blocks[0]
-        for block in blocks[1:]:
-            sio.write(prev_block.get_spacing(block.xbounds[0]))
-            sio.write(block.text)
-            prev_block = block
-        return sio.getvalue()
+        if fixed_width:
+            text = ' '
+            for block in blocks:
+                width = block.xbounds[0]-self._page.CropBox[0]
+                text += ' '*(block.get_no_space(width)-len(text)) + block.text
+            return text
+        else:
+            sio = io.StringIO()
+            sio.write(blocks[0].text)
+            for block in blocks[1:]:
+                sio.write(prev_block.get_spacing(block.xbounds[0]))
+                sio.write(block.text)
+                prev_block = block
+            return sio.getvalue()

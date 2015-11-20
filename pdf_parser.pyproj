@@ -53,7 +53,7 @@
     <Compile Include="gymnast\pdf_types\common.py" />
     <Compile Include="gymnast\pdf_types\__init__.py" />
     <Compile Include="gymnast\renderer\simple_renderer.py" />
-    <Compile Include="gymnast\renderer\line_renderer.py" />
+    <Compile Include="gymnast\renderer\text_renderer.py" />
     <Compile Include="gymnast\renderer\renderer_states.py" />
     <Compile Include="gymnast\renderer\__init__.py" />
     <Compile Include="setup.py" />
