@@ -183,8 +183,11 @@ class FontEncoding(PdfElement):
     def get_glyph_name(self, code):
         return self._glyphmap[:code]
     def get_char_code(self, name):
-        return self._glyphmap[name]
+        try:
+            return self._glyphmap[name]
+        except KeyError:
+            print('Ruh Roh!')
     @classmethod
     def from_name(cls, encoding_name):
         """Return an FontEncoding object when given a name"""
-        return cls(PdfDict({'Encoding': encoding_name}))
+        return cls(PdfDict({'BaseEncoding': encoding_name}))

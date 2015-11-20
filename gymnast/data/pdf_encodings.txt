@@ -1,10 +1,9 @@
 # Default PDF encoding schemes.
 # Data from the tables beginning on p. 997 of the Adobe PDF Reference v. 1.7
 # http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf
-# Fields are the glyph name followed by octal character codes for the following 
-# encodings (in order): 
-#   StandardEncoding, MacRomanEncoding, WinAnsiEncoding, 
-#   PDFDocEncoding
+# Fields are the glyph name followed by octal character codes for the following
+# encodings (in order):
+#   StandardEncoding, MacRomanEncoding, WinAnsiEncoding, PDFDocEncoding
 # Missing values have blank fields
 A;0o101;0o101;0o101;0o101
 AE;0o341;0o256;0o306;0o306
