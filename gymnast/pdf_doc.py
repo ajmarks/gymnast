@@ -194,7 +194,7 @@ class PdfDocument(object):
         data = obj.data
 
         # TODO: Python 2.7-3.2 compatibility
-        def parse_rec(offset):
+        def parse_rec(offset, i):
             return {'object_id' : id0 + i,
                     'offset'    : int.from_bytes(data[offset     :offset+w[0]], 'big'),
                     'generation': int.from_bytes(data[offset+w[0]:offset+w[1]], 'big'),
@@ -202,7 +202,7 @@ class PdfDocument(object):
         xrefs = {(p['object_id'],p['generation']):\
                         PdfXref(self, p['object_id'], p['offset'],
                                 p['generation'], p['in_use'])
-                 for p in (parse_rec(recsize*i) for i in range(obj['Size']))}
+                 for p in (parse_rec(recsize*i, i) for i in range(obj['Size']))}
         return xrefs, obj.header
 
     def _get_xref_subsection(self):
