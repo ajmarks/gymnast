@@ -77,20 +77,28 @@ class PdfDocument(object):
         if self._opened_file:
             self._data.close()
 
-    def _get_structure(self):
-        """Build the basic document structure."""
+    def _get_structure(self, startxref):
+        """Build the basic document structure.  Xrefs and trailers can come in
+        two forms: either as literals in the file or as stream objects.  When
+        presented as objects, the stream header also acts as the trailer, and
+        the stream data is a set of xref records.  As far as I can tell, there
+        is no rule against mixing and matching."""
         startxref = self._get_startxref(self._data)
-        xrefs    = [self._get_xref_table(startxref)]
-        trailers = [self._get_trailer()]
-        while trailers[-1].get('Prev'):
-            xrefs.append(self._get_xref_table(trailers[-1]['Prev']))
-            trailers.append(self._get_trailer())
-        final_xref    = {}
-        final_trailer = {}
-        for x, t in zip(xrefs[::-1], trailers[::-1]):
-            final_xref.update(x)
-            final_trailer.update(t)
-        return final_xref, final_trailer
+
+        self._data.seek(startxref)
+        if self._data.read(1).isidigit():
+            xrefs, trailer = self._get_xref_stream(startxref)
+        else:
+            xrefs   = self._get_xref_table(startxref)
+            trailer = self._get_trailer()
+        try:
+            new_xrefs, new_trailer = self._get_structure(trailer['Prev'])
+        except KeyError:
+            pass
+        else:
+            xrefs.update(new_xrefs)
+            trailer.update(new_trailer)
+        return xref, trailer
 
     @staticmethod
     def _get_header(data):
@@ -175,7 +183,7 @@ class PdfDocument(object):
         obj = self._parser.parse_indirect_object(self._data, offset)
         return self.parse_xref_obj(obj)
 
-    def parse_xref_obj(self):
+    def parse_xref_obj(self, obj):
         if obj['Type'] != 'XRef':
             raise PdfError('Type "XRef" expected, got "{}"'.format(obj['Type']))
         id0 = obj.get('Index', 0)
@@ -189,10 +197,11 @@ class PdfDocument(object):
                     'offset'    : int.from_bytes(data[offset     :offset+w[0]], 'big'),
                     'generation': int.from_bytes(data[offset+w[0]:offset+w[1]], 'big'),
                     'in_use'    : bool(data[offset+w[1]:offset+w[2]])}
-        return {(p['object_id'],p['generation']):\
+        xrefs = {(p['object_id'],p['generation']):\
                         PdfXref(self, p['object_id'], p['offset'],
                                 p['generation'], p['in_use'])
-                for p in (parse_rec(recsize*i) for i in range(obj['Size']))}
+                 for p in (parse_rec(recsize*i) for i in range(obj['Size']))}
+        return xrefs, obj._header
 
     def _get_xref_subsection(self):
         """Exctract an Xref subsection from data.  This method assumes data's
