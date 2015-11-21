@@ -45,7 +45,7 @@ class PdfIndirectObject(PdfType):
         if isinstance(val, PdfDict):
             try:
                 self._parsed_obj = obj_types[val['Type']]\
-                                          .from_object(val, self.object_key)
+                                          .from_object(val, self.object_key, self._document)
                 return self._parsed_obj
             except KeyError:
                 return val
@@ -69,11 +69,19 @@ class PdfObjectReference(PdfType):
             raise PdfError('Evaluating indirect references requires a document')
         obj_id = (self._object_number, self._generation)
         return (document if document else self._document).get_object(*obj_id)
+
+    @property
+    def document(self):
+        """Object reference's document"""
+        return self._document
+
     @property
     def value(self):
+        """Object referenced"""
         return self.get_object().value
     @property
     def parsed_object(self):
+        """Object referenced, parsed"""
         return self.get_object().parsed_object
 
     def __str__(self):

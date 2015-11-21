@@ -29,9 +29,9 @@ class PdfElement(MutableMapping):
 
     required_properties = set(('Type', ))
     @classmethod
-    def from_object(cls, obj, object_key=None):
+    def from_object(cls, obj, object_key=None, document=None):
         """Parse an object into a document element"""
-        return cls(obj.value, object_key)
+        return cls(obj.value, object_key, document)
 
     @property
     def parsed_object(self):

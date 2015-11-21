@@ -275,7 +275,8 @@ class PdfDocument(object):
     def get_page_index(self, page):
         """Retrieve the index into self.Pages for the given page"""
         if self._page_index is None:
-            self._page_index = dict(enumerate(p.unique_id for p in self.Pages))
+            self._page_index = {k:v for v, k in 
+                                enumerate(p.unique_id for p in self.Pages)}
         return self._page_index.get(page.unique_id)
 
     @classmethod
