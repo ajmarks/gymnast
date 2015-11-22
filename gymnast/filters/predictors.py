@@ -87,7 +87,7 @@ def png_decode_sample(pred, sample, bpp, prev_sample=None):
 
 def paeth_decode(left, up, up_left):
     """Paeth predictor decoding.  Returns whichever argument is closest to
-    left + up − up_left, prefering left over up and up over up_left in ties."""
+    left + up - up_left, prefering left over up and up over up_left in ties."""
     est = left + up - up_left
     e_left = abs(est - left)
     e_up   = abs(est - up)
