@@ -36,13 +36,12 @@ def png_predictor_decode(data, params, predictor=None):
         predictor = params.get('Predictor', 11) - 10
     if not (1 <= predictor <= 5):
         raise ValueError('Invalid PNG predictor')
-    colors    = params.get('Colors', 1)
-    comp_bits = params.get('BitsPerComponent', 8)
+
     columns   = params.get('Columns', 1)
     early_change = bool(params.get('EarlyChange', 1))
-    
+
     # Break up the data into samples
-    bpp = math.ceil((colors*comp_bits) / 8)
+    bpp = math.ceil(params.get('BitsPerComponent',8)*params.get('Colors', 1)/8)
     rec_size = bpp*columns+1
     samples = [(n, data[i], bytearray(data[i+1:i+rec_size]))
                for n, i in enumerate(range(0, len(data), rec_size))]
@@ -78,16 +77,16 @@ def png_decode_sample(pred, sample, bpp, prev_sample=None):
     elif pred == 2: # PNG Up
         return bytearray((r + u) % 256 for r, u in zip(prev_sample, sample))
     elif pred == 3: # PNG Average
-        return bytearray((r + (l + u)//2) % 256 
+        return bytearray((r + (l + u)//2) % 256
                          for r, l, u in zip(sample, lefts, prev_sample))
     elif pred == 4: # PNG Paeth
         up_lefts = bytearray(b'\x00'*bpp)+prev_sample[bpp:]
         return bytearray((r + paeth_decode(l, u, ul)) % 256
-                         for a, l, u, ul in zip(sample, lefts, prev_sample, up_lefts))
+                         for r, l, u, ul in zip(sample, lefts, prev_sample, up_lefts))
     raise ValueError('Invalid PNG predictor')
 
 def paeth_decode(left, up, up_left):
-    """Paeth predictor decoding.  Returns whichever argument is closest to 
+    """Paeth predictor decoding.  Returns whichever argument is closest to
     left + up − up_left, prefering left over up and up over up_left in ties."""
     est = left + up - up_left
     e_left = abs(est - left)
@@ -137,7 +136,7 @@ def png_predictor_encode(samples, params, predictor=None, sample_predictors=None
     results = [None]*len(samples)
     prev_sample = None
     rows = ((p, s) for p, s in zip(sample_predictors, samples))
-    for n, pred, sample in rows:
+    for pred, sample in rows:
         prev_sample = png_encode_sample(pred, sample, bpp, prev_sample)
         results.write(int_to_bytes(pred)+bytes(prev_sample))
     return results.getvalue()
@@ -165,16 +164,16 @@ def png_encode_sample(pred, sample, bpp, prev_sample=None):
     elif pred == 2: # PNG Up
         return bytearray((r - u) % 256 for r, u in zip(prev_sample, sample))
     elif pred == 3: # PNG Average
-        return bytearray((r - (l + u)//2) % 256 
+        return bytearray((r - (l + u)//2) % 256
                          for r, l, u in zip(sample, lefts, prev_sample))
     elif pred == 4: # PNG Paeth
         up_lefts = bytearray(b'\x00'*bpp)+prev_sample[bpp:]
         return bytearray((r - paeth_decode(l, u, ul)) % 256
-                         for a, l, u, ul in zip(sample, lefts, prev_sample, up_lefts))
+                         for r, l, u, ul in zip(sample, lefts, prev_sample, up_lefts))
     raise ValueError('Invalid PNG predictor')
 
 def paeth_encode(left, up, up_left):
-    """Paeth predictor decoding.  Returns whichever argument is closest to 
+    """Paeth predictor decoding.  Returns whichever argument is closest to
     left + up − up_left, prefering left over up and up over up_left in ties."""
     est = left + up - up_left
     e_left = abs(est - left)

@@ -134,22 +134,6 @@ class PdfHeader(PdfType):
     def pdf_encode(self):
         return str(self).encode()
 
-class PdfHeader(PdfType):
-    """PDF version header.  Probably not super necessary to have."""
-    def __init__(self, version, adobe_version=None):
-        super(PdfHeader, self).__init__()
-        self.version       = Decimal(version)
-        self.adobe_version = Decimal(adobe_version) if adobe_version else None
-    def __str__(self):
-        vers = '%'
-        if self.adobe_version:
-            vers += '!PS-Adobe-'+str(self.adobe_version)+' '
-        return vers+'PDF-'+str(self.version)
-    def __bytes__(self):
-        return bytes(str(self))
-    def pdf_encode(self):
-        return str(self).encode()
-
 class PdfRaw(PdfType, bytes):
     """Raw PDF token"""
     def __new__(cls, *args, **kwargs):

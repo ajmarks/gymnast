@@ -104,7 +104,7 @@ class PdfObjStream(PdfRegularStream):
 
         TODO: Python 2-ify"""
         self._dataio.seek(0)
-        tokens = [self._parser.parse_simple_object(self._dataio) 
+        tokens = [self._parser.parse_simple_object(self._dataio)
                   for i in range(2*self._n_objs)]
         self._obj_nos = [tokens[i]   for i in range(0, len(tokens), 2)]
         self._offsets = [tokens[i+1] for i in range(0, len(tokens), 2)]
@@ -118,8 +118,8 @@ class PdfObjStream(PdfRegularStream):
     def get_nth_object(self, n):
         """Get the nth object in this stream"""
         if self._objects[n] is None:
-            obj = self._parser.parse_simple_object(
-                            self._dataio, self._header['First']+self.offsets[n])
+            obj = self._parser.parse_simple_object(self._dataio,
+                                                   self._header['First']+self.offsets[n])
             obj = PdfIndirectObject(self._obj_nos[n], 0, obj, self._document)
             self._objects[n] = obj
         return self._objects[n]
