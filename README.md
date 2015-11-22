@@ -36,7 +36,7 @@ text  = SimpleRenderer(pdf.Pages[-3]).render()
     - [x] Get a bit fancier, assigning textblocks to lines and such
   - [ ] Handle page numbering more fully
     - [x] Add a method to `PdfDocument` to get a page by number
-    - [ ] Add propreties to `PdfPage` for the page number (both as an `int` and a formatted `str` according to `PdfDocument.Root.PageLabels['Nums']`)
+    - [ ] Add propreties to `PdfPage` for the page number (both as an `int` and a formatted `str` according to `PdfDocument.Root.PageLabels['Nums']`) (first part done on dev branch)
   - [ ] Backport to Python 2.7 (about 80% done or so)
   - [ ] Font stuff
     - [x] Carve the `PdfFont` class into an abstract `PdfBaseFont` and a `PdfType1Font` implementation
