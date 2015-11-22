@@ -160,16 +160,21 @@ class ContentStream(object):
         Each element is an instance of a subclass of PdfOperation, which can
         then be rendered by the page by calling e.g. next(operations)(renderer)
         where renderer is a PdfRenderer object."""
-        for stream in self._contents:
-            if isinstance(stream, PdfObjectReference):
-                stream = stream.value
-            for oper in self._extract_stream_ops(stream):
-                yield oper
+        stream = b''
+        # We can't just nest the loops because sometimes an opcode will be
+        # split into two streams, which should totally not be allowed.
+        for strm in self._contents:
+            if isinstance(strm, PdfObjectReference):
+                stream += strm.value.data
+            else:
+                stream += strm.data
+        for oper in self._extract_stream_ops(stream):
+            yield oper
 
     @staticmethod
     def _extract_stream_ops(stream):
         operands = []
-        for op in PdfParser().iterparse(stream.value.data):
+        for op in PdfParser().iterparse(stream):
             if isinstance(op, PdfRaw):
                 yield PdfOperation[op](*operands)
                 operands = []
