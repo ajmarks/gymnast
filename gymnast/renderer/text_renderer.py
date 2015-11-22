@@ -112,12 +112,18 @@ class PdfTextRenderer(PdfBaseRenderer):
         self._lines       = collections.defaultdict(list)
         self._tab_width   = tab_width
         self._fixed_width = fixed_width
+        self._line_sizes  = collections.defaultdict(int)
 
     def _render_text(self, string, new_state):
-        """Add the text to the active text block"""
+        """Add the text to the active text block, and update the active font's
+        glyph count"""
         x0 = self.text_coords[0]
         x1 = new_state.current_coords[0]
         self._text_block.write_text(string, x1-x0, x0)
+        cap_height  = self.active_font.FontDescriptor.CapHeight
+        cap_height  = self.active_font.text_space_coords(0, cap_height)[1]
+        cap_height *= self.ts.fs*self.ts.m.d
+        self._line_sizes[round(cap_height, 1)] += len(string)
 
     def _preop(self, op):
         """If the operation is a text showing one, initialize a new textbox
@@ -139,10 +145,27 @@ class PdfTextRenderer(PdfBaseRenderer):
 
     def _return(self):
         """Return the extracted text"""
-        #IDEA: there's probably a better way to do this
-        lines = list(six.iteritems(self._lines))
+        # Median line size
+        line_size = max(self._line_sizes, key=self._line_sizes.get)
+        lines = sorted(six.iteritems(self._lines), key=lambda l: -l[0][1])
+        dist_lines = [lines[0]]
+        for l in lines[1:]:
+            # Does the top of this line cross the bottom of the one above?
+            if l[0][1] + line_size >= dist_lines[-1][0][1]:
+                dist_lines[-1][1].extend(l[1])
+            else:
+                dist_lines.append(l)
         return '\n'.join([self._join_blocks(i[1], self._fixed_width)
-                         for i in sorted(lines, key=lambda l: -l[0][1])])
+                         for i in dist_lines])
+        ## IDEA: Add option to include blank lines as below
+        #text_lines = [(i[0][1], self._join_blocks(i[1], self._fixed_width))
+        #               for i in dist_lines]
+        #results = io.StringIO()
+        #results.write(text_lines[0][1])
+        #for i in range(1, len(text_lines)):
+        #    new_lines = round((text_lines[i-1][0]-text_lines[i][0])/line_size)
+        #    results.write('\n'*new_lines+text_lines[i][1])
+        #return results.getvalue()
 
     @property
     def _line_id(self):
@@ -152,7 +175,7 @@ class PdfTextRenderer(PdfBaseRenderer):
         # a new line, so we need to add a correction
         y_adj = (self.ts.rise <= -self._line_height)*self.ts.rise
         slope = mat.a/mat.b if mat.b else 0
-        return (round(slope,1),
+        return (round(slope),
                 round(mat.f - y_adj + mat.e*slope, 1))
 
     @property
