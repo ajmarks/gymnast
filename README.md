@@ -54,7 +54,7 @@ text  = PdfSimpleRenderer(pdf.Pages[-3]).render()
     - [ ] `JPXDecode`
     - [ ] `Crypt`
   - [ ] Implement remaining object types
-    - [ ] `ObjStm`
+    - [x] `ObjStm` (on dev branch)
     - [x] `XRef`
     - [ ] `Filespec`
     - [ ] `EmbeddedFile`
