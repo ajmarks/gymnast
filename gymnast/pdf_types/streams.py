@@ -2,18 +2,21 @@
 PDF stream objects - Reference p. 60
 """
 
+import io
 from functools import partial, reduce
 
-from .common   import PdfType
+from .common       import PdfType
+from .object_types import PdfIndirectObject
 from ..filters import StreamFilter
 from ..misc    import ensure_list
 
 class PdfStream(PdfType):
     """PDF stream type"""
-    def __init__(self, header, data):
+    def __init__(self, header, data, document=None):
         super(PdfStream, self).__init__()
-        self._header  = header
-        self._objects = None
+        self._header   = header
+        self._objects  = None
+        self._document = document
 
         # This is obnoxious, but the PDF standard allows the stream header to
         # to specify another file with the data, ignoring the stream data.
@@ -68,3 +71,35 @@ class PdfStream(PdfType):
 def chain_funcs(funcs):
     """Compose the functions in iterable funcs"""
     return lambda x: reduce(lambda f1, f2: f2(f1), funcs, x)
+
+class PdfObjStream(PdfStream):
+    """Subclass of PdfStream for object streams.  See pp. 100-105 for an 
+    example of yet another thing slapped onto the PDF standard late in the
+    game."""
+
+    def __init__(self, header, data, document=None):
+        """Create a new object stream"""
+        from ..pdf_parser import PdfParser
+
+        super(PdfObjStream, self).__init__(header, data)
+        self._offsets = None
+        self._obj_nos = None
+        self._parser  = PdfParser(document)
+        self._objects = self._header['N']*[None]
+
+    def _parse_offsets(self):
+        """Build the offsets and object numbers lists.
+        
+        TODO: Python 2-ify"""
+        lines = (l for l in self.data.splitlines() if l.strip()[0] != b'%')
+        nums = [int(n) for n in next(line).split()]
+        self._obj_nos = [nums[i]   for i in range(0, len(nums), 2)]
+        self._offsets = [nums[i+1] for i in range(0, len(nums), 2)]
+
+    def get_nth_object(self, n):
+        """Get the nth object in this stream"""
+        if self._objects[n] is None:
+            obj = self._parser.parse_simple_object(
+                            self._data, self._header['First']+self._offsets[n])
+            self._objects[n] = obj
+        return self._objects[n]

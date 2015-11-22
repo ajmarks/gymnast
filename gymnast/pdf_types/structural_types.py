@@ -13,13 +13,16 @@ class PdfXref(PdfType):
     file, indicating where in the file each object is located."""
     LINE_PAT = re.compile(r'^(\d{10}) (\d{5}) (n|f)\s{0,2}$')
 
-    def __init__(self, document, obj_no, offset, generation, in_use):
+    def __init__(self, document, obj_no, offset=0, generation=0,
+                 in_use=True, obj_strm_no=None):
         super(PdfXref, self).__init__()
-        self._obj_no     = obj_no
-        self._offset     = offset
-        self._generation = generation
-        self._in_use     = in_use
-        self._document   = document
+        self._obj_no      = obj_no
+        self._offset      = offset
+        self._generation  = generation
+        self._in_use      = in_use
+        self._document    = document
+        self._obj_strm_no = obj_strm_no
+
     @property
     def key(self):
         return (self._obj_no, self._generation)
@@ -34,10 +37,14 @@ class PdfXref(PdfType):
         if self._in_use:
             objs = self._document.indirect_objects
             try:
-                return objs[self.key]
+                obj = objs[self.key]
             except KeyError:
-                self._document.parse_object(self._offset)
-                return objs[self.key]
+                obj = self._document.parse_object(self._offset)
+            if self._obj_strm_no:
+                # Object stream reference
+                return obj.parsed_object.get_object(self._obj_no)
+            else:
+                return obj
         else:
             return None # TODO: implement free Xrefs
     def pdf_encode(self):

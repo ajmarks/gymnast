@@ -36,7 +36,6 @@ class PdfIndirectObject(PdfType):
                      'FontDescriptor': pdf_elements.FontDescriptor,
                      'Encoding'      : pdf_elements.FontEncoding,
                      #'ObjStm'        : ObjectStream, #TODO
-                     #'XRef'          : XRef
                      'Catalog'       : pdf_elements.PdfCatalog
                     }
         if self._parsed_obj is not None:

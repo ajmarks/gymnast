@@ -73,6 +73,7 @@ class PdfDocument(object):
         obj = self._parser.parse_indirect_object(self._data, offset)
         self.indirect_objects[obj.object_key] = obj
         self._data.seek(pos)
+        return obj
 
     def __del__(self):
         """Cleanup on deletion"""
