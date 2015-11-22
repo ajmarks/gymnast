@@ -4,8 +4,8 @@ PDF Parser object
 
 import io
 from .exc           import PdfParseError
-from .pdf_types     import PdfRaw, PdfRawData, PdfDict, PdfObjectReference,\
-                           PdfLiteralString, PdfHexString, PdfComment, \
+from .pdf_types     import PdfRaw, PdfRawData, PdfDict, PdfObjectReference, \
+                           PdfLiteralString, PdfHexString, PdfComment,      \
                            PdfIndirectObject, PdfArray, PdfName, PdfStream
 from .misc          import BlackHole, buffer_data, consume_whitespace
 from .pdf_constants import EOLS, WHITESPACE

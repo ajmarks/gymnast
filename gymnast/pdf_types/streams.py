@@ -10,10 +10,19 @@ from .object_types import PdfIndirectObject
 from ..filters import StreamFilter
 from ..misc    import ensure_list
 
-class PdfStream(PdfType):
+class PdfStream(object):
+    """Switchboard class for streams.  I should probably replaces these with
+    functions. That'll happen in the next big refactor, I guess."""
+    def __new__(cls, header, data, document=None):
+        if header['Type'] == 'ObjStm':
+            return PdfObjStream(header, data, document)
+        else:
+            return PdfRegularStream(header, data, document)
+
+class PdfRegularStream(PdfType):
     """PDF stream type"""
     def __init__(self, header, data, document=None):
-        super(PdfStream, self).__init__()
+        super(PdfRegularStream, self).__init__()
         self._header   = header
         self._objects  = None
         self._document = document
@@ -89,7 +98,7 @@ class PdfObjStream(PdfStream):
 
     def _parse_offsets(self):
         """Build the offsets and object numbers lists.
-        
+
         TODO: Python 2-ify"""
         lines = (l for l in self.data.splitlines() if l.strip()[0] != b'%')
         nums = [int(n) for n in next(line).split()]

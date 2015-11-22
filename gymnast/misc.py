@@ -13,6 +13,7 @@ __all__ = [
     # Static functions
     'buffer_data', 'ensure_str', 'ensure_list', 'is_digit',
     'read_until', 'force_decode', 'consume_whitespace',
+    'int_from_bytes', 'int_to_bytes',
     # Decorators
     'classproperty',
     # Classes
@@ -28,6 +29,14 @@ def int_from_bytes(val):
     except AttributeError:
         # Older Python, so pad it and unpack
         return struct.unpack('>L', b'\x00'*(4-len(val))+val)[0]
+
+def int_to_bytes(val):
+    """Converts val to bigendian bytes"""
+    try:
+        return val.to_bytes('big')
+    except AttributeError:
+        # Older Python, so pack it and strip the padding
+        return struct.pack('>q', val).lstrip(b'\x00')
 
 def _is_buffered_bytesio(data):
     """Check if the argument is a buffered bytes io object"""
