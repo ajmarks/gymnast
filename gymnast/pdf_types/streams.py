@@ -67,7 +67,7 @@ class PdfRegularStream(PdfType):
         params  = ensure_list(self._header.get(self._params_key, []))
         if not params:
             params = [{} for f in filters]
-        composed_filters = chain_funcs((partial(StreamFilter[f].decode, **p)
+        composed_filters = chain_funcs((partial(StreamFilter[f].decode, params=p)
                                         for f, p in zip(filters, params)))
         decoded_data = composed_filters(self._data)
         self._decoded      = True
@@ -81,9 +81,9 @@ def chain_funcs(funcs):
     """Compose the functions in iterable funcs"""
     return lambda x: reduce(lambda f1, f2: f2(f1), funcs, x)
 
-class PdfObjStream(PdfStream):
-    """Subclass of PdfStream for object streams.  See pp. 100-105 for an 
-    example of yet another thing slapped onto the PDF standard late in the
+class PdfObjStream(PdfRegularStream):
+    """Subclass of PdfRegularStream for object streams.  See pp. 100-105 for
+    an example of yet another thing slapped onto the PDF standard late in the
     game."""
 
     def __init__(self, header, data, document=None):

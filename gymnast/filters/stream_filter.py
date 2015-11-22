@@ -10,19 +10,17 @@ base = namedtuple('StreamFilter', ('filter_name','decoder', 'EOD', 'encoder'))
 base.__new__.__defaults__ = (None, None)
 class StreamFilterBase(base):
     """Stream filter class."""
-    def decode(self, data, **kwargs):
-        """Decode the encoded stream. Keyword arguments are the parameters from
-        the stream dictionary."""
+    def decode(self, data, params):
+        """Decode the encoded stream."""
         if self.EOD:
             end = data.find(bytes(self.EOD))
-            return self.decoder(data[:end if end > 0 else None], **kwargs)
+            return self.decoder(data[:end if end > 0 else None], params)
         else:
-            return self.decoder(data, **kwargs)
-    def encode(self, data, **kwargs):
-        """Encode the stream data. Keyword arguments are the parameters from
-        the stream dictionary."""
+            return self.decoder(data, params)
+    def encode(self, data, params):
+        """Encode the stream data."""
         if self.encoder:
-            return self.encoder(data, **kwargs) + (self.EOD if self.EOD else b'')
+            return self.encoder(data, params) + (self.EOD if self.EOD else b'')
         else:
             warn('Encoding for {} not implemented'.format(self.filter_name))
             return data + (self.EOD if self.EOD else b'')
