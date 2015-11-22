@@ -190,6 +190,7 @@ class PdfDocument(object):
         return self.parse_xref_obj(obj)
 
     def parse_xref_obj(self, obj):
+        """Extract an xref table and trailer from an XRef object"""
         stream = obj.value
         header = stream.header
         if header['Type'] != 'XRef':
@@ -202,20 +203,24 @@ class PdfDocument(object):
             widths.insert(0, 0)
         recsize = sum(widths)
         data = stream.data
-        # Divide, parse, and dictify
-        recs = [(id0 + i, data[i*recsize:(i+1)*recsize])
-                for i in range(header['Size']-id0)]
+        if isinstance(data, (list, tuple)):
+            # Stream predictors already gave us records
+            recs = [(id0 + i, d) for i, d in enumerate(data)]
+        else:
+            recs = [(id0 + i, data[i*recsize:(i+1)*recsize])
+                    for i in range(header['Size']-id0)]
         xrefs = (self._parse_xrefstrm_rec(r[0], r[1], widths) for r in recs)
         xrefs = {x.key: x for x in xrefs if x is not None}
         return xrefs, header
 
     def _parse_xrefstrm_rec(self, obj_id, data, widths):
+        """Parse a record in an xref stream into an XRef object"""
         if widths[0] == 0:
             rec_type = 1
         else:
             rec_type = int_from_bytes(data[:widths[0]])
-        val_2 = int_from_bytes(data[widths[0]:widths[1]])
-        val_3 = int_from_bytes(data[widths[1]:]) # Type and obj_no are 1 and 2
+        val_2 = int_from_bytes(data[widths[0]:widths[0]+widths[1]])
+        val_3 = int_from_bytes(data[widths[0]+widths[1]:]) # Type and obj_no are 1 and 2
         if rec_type == 0:
             return PdfXref(self, obj_id, val_2, val_3, False)
         if rec_type == 1:
@@ -288,7 +293,7 @@ class PdfDocument(object):
         try:
             return sum((cls._build_page_list(p) for p in page.Kids), [])
         except AttributeError:
-            return [page]
+            return [page.parsed_object]
 
     @property
     def indirect_objects(self):

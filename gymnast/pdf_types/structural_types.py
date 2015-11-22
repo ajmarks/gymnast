@@ -1,6 +1,15 @@
 """
 PDF objects that represent the low-level document structure
-"""
+
+For lack of a better place, here's how we find an object:
+    1. Each object has a unique key (object number, generation number)
+    2. If that key is in the document's _ind_objects dict, return it.
+    3. If not, get the cross reference from the document's _xrefs dict
+       a. If the result is a PdfXref, go to the xref's _offset in the doc's
+          data, parse that object, and save and return the result.
+       b. If the result is a PdfStreamXref and it's type 2, get the specified
+          object stream, and then use the object stream's get_nth_object method
+          to return the object."""
 
 import re
 from decimal   import Decimal
@@ -22,6 +31,7 @@ class PdfXref(PdfType):
         self._document   = document
     @property
     def key(self):
+        """Id of the object this represents"""
         return (self._obj_no, self._generation)
 
     @property
@@ -100,7 +110,7 @@ class PdfStreamXref(PdfType):
             obj = objs[self.key]
         except KeyError:
             strm_obj = self._document.get_object(self._obj_strm_no, 0)
-            obj = strm_obj.parsed_object.get_object(self._obj_no)
+            obj = strm_obj.parsed_object.get_nth_object(self._obj_strm_idx)
             objs[self.key] = obj
         return obj
 

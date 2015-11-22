@@ -241,6 +241,7 @@ class PdfParser(object):
         """Extract an indirect object from the data stream"""
         gen     = objects.pop()
         obj_no  = objects.pop()
+        consume_whitespace(data)
         obj     = self._get_objects(data, closer=b'endobj')
         return  PdfIndirectObject(obj_no, gen, obj[0] if obj else None,
                                   self._doc)
@@ -265,7 +266,7 @@ class PdfParser(object):
             data.seek(-2, 1)
         else:
             raise PdfParseError('endstream not found')
-        return PdfStream(header, s_data)
+        return PdfStream(header, s_data, self._doc)
 
     @staticmethod
     def parse_literal(token):

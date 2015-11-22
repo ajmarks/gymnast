@@ -44,7 +44,8 @@ class PdfIndirectObject(PdfType):
         if isinstance(val, PdfDict):
             try:
                 self._parsed_obj = obj_types[val['Type']]\
-                                          .from_object(val, self.object_key)
+                                           .from_object(val, self.object_key,
+                                                        self._document)
                 return self._parsed_obj
             except KeyError:
                 return val

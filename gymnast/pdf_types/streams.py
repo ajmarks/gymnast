@@ -14,7 +14,7 @@ class PdfStream(object):
     """Switchboard class for streams.  I should probably replaces these with
     functions. That'll happen in the next big refactor, I guess."""
     def __new__(cls, header, data, document=None):
-        if header['Type'] == 'ObjStm':
+        if header.get('Type') == 'ObjStm':
             return PdfObjStream(header, data, document)
         else:
             return PdfRegularStream(header, data, document)
@@ -94,21 +94,32 @@ class PdfObjStream(PdfRegularStream):
         self._offsets = None
         self._obj_nos = None
         self._parser  = PdfParser(document)
-        self._objects = self._header['N']*[None]
+        self._n_objs  = header['N']
+        self._objects = [None]*header['N']
+        self._offsets = None
+        self._dataio  = io.BufferedReader(io.BytesIO(self.data))
 
     def _parse_offsets(self):
         """Build the offsets and object numbers lists.
 
         TODO: Python 2-ify"""
-        lines = (l for l in self.data.splitlines() if l.strip()[0] != b'%')
-        nums = [int(n) for n in next(line).split()]
-        self._obj_nos = [nums[i]   for i in range(0, len(nums), 2)]
-        self._offsets = [nums[i+1] for i in range(0, len(nums), 2)]
+        self._dataio.seek(0)
+        tokens = [self._parser.parse_simple_object(self._dataio) 
+                  for i in range(2*self._n_objs)]
+        self._obj_nos = [tokens[i]   for i in range(0, len(tokens), 2)]
+        self._offsets = [tokens[i+1] for i in range(0, len(tokens), 2)]
+
+    @property
+    def offsets(self):
+        if self._offsets is None:
+            self._parse_offsets()
+        return self._offsets
 
     def get_nth_object(self, n):
         """Get the nth object in this stream"""
         if self._objects[n] is None:
             obj = self._parser.parse_simple_object(
-                            self._data, self._header['First']+self._offsets[n])
+                            self._dataio, self._header['First']+self.offsets[n])
+            obj = PdfIndirectObject(self._obj_nos[n], 0, obj, self._document)
             self._objects[n] = obj
         return self._objects[n]

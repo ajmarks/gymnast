@@ -12,6 +12,7 @@ IDEA: Consider replacing this with something like pypng
 from __future__ import division
 from ..misc import int_to_bytes
 import io
+import math
 
 __all__ = ['predictor_decode', 'predictor_encode']
 
@@ -22,8 +23,9 @@ def predictor_decode(data, predictor_id, params):
     elif predictor_id == 2:
         raise NotImplementedError('TIFF predictor not yet implemented')
     elif 10 <= predictor_id <= 15:
-        # PNG predictors
-        return png_predictor_decode(data, params, predictor_id)
+        # PNG predictors.  Subtracting 10 to turn it into a W3C standard PNG
+        # predictor number
+        return png_predictor_decode(data, params, predictor_id - 10)
     else:
         raise ValueError('Invalid predictor number')
 
@@ -40,9 +42,10 @@ def png_predictor_decode(data, params, predictor=None):
     early_change = bool(params.get('EarlyChange', 1))
     
     # Break up the data into samples
-    bpp = round(colors*comp_bits*columns/8 + .5)
-    samples = [(n, data[i], bytearray(data[i+1:i+bpp+1]))
-               for n, i in enumerate(range(0, len(data), bpp))]
+    bpp = math.ceil((colors*comp_bits) / 8)
+    rec_size = bpp*columns+1
+    samples = [(n, data[i], bytearray(data[i+1:i+rec_size]))
+               for n, i in enumerate(range(0, len(data), rec_size))]
     prev_sample = None
     results = [None]*len(samples)
     for n, pred, sample in samples:
@@ -66,20 +69,20 @@ def png_decode_sample(pred, sample, bpp, prev_sample=None):
     #   u  - Corresponding byte in pixel above (up)
     #   ul - Corresponding byte in pixel up and to the left
     if prev_sample is None:
-        prev_sample = bytearray(b'x00' for b in sample)
-    lefts = bytearray(b'\x00'*bpp)+sample[bpp:]
+        prev_sample = bytearray(len(sample))
+    lefts = bytearray(bpp)+sample[bpp:]
     if   pred == 0: # PNG None
         return sample
     elif pred == 1: # PNG Sub
-        return bytearray((r - l) % 256 for r, l in zip(sample, lefts))
+        return bytearray((r + l) % 256 for r, l in zip(sample, lefts))
     elif pred == 2: # PNG Up
-        return bytearray((r - u) % 256 for r, u in zip(prev_sample, sample))
+        return bytearray((r + u) % 256 for r, u in zip(prev_sample, sample))
     elif pred == 3: # PNG Average
-        return bytearray((r - (l + u)//2) % 256 
+        return bytearray((r + (l + u)//2) % 256 
                          for r, l, u in zip(sample, lefts, prev_sample))
     elif pred == 4: # PNG Paeth
         up_lefts = bytearray(b'\x00'*bpp)+prev_sample[bpp:]
-        return bytearray((r - paeth_decode(l, u, ul)) % 256
+        return bytearray((r + paeth_decode(l, u, ul)) % 256
                          for a, l, u, ul in zip(sample, lefts, prev_sample, up_lefts))
     raise ValueError('Invalid PNG predictor')
 
@@ -153,23 +156,21 @@ def png_encode_sample(pred, sample, bpp, prev_sample=None):
     #   u  - Corresponding byte in pixel above (up)
     #   ul - Corresponding byte in pixel up and to the left
     if prev_sample is None:
-        prev_sample = bytearray(b'x00' for b in sample)
-    lefts = bytearray(b'\x00'*bpp)+sample[bpp:]
+        prev_sample = bytearray(len(sample))
+    lefts = bytearray(bpp)+sample[bpp:]
     if   pred == 0: # PNG None
         return sample
     elif pred == 1: # PNG Sub
-        return bytearray((r + l) % 256 for r, l in zip(sample, lefts))
+        return bytearray((r - l) % 256 for r, l in zip(sample, lefts))
     elif pred == 2: # PNG Up
-        return bytearray((r + u) % 256 for r, u in zip(prev_sample, sample))
+        return bytearray((r - u) % 256 for r, u in zip(prev_sample, sample))
     elif pred == 3: # PNG Average
-        return bytearray((r + (l + u)//2) % 256 
+        return bytearray((r - (l + u)//2) % 256 
                          for r, l, u in zip(sample, lefts, prev_sample))
     elif pred == 4: # PNG Paeth
         up_lefts = bytearray(b'\x00'*bpp)+prev_sample[bpp:]
-        return bytearray((r + paeth_decode(l, u, ul)) % 256
-                         for a, l, u, rl in zip(sample, lefts, prev_sample, up_lefts))
-    elif pred == 5:
-        return 
+        return bytearray((r - paeth_decode(l, u, ul)) % 256
+                         for a, l, u, ul in zip(sample, lefts, prev_sample, up_lefts))
     raise ValueError('Invalid PNG predictor')
 
 def paeth_encode(left, up, up_left):
@@ -185,6 +186,3 @@ def paeth_encode(left, up, up_left):
     elif e_up == min_err:
         return up
     return up_left
-
-
-
