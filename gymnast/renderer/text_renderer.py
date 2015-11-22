@@ -156,7 +156,7 @@ class PdfTextRenderer(PdfBaseRenderer):
             else:
                 dist_lines.append(l)
         return '\n'.join([self._join_blocks(i[1], self._fixed_width)
-                         for i in dist_lines])
+                          for i in dist_lines])
         ## IDEA: Add option to include blank lines as below
         #text_lines = [(i[0][1], self._join_blocks(i[1], self._fixed_width))
         #               for i in dist_lines]
