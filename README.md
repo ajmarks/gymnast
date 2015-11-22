@@ -12,7 +12,7 @@ from gymnast import PdfDocument, PdfTextRenderer
 url = 'http://www.census.gov/retail/mrts/www/data/pdf/ec_current.pdf'
 r = requests.get(url)
 pdf = PdfDocument(r.content).parse()
-text = PdfTextRenderer(pdf.Pages[-1], fixed_width=True).render()
+text = PdfTextRenderer(pdf.Pages[1], fixed_width=True).render()
 print(text)
 ```
 
