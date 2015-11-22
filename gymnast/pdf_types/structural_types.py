@@ -1,6 +1,15 @@
 """
 PDF objects that represent the low-level document structure
-"""
+
+For lack of a better place, here's how we find an object:
+    1. Each object has a unique key (object number, generation number)
+    2. If that key is in the document's _ind_objects dict, return it.
+    3. If not, get the cross reference from the document's _xrefs dict
+       a. If the result is a PdfXref, go to the xref's _offset in the doc's
+          data, parse that object, and save and return the result.
+       b. If the result is a PdfStreamXref and it's type 2, get the specified
+          object stream, and then use the object stream's get_nth_object method
+          to return the object."""
 
 import re
 from decimal   import Decimal
@@ -22,6 +31,7 @@ class PdfXref(PdfType):
         self._document   = document
     @property
     def key(self):
+        """Id of the object this represents"""
         return (self._obj_no, self._generation)
 
     @property
@@ -63,6 +73,66 @@ class PdfXref(PdfType):
             raise PdfParseError('Invalid xref line')
         return cls(document, obj_id, int(match.group(1)), int(match.group(2)),
                    match.group(3) == 'n')
+
+
+class PdfStreamXref(PdfType):
+    """Cross reference stream objects."""
+    def __init__(self, document, obj_no, obj_strm_no, obj_strm_idx):
+        """Create a new xref stream reference.
+
+        Arguments:
+            document     - The PdfDocument in which it was created
+            obj_no       - The object number by which it is referenced
+            obj_strm_no  - The object number of the object stream in which the
+                           object is stored
+            obj_strm_idx - The index into the list of objects in its stream"""
+        super(PdfStreamXref, self).__init__()
+        self._document     = document
+        self._obj_strm_no  = obj_strm_no
+        self._obj_no       = obj_no
+        self._obj_strm_idx = obj_strm_idx
+
+    @property
+    def key(self):
+        """Unique key for this object"""
+        return (self._obj_no, 0)
+
+    @property
+    def value(self):
+        """The object represented"""
+        return self.get_object()
+
+    def get_object(self):
+        """Return the object referenced by this Xref.  If it's already parsed
+        in the document, great, otherwise parse it."""
+        objs = self._document.indirect_objects
+        try:
+            obj = objs[self.key]
+        except KeyError:
+            strm_obj = self._document.get_object(self._obj_strm_no, 0)
+            obj = strm_obj.parsed_object.get_nth_object(self._obj_strm_idx)
+            objs[self.key] = obj
+        return obj
+
+    def __str__(self):
+        return '{:010d} {:010d} '.format(self._offset, self._generation)\
+              +('n' if self._in_use else 'f')
+
+class PdfHeader(PdfType):
+    """PDF version header.  Probably not super necessary to have."""
+    def __init__(self, version, adobe_version=None):
+        super(PdfHeader, self).__init__()
+        self.version       = Decimal(version)
+        self.adobe_version = Decimal(adobe_version) if adobe_version else None
+    def __str__(self):
+        vers = '%'
+        if self.adobe_version:
+            vers += '!PS-Adobe-'+str(self.adobe_version)+' '
+        return vers+'PDF-'+str(self.version)
+    def __bytes__(self):
+        return bytes(str(self))
+    def pdf_encode(self):
+        return str(self).encode()
 
 class PdfHeader(PdfType):
     """PDF version header.  Probably not super necessary to have."""

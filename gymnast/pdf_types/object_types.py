@@ -36,7 +36,6 @@ class PdfIndirectObject(PdfType):
                      'FontDescriptor': pdf_elements.FontDescriptor,
                      'Encoding'      : pdf_elements.FontEncoding,
                      #'ObjStm'        : ObjectStream, #TODO
-                     #'XRef'          : XRef
                      'Catalog'       : pdf_elements.PdfCatalog
                     }
         if self._parsed_obj is not None:
@@ -45,7 +44,7 @@ class PdfIndirectObject(PdfType):
         if isinstance(val, PdfDict):
             try:
                 self._parsed_obj = obj_types[val['Type']]\
-                                          .from_object(val, self.object_key, self._document)
+                                       .from_object(val, self.object_key, self._document)
                 return self._parsed_obj
             except KeyError:
                 return val

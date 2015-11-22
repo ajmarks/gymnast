@@ -3,12 +3,13 @@ The main PDF Document class
 """
 
 from .exc           import PdfError, PdfParseError
-from .misc          import buffer_data, read_until, force_decode, \
+from .misc          import buffer_data, read_until, force_decode,  \
                            consume_whitespace, is_digit, ReCacher, \
                            int_from_bytes
 from .pdf_constants import EOLS
 from .pdf_parser    import PdfParser
-from .pdf_types     import PdfHeader, PdfXref, PdfObjectReference, PdfDict
+from .pdf_types     import PdfHeader, PdfXref, PdfObjectReference, PdfDict, \
+                           PdfStreamXref
 
 __all__ = ['PdfDocument']
 
@@ -73,6 +74,7 @@ class PdfDocument(object):
         obj = self._parser.parse_indirect_object(self._data, offset)
         self.indirect_objects[obj.object_key] = obj
         self._data.seek(pos)
+        return obj
 
     def __del__(self):
         """Cleanup on deletion"""
@@ -188,6 +190,7 @@ class PdfDocument(object):
         return self.parse_xref_obj(obj)
 
     def parse_xref_obj(self, obj):
+        """Extract an xref table and trailer from an XRef object"""
         stream = obj.value
         header = stream.header
         if header['Type'] != 'XRef':
@@ -200,27 +203,32 @@ class PdfDocument(object):
             widths.insert(0, 0)
         recsize = sum(widths)
         data = stream.data
-        # Divide, parse, and dictify
-        recs = [(id0 + i, data[i*recsize:(i+1)*recsize])
-                for i in range(header['Size'])]
+        if isinstance(data, (list, tuple)):
+            # Stream predictors already gave us records
+            recs = [(id0 + i, d) for i, d in enumerate(data)]
+        else:
+            recs = [(id0 + i, data[i*recsize:(i+1)*recsize])
+                    for i in range(header['Size']-id0)]
         xrefs = (self._parse_xrefstrm_rec(r[0], r[1], widths) for r in recs)
-        xrefs = {(x['object_id'], x['generation']): x for x in xrefs}
+        xrefs = {x.key: x for x in xrefs if x is not None}
         return xrefs, header
 
     def _parse_xrefstrm_rec(self, obj_id, data, widths):
+        """Parse a record in an xref stream into an XRef object"""
         if widths[0] == 0:
             rec_type = 1
         else:
             rec_type = int_from_bytes(data[:widths[0]])
-        val_2 = data[widths[0]:widths[1]]
-        val_3 = data[widths[1]:] # Type and obj_no are 1 and 2
+        val_2 = int_from_bytes(data[widths[0]:widths[0]+widths[1]])
+        val_3 = int_from_bytes(data[widths[0]+widths[1]:]) # Type and obj_no are 1 and 2
         if rec_type == 0:
             return PdfXref(self, obj_id, val_2, val_3, False)
         if rec_type == 1:
             return PdfXref(self, obj_id, val_2, val_3 if widths[2] else 0, True)
         if rec_type == 2:
-            #TODO
-            raise NotImplementedError('Object streams not yet implemented')
+            return PdfStreamXref(self, obj_id, val_2, val_3)
+        else:
+            return None
 
     def _get_xref_subsection(self):
         """Exctract an Xref subsection from data.  This method assumes data's
@@ -286,7 +294,7 @@ class PdfDocument(object):
         try:
             return sum((cls._build_page_list(p) for p in page.Kids), [])
         except AttributeError:
-            return [page]
+            return [page.parsed_object]
 
     @property
     def indirect_objects(self):
