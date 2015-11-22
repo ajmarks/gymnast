@@ -7,8 +7,7 @@ PDF parser written in Python 3 (backport to 2.7 in the works).  This was designe
 ##Usage
 ```python
 import io
-from gymnast          import PdfDocument
-from gymnast.renderer import PdfBaseRenderer
+from gymnast          import PdfDocument, PdfBaseRenderer
 
 class PdfSimpleRenderer(PdfBaseRenderer):
     """Simple renderer example that just extracts text with no processing"""
@@ -22,7 +21,7 @@ class PdfSimpleRenderer(PdfBaseRenderer):
 
 fname = '/path/to/file.pdf'
 pdf   = PdfDocument(fname).parse()
-text  = SimpleRenderer(pdf.Pages[-3]).render()
+text  = PdfSimpleRenderer(pdf.Pages[-3]).render()
 ```
 
 
