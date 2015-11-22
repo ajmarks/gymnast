@@ -171,17 +171,3 @@ def png_encode_sample(pred, sample, bpp, prev_sample=None):
         return bytearray((r - paeth_decode(l, u, ul)) % 256
                          for r, l, u, ul in zip(sample, lefts, prev_sample, up_lefts))
     raise ValueError('Invalid PNG predictor')
-
-def paeth_encode(left, up, up_left):
-    """Paeth predictor decoding.  Returns whichever argument is closest to
-    left+up−up_left, prefering left over up and up over up_left in ties."""
-    est = left + up - up_left
-    e_left = abs(est - left)
-    e_up   = abs(est - up)
-    e_ul   = abs(est - up_left)
-    min_err = min((e_left, e_up, e_ul))
-    if e_left == min_err:
-        return left
-    elif e_up == min_err:
-        return up
-    return up_left
