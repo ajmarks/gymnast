@@ -60,7 +60,7 @@ def consume_whitespace(data, whitespace=WHITESPACE):
         break
     while c and c in whitespace:
         c = data.read(1)
-    if c not in whitespace:
+    if c and c not in whitespace:
         data.seek(-1, 1) # Rewind 1 byte
 
 def force_decode(bstring):
