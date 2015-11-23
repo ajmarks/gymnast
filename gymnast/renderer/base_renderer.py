@@ -99,23 +99,8 @@ class PdfBaseRenderer(object):
                                 0,   ts.rise)*m*CTM
 
     def _get_glyph_width(self, glyph):
-        """Get the glyph's width in _text_ space.
-
-        IDEA: Consider adding a helper method in fonts for this"""
-        raw_width = self.active_font.get_glyph_width(glyph)
-        return self._gs_to_ts(raw_width, 0)[0]
-
-    def _gs_to_ts(self, x, y):
-        """Convert coordinates from glyph space to text space"""
-        return self.active_font.text_space_coords(x, y)
-
-    def _extra_space(self, glyph):
-        """Compute the appropriate amount of extra spacing to apply based on
-        the last glyph drawn and the character- and word-spacing parameters in
-        the current text state.
-
-        Equivalent to T_c + T_w in the formulae on p. 410"""
-        return self.ts.c + (glyph == ' ')*self.ts.w
+        """Get the glyph's width in text space."""
+        return self.active_font.get_glyph_width(glyph)
 
     def render_text(self, string):
         """Write the string to the text output and, depending on the mode,
@@ -124,7 +109,8 @@ class PdfBaseRenderer(object):
         TODO: Vertical writing"""
         # This shortcut works.  Check the math.
         ts = self.ts
-        widths = (self._get_glyph_width(glyph)*ts.fs + self._extra_space(glyph)
+        widths = (  self._get_glyph_width(glyph)*ts.fs \
+                   +((self.ts.c + (glyph == ' ')*self.ts.w))
                   for glyph in string)
         t_x = sum(widths) * ts.h
         t_y = 0.0 # <--- TODO: Vertical writing mode

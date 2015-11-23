@@ -76,15 +76,17 @@ class PdfBaseFont(PdfElement):
 
     def get_glyph_width(self, glyph, missing_width=0):
         """Return the width of the specified glyph in the current font.
-        Note that these widths are in _glyph_ space, not _text_ space.
+        Note that these widths are in _text_ space, not glyph or user space.
 
         Arguments:
             glyph - a one character string"""
         if not isinstance(glyph, int):
             glyph = self.Encoding.get_char_code(GLYPH_LIST[:glyph])
         if not (self.FirstChar <= glyph <= self.LastChar):
-            return self.FontDescriptor.get('MissingWidth', missing_width)
-        return self.Widths[glyph - self.FirstChar]
+            size = self.FontDescriptor.get('MissingWidth', missing_width)
+        else:
+            size = self.Widths[glyph - self.FirstChar]
+        return self.text_space_coords(size, 0)[0]
 
     def get_glyph_name(self, code):
         return self.Encoding.get_glyph_name(code)
@@ -94,16 +96,20 @@ class PdfBaseFont(PdfElement):
 
     @property
     def space_width(self):
-        """Width of the space character in the current font"""
+        """Width of the space character in the current font in _text_ space"""
         return self.get_glyph_width(self.get_char_code('space'))
     @property
     def avg_width(self):
         """Approximate average character width.  Currently only defined for
-        latin fonts."""
+        latin fonts.  Value returned is in _text_ space units.
+
+        This is currently computed by taking the weighted average of all glyphs
+        in the font in the range [A-Za-z], weighing the lower case letter four
+        times as much as the upper case ones."""
         if self._avg_width is None:
-            capwidths = [i for i in (self.get_glyph_width(i, None)
+            capwidths = [i for i in (self.get_glyph_width(i)
                                      for i in range(ord('A'), ord('Z')+1)) if i]
-            lowwidths = [i for i in (self.get_glyph_width(i, None)
+            lowwidths = [i for i in (self.get_glyph_width(i)
                                      for i in range(ord('a'), ord('z')+1)) if i]
             try:
                 self._avg_width = float(4*sum(lowwidths)+sum(capwidths)) \

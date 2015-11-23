@@ -41,6 +41,7 @@ TODO: Support vertical writing
 
 import collections
 import io
+import math
 import six
 
 from .base_renderer  import PdfBaseRenderer
@@ -49,25 +50,23 @@ from ..pdf_operation import PdfOperation
 class TextBlock(object):
     """Represents a block of text in the PDF output"""
 
-    def __init__(self, xmin, space_width, tab_width=None):
+    def __init__(self, xmin, space_width, fixed_width):
         """Initialize a new text box at the specified x coordinate with the
         space character width and tab width (in terms of spaces)"""
         self._xmin        = float(xmin)
         self._space_width = float(space_width)
-        self._tab_width   = float(tab_width) if tab_width else None
+        self._fixed_width = bool(fixed_width)
         self._text        = io.StringIO()
-        self._width       = 0
+        self._width       = 0.0
 
     @property
     def xbounds(self):
         """Horizontal coordinate lower and upper bounds"""
         return (self._xmin, self._xmin+self._width)
 
-    def get_no_spaces(self, width):
-        return round(width/self._space_width)
-
     @property
     def space_width(self):
+        """The width of a space in the current font"""
         return self._space_width
 
     def write_text(self, text, width, x=None):
@@ -78,23 +77,27 @@ class TextBlock(object):
         self._text.write(text)
         self._width += width
 
-    def get_spacing(self, x):
-        """Returns an appropriate amount of spacing between the current end of
-        the block and the x coordinate."""
-        dist = x - self._xmin - self._width
-        spaces = dist/self._space_width
-        if self._tab_width and spaces >= self._tab_width:
-            return '\t'
+    def get_no_spaces(self, width):
+        """Get the number of spaces needed to fill the specified width (in text
+        space units)."""
+        spaces = width/self._space_width
+        if self._fixed_width and spaces >= .8:
+            text_len = len(self._text.getvalue())
+            return round((self._width+width)/self._space_width)-text_len
+        elif self._fixed_width:
+            return 0
         else:
-            return int(spaces)*' '
+            return round(width/self._space_width)
 
     def fill_spaces(self, x):
         """Fill in enough spaces to reach the specified x coordinate"""
-        self._text.write(self.get_spacing(x))
+        spaces = self.get_no_spaces(x - self._xmin - self._width)
+        self._text.write(' '*spaces)
         self._width = x - self._xmin
 
     @property
     def text(self):
+        """The text string in the block"""
         return self._text.getvalue()
 
 class PdfTextRenderer(PdfBaseRenderer):
@@ -105,16 +108,15 @@ class PdfTextRenderer(PdfBaseRenderer):
     between successive TextBlocks in the line and width of the space character
     in the first of the two."""
 
-    def __init__(self, page, fixed_width=True, tab_width=None):
+    def __init__(self, page, fixed_width=True):
         """Text line extractor.
 
         Arguments:
             page - The PdfPage to parse
-            fw_spaces - Should spaces be approximate as fixed width?
-            tab_width - Replaces this many spaces with a tab (default None)"""
+            fw_spaces - Adjust spacing to render to preserve format in a fixed
+                        width font (default True)"""
         super(PdfTextRenderer, self).__init__(page)
         self._lines       = collections.defaultdict(list)
-        self._tab_width   = tab_width
         self._fixed_width = fixed_width
         self._line_sizes  = collections.defaultdict(int)
 
@@ -127,7 +129,7 @@ class PdfTextRenderer(PdfBaseRenderer):
         cap_height  = self.active_font.FontDescriptor.CapHeight
         cap_height  = self.active_font.text_space_coords(0, cap_height)[1]
         cap_height *= self.ts.fs*self.ts.m.d
-        self._line_sizes[round(cap_height, 1)] += len(string)
+        self._line_sizes[round(cap_height,1)] += len(string)
 
     def _preop(self, op):
         """If the operation is a text showing one, initialize a new textbox
@@ -137,9 +139,8 @@ class PdfTextRenderer(PdfBaseRenderer):
                 space_width = self._avg_width
             else:
                 space_width = self._space_width
-            self._text_block = TextBlock(self.text_coords[0],
-                                         space_width,
-                                         self._tab_width)
+            self._text_block = TextBlock(self.text_coords[0], space_width,
+                                         self._fixed_width)
 
     def _postop(self, op):
         """If we were in a text showing operation, add it to a line"""
@@ -180,7 +181,7 @@ class PdfTextRenderer(PdfBaseRenderer):
         y_adj = (self.ts.rise <= -self._line_height)*self.ts.rise
         slope = mat.a/mat.b if mat.b else 0
         return (round(slope),
-                round(mat.f - y_adj + mat.e*slope, 1))
+                mat.f - y_adj + mat.e*slope)
 
     @property
     def _line_height(self):
@@ -193,37 +194,28 @@ class PdfTextRenderer(PdfBaseRenderer):
     def _space_width(self):
         """The width of a space in the current font, transformed to text space
         and then to user-space"""
-        w0 = self._gs_to_ts(self.active_font.space_width, 1)[0]
+        w0 = self.active_font.space_width
         return w0 * self.ts.fs * self.ts.h * self.ts.m.a
 
     @property
     def _avg_width(self):
         """The width of a typical character in the current font, transformed to
         text space and then to user-space"""
-        w0 = self._gs_to_ts(self.active_font.avg_width, 0)[0]
+        w0 = self.active_font.avg_width
         return w0 * self.ts.fs * self.ts.h * self.ts.m.a
 
     def _join_blocks(self, blocks, fixed_width):
         """Join together a list of text blocks, adding space as needed"""
         blocks.sort(key=lambda b: b.xbounds[0])
-        prev_block = blocks[0]
+        sio = io.StringIO()
         if fixed_width:
-            text = ''
-            prev_end = self._page.CropBox[0]
-            for block in blocks:
-                width = block.xbounds[0]-self._page.CropBox[0]
-                block_spaces = (block.xbounds[0]-prev_end)*prev_block.space_width
-                if block_spaces >= .8:
-                    text += ' '*(block.get_no_spaces(width)-len(text))
-                text += block.text
-                prev_block = block
-                prev_end   = prev_block.xbounds[1]
-            return text
-        else:
-            sio = io.StringIO()
-            sio.write(blocks[0].text)
-            for block in blocks[1:]:
-                sio.write(prev_block.get_spacing(block.xbounds[0]))
-                sio.write(block.text)
-                prev_block = block
-            return sio.getvalue()
+            spaces = ' '*round( (blocks[0].xbounds[0]-self._page.CropBox[0]) \
+                         /blocks[0].space_width)
+            sio.write(spaces)
+        sio.write(blocks[0].text)
+        prev_block = blocks[0]
+        for block in blocks[1:]:
+            width = block.xbounds[0] - prev_block.xbounds[1]
+            sio.write(' '*block.get_no_spaces(width) + block.text)
+            prev_block = block
+        return sio.getvalue()
