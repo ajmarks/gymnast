@@ -64,7 +64,11 @@ class TextBlock(object):
         return (self._xmin, self._xmin+self._width)
 
     def get_no_spaces(self, width):
-        return int(width/self._space_width)
+        return round(width/self._space_width)
+
+    @property
+    def space_width(self):
+        return self._space_width
 
     def write_text(self, text, width, x=None):
         """Add new text to the next box, adjusting the box width and adding
@@ -196,7 +200,7 @@ class PdfTextRenderer(PdfBaseRenderer):
     def _avg_width(self):
         """The width of a typical character in the current font, transformed to
         text space and then to user-space"""
-        w0 = self._gs_to_ts(self.active_font.avg_width, 1)[0]
+        w0 = self._gs_to_ts(self.active_font.avg_width, 0)[0]
         return w0 * self.ts.fs * self.ts.h * self.ts.m.a
 
     def _join_blocks(self, blocks, fixed_width):
@@ -204,10 +208,16 @@ class PdfTextRenderer(PdfBaseRenderer):
         blocks.sort(key=lambda b: b.xbounds[0])
         prev_block = blocks[0]
         if fixed_width:
-            text = ' '
+            text = ''
+            prev_end = self._page.CropBox[0]
             for block in blocks:
                 width = block.xbounds[0]-self._page.CropBox[0]
-                text += ' '*(block.get_no_spaces(width)-len(text)) + block.text
+                block_spaces = (block.xbounds[0]-prev_end)*prev_block.space_width
+                if block_spaces >= .8:
+                    text += ' '*(block.get_no_spaces(width)-len(text))
+                text += block.text
+                prev_block = block
+                prev_end   = prev_block.xbounds[1]
             return text
         else:
             sio = io.StringIO()
