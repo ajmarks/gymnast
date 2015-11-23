@@ -18,24 +18,24 @@ print(text)
 
 ####Output:
 ```
-     Table 1.    Estimated Quarterly U.S. Retail Sales: Total and E-commerce1 
+     Table 1.   Estimated Quarterly U.S. Retail Sales: Total and E-commerce1 
       (Estimates are based on data from the Monthly Retail Trade Survey and administrative records.) 
-                                    Retail Sales        E-commerce          Percent Change              Percent Change
-                                (millions of dollars)    as a Percent      From Prior Quarter            From Same Quarter 
-             Quarter                                            of                                         A Year Ago
-                               Total      E-commerce          Total       Total      E-commerce       Total     E-commerce 
+                                    Retail Sales            E-commerce        Percent Change              Percent Change
+                                (millions of dollars)      as a Percent       From Prior Quarter          From Same Quarter 
+             Quarter                                            of                                            A Year Ago
+                               Total      E-commerce       Total           Total      E-commerce         Total    E-commerce 
        Adjusted2
-       3rd quarter 2015(p)     1,184,994      87,509         7.4           1.2           4.2           1.6          15.1
-       2nd quarter 2015(r)     1,171,458      84,019         7.2           1.6           4.4           1.0          14.3
-       1st quarter 2015       1,152,986      80,451         7.0          -1.4          3.7           1.8          14.8
-       4th quarter 2014       1,169,143      77,558         6.6           0.3           2.0           3.8          14.0
-       3rd quarter 2014(r)     1,165,943      76,041         6.5           0.5           3.5           4.0          15.4
+       3rd quarter 2015(p)   1,184,994       87,509         7.4           1.2            4.2           1.6          15.1
+       2nd quarter 2015(r)   1,171,458       84,019         7.2           1.6            4.4           1.0          14.3
+       1st quarter 2015      1,152,986       80,451         7.0           -1.4           3.7           1.8          14.8
+       4th quarter 2014      1,169,143       77,558         6.6           0.3            2.0           3.8          14.0
+       3rd quarter 2014(r)   1,165,943       76,041         6.5           0.5            3.5           4.0          15.4
        Not Adjusted
-       3rd quarter 2015(p)     1,187,337      81,053         6.8           0.0           2.9           1.6          15.2
-       2nd quarter 2015(r)     1,187,208      78,779         6.6          10.2          5.2           0.9          14.4
-       1st quarter 2015       1,077,586      74,920         7.0          -12.1         -19.9          1.5          14.4
-       4th quarter 2014       1,225,969      93,530         7.6           4.9          32.9          3.9          13.9
-       3rd quarter 2014       1,168,187      70,351         6.0          -0.7          2.2           4.2          15.7
+       3rd quarter 2015(p)   1,187,337       81,053         6.8           0.0            2.9           1.6          15.2
+       2nd quarter 2015(r)   1,187,208       78,779         6.6           10.2           5.2           0.9          14.4
+       1st quarter 2015      1,077,586       74,920         7.0          -12.1         -19.9           1.5          14.4
+       4th quarter 2014      1,225,969       93,530         7.6           4.9           32.9           3.9          13.9
+       3rd quarter 2014      1,168,187       70,351         6.0           -0.7           2.2           4.2          15.7
          (p) Preliminary estimate.    (r) Revised estimate.  
              1 E-commerce sales are sales of goods and services where  the buyer places an order, or the price and terms  of the sale  are negotiated over an Internet, mobile 
          device (M-commerce), extranet, Electronic Data Interchange (EDI) network, electronic mail, or other comparable online system. Payment may or may not be 
