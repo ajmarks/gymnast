@@ -137,6 +137,8 @@ class PdfHexString(PdfString):
         return codecs.decode(hstr, 'hex_codec')
     def __repr__(self):
         return str(self)
+    def __str__(self):
+        return self._text
     def pdf_encode(self):
         return b'<'+self.raw_bytes+b'>'
 
