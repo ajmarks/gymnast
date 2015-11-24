@@ -138,7 +138,7 @@ def png_predictor_encode(samples, params, predictor=None, sample_predictors=None
     rows = ((p, s) for p, s in zip(sample_predictors, samples))
     for pred, sample in rows:
         prev_sample = png_encode_sample(pred, sample, bpp, prev_sample)
-        results.write(int_to_bytes(pred)+bytes(prev_sample))
+        results.write(int_to_bytes(pred, 1)+bytes(prev_sample))
     return results.getvalue()
 
 def png_encode_sample(pred, sample, bpp, prev_sample=None):

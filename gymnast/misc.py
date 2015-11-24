@@ -30,13 +30,13 @@ def int_from_bytes(val):
         # Older Python, so pad it and unpack
         return struct.unpack('>L', b'\x00'*(4-len(val))+val)[0]
 
-def int_to_bytes(val):
+def int_to_bytes(val, len):
     """Converts val to bigendian bytes"""
     try:
-        return val.to_bytes('big')
+        return val.to_bytes(len, 'big')
     except AttributeError:
         # Older Python, so pack it and strip the padding
-        return struct.pack('>q', val).lstrip(b'\x00')
+        return struct.pack('>q', val)[-len:]
 
 def _is_buffered_bytesio(data):
     """Check if the argument is a buffered bytes io object"""
