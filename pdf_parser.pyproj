@@ -26,6 +26,7 @@
     <Compile Include="gymnast\filters\filters.py" />
     <Compile Include="gymnast\filters\predictors.py" />
     <Compile Include="gymnast\pdf_elements\fonts\base_font.py" />
+    <Compile Include="gymnast\pdf_elements\fonts\cmap.py" />
     <Compile Include="gymnast\pdf_elements\fonts\pdf_font.py" />
     <Compile Include="gymnast\pdf_elements\fonts\true_type.py" />
     <Compile Include="gymnast\pdf_elements\fonts\type1.py" />
