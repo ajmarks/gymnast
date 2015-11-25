@@ -181,7 +181,7 @@ class FontEncoding(PdfElement):
         """bidict on pairs (glyph, character code)"""
         return self._glyphmap
     def get_glyph_name(self, code):
-        return self._glyphmap[:code]
+        return self._glyphmap.inv[code]
     def get_char_code(self, name):
         try:
             return self._glyphmap[name]
