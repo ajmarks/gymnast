@@ -178,17 +178,23 @@ class FontEncoding(PdfElement):
         self._fontmatrix  = PdfMatrix(.001, 0, 0, .001, 0, 0)
     @property
     def BaseEncoding(self):
+        """The font's base encoding"""
         return self._object.get('BaseEncoding', 'StandardEncoding')
     @property
     def Differences(self):
+        """Fon't computed differences map"""
         return self._differences
     @property
     def GlyphMap(self):
         """bidict on pairs (glyph, character code)"""
         return self._glyphmap
     def get_glyph_name(self, code):
-        return self._glyphmap[:code]
+        """Get the glyph name associated with the character code in the font's
+        encoding"""
+        return self._glyphmap.inv[code]
     def get_char_code(self, name):
+        """Get the character code associated with a given glyph name in the
+        font's encoding"""
         try:
             return self._glyphmap[name]
         except KeyError:

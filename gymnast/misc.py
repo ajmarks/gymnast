@@ -17,7 +17,7 @@ __all__ = [
     # Decorators
     'classproperty',
     # Classes
-    'ReCacher', 'BlackHole',
+    'ReCacher', 'BlackHole', 'defaultlist',
     # Metaclasses
     'MetaGettable', 'MetaNonelike',
     ]
@@ -100,6 +100,37 @@ class classproperty(object):
         self.fget = fget
     def __get__(self, owner_self, owner_cls):
         return self.fget(owner_cls)
+
+class defaultlist(list):
+    """Like collections.defaultdict, but a list"""
+    def __init__(self, item_factory, *args, **kwargs):
+        """Creates a defaultlist with values from item_factory()"""
+        self._item_factory = item_factory
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, index):
+        """Get the item, expanding the list as needed"""
+        try:
+            return super().__getitem__(index)
+        except IndexError:
+            # Slices won't IndexError, and that's how we want it
+            if index >= 0:
+                self.extend([self._item_factory()]*(index - len(self) + 1))
+                return super().__getitem__(index)
+            else: #Too large a negative index has no obvious meaning
+                raise
+
+    def __setitem__(self, index, value):
+        """Set the item, expanding the list as needed"""
+        try:
+            super().__setitem__(index, value)
+        except IndexError:
+            # Slices won't IndexError, and that's how we want it (probably)
+            if index >= 0:
+                self.extend([self._item_factory()]*(index - len(self) + 1))
+                return super().__setitem__(index, value)
+            else: #Too large a negative index has no obvious meaning
+                raise
 
 class MetaGettable(type):
     """Metaclass to allow classes to be treated as dictlikes with MyClass[key].

@@ -23,7 +23,7 @@ class PdfString(PdfType):
     def __ne__(self, other): return self._parsed_bytes.__ne__(other)
     def __gt__(self, other): return self._parsed_bytes.__gt__(other)
     def __ge__(self, other): return self._parsed_bytes.__ge__(other)
-    def __bool__(self):      return self._parsed_bytes.__bool__()
+    def __bool__(self):      return bool(self._parsed_bytes)
     def __bytes__(self):     return self._parsed_bytes
     def __hash__(self):      return self._parsed_bytes.__hash__()
     def __repr__(self):
@@ -122,10 +122,15 @@ class PdfLiteralString(str, PdfString):
             char = iodata.read(1)
         return bytes(result.getvalue())
 
-class PdfHexString(PdfString):
+class PdfHexString(PdfString, bytes):
     """Hex strings, mostly used for ID values"""
+    def __new__(cls, data):
+        return bytes.__new__(cls, cls.parse_bytes(data))
+
     def __init__(self, data):
-        super(PdfHexString, self).__init__(data)
+        PdfString.__init__(self, data)
+        bytes.__init__(self)
+
     @property
     def _text(self):
         return '0x'+binascii.hexlify(self._parsed_bytes).decode()
