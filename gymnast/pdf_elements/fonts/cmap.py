@@ -161,7 +161,6 @@ def clean_token(token):
 
 def coderange_dims(start, end):
     """Code range dimensions between bytecodes"""
-
     if len(start) != len(end):
         raise ValueError('start and end must have the same dimesionality')
     dims = [e-s for s, e in zip(start, end)]
