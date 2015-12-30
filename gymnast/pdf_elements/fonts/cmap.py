@@ -2,7 +2,10 @@
 CIDMap objects
 
 See Reference pp. 441-452, and 472-475 for an overview. Full treatment at
-http://www.adobe.com/content/dam/Adobe/en/devnet/font/pdfs/5014.CIDFont_Spec.pdf
+http://www.adobe.com/content/dam/Adobe/en/devnet/font/pdfs/5014.CIDFont_Spec.pdf.
+
+See also ToUnicode Mapping File Tutorial
+http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/5411.ToUnicode.pdf.
 """
 
 from bidict      import bidict
@@ -35,6 +38,7 @@ class CMap(object):
         self._basemap    = None
         self._coderanges = defaultlist(set)
         self._sys_info   = []
+        self._unicodemap = None
         if parse:
             self._results = self.parse()
         input()
@@ -127,6 +131,16 @@ class CMap(object):
         """Set the system info"""
         self._sys_info = args[0]
 
+    @property
+    def unicode_map(self):
+        if self._unicodemap is None:
+            self._unicodemap = self._construct_unimap()
+        return self._unicodemap
+
+    def _construct_unimap(self):
+        base_map = {c:c.decode() for rng in self._coderanges for c in rng}
+
+
     # The various operators.  Somehow I like this more than a big
     # series of elifs
     OPERATIONS = {'beginbfchar'        : bfchar,
@@ -167,7 +181,8 @@ def codespace(start, end=None, dimensions=None):
     if not start:
         yield b''
         raise StopIteration
-    for val in range(start[-dim], dimensions[0] + 1):
+
+    for val in range(start[-dim], start[-dim] + dimensions[0] + 1):
         for rest in codespace(start[-dim:][1:],
                               dimensions=dimensions[1:]):
-            yield int_to_bytes(val, 1)+rest
+            yield start[:-dim]+int_to_bytes(val, 1)+rest
