@@ -24,7 +24,7 @@ except ImportError:
 
 NAME = 'gymnast'
 URL = 'https://github.com/ajmarks/gymnast/'
-REQUIRES = ['bidict>=0.9', 'six>=1.0']
+REQUIRES = ['bidict>=0.9', 'six>=1.0', 'intervaltree>=2.1.0']
 KEYWORDS = ['pdf', 'acrobat']
 LICENSE  = 'MIT License'
 CLASSIFIERS = ['Development Status :: 3 - Alpha',
