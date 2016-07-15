@@ -4,7 +4,7 @@ Font objects
 
 import six
 import struct
-from bidict    import collapsingbidict
+from bidict    import loosebidict
 
 from ..pdf_element    import PdfElement
 from ...pdf_constants import BASE_ENCODINGS, GLYPH_LIST
@@ -149,8 +149,8 @@ class FontEncoding(PdfElement):
             raise ValueError('Invalid BaseEncoding')
 
         #Base glyph map for the specified encoding
-        self._glyphmap = collapsingbidict({k: v[base_encoding]
-                                           for k,v in six.iteritems(BASE_ENCODINGS)})
+        self._glyphmap = loosebidict({k: v[base_encoding]
+                                      for k,v in six.iteritems(BASE_ENCODINGS)})
         # Now modify it with the differences array, if specified
         diffs = obj.value.get('Differences', [])
         # Flatten if we need to (though we shouldn't need to)
