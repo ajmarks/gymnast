@@ -35,15 +35,10 @@ def get_glyph_list():
     """Load the Adobe Glyph list into a bidict.
     https://partners.adobe.com/public/developer/en/opentype/glyphlist.txt"""
 
-    #For the character codes that appear multiple times, we're going to
-    #arbitrarily exclude one of the names.
-    #TODO: handle this less dumbly
-    dupes = {'Cdotaccent', 'Dcroat', 'Edotaccent', 'Gcommaaccent',
-             'Gdotaccent', 'cdotaccent', 'dcroat', 'edotaccent',
-             'gcommaaccent', 'middot', 'mu1', 'nbspace', 'overscore',
-             'sfthyphen', 'spacehackarabic', 'verticalbar'}
-    with open(DATA_DIR+'glyphlist.txt') as f:
+    with open(DATA_DIR + 'glyphlist.txt') as f:
         lines = [l.split(';') for l in f.read().splitlines() if l[0] != '#']
-    return bidict({l[0]:decode_hex(l[1]) for l in lines if l[0] not in dupes})
+    # Dedupe, because Adobe
+    glyph_set = {l[0] for l in lines}
+    return bidict({l[0]: decode_hex(l[1]) for l in lines if l[0] not in glyph_set})
 
 GLYPH_LIST = get_glyph_list()
